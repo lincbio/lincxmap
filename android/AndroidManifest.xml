@@ -1,0 +1,40 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.lincbio.lincxmap"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="14" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme" >
+        <activity android:name=".android.app.AboutActivity" />
+        <activity android:name=".android.app.DetectionActivity" />
+        <activity android:name=".android.app.DetectionResultActivity" />
+        <activity
+            android:name=".android.app.MainActivity"
+            android:noHistory="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".android.app.ProductsActivity" />
+        <activity
+            android:name=".android.app.SettingsActivity"
+            android:noHistory="true" />
+        <activity
+            android:name=".android.app.TemplateListActivity"
+            android:configChanges="orientation" />
+        <activity android:name=".android.app.TemplateSpecActivity" />
+        <activity android:name=".android.app.TemplateEditorActivity" />
+    </application>
+
+</manifest>

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<products>
+
+    <catalogue name="肿瘤类" >
+        <product name="Anti-Bata-HCG" />
+        <product name="Anti-alfa-HCG" />
+        <product name="Anti-CEA" />
+        <product name="Anti-AFP" />
+    </catalogue>
+    <catalogue name="肝炎类" >
+        <product name="HAV-Ag" />
+        <product name="HBS-Ag" />
+        <product name="HBc-Ag" />
+        <product name="HDV-Ag" />
+        <product name="HEV-Ag" />
+        <product name="HGV-Ag" />
+    </catalogue>
+    <catalogue name="传染病类" >
+    </catalogue>
+    <catalogue name="脑血管疾病类" >
+    </catalogue>
+    <catalogue name="胰岛素类" >
+    </catalogue>
+    <catalogue name="心脏病类" >
+    </catalogue>
+    <catalogue name="激素类" >
+    </catalogue>
+    <catalogue name="优生优育类" >
+    </catalogue>
+    <catalogue name="不孕不育类" >
+    </catalogue>
+    <catalogue name="毒品药品类" >
+    </catalogue>
+    <catalogue name="免疫球蛋白类" >
+    </catalogue>
+
+</products>
