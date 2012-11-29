@@ -21,7 +21,7 @@ public class CircleSampleSelector extends SampleSelector implements
 
 	@Override
 	public Rectangle getBounds() {
-		return new Rectangle.Float(this.x - this.radius / 2.0f, this.y
-				- this.radius / 2.0f, this.radius * 2, this.radius * 2);
+		return new Rectangle.Float(this.x - this.radius, this.y
+				- this.radius, this.radius * 2, this.radius * 2);
 	}
 }

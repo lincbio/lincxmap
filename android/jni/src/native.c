@@ -78,10 +78,11 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		w = (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_width);
 		h = (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_height);
 
-		rect.x = x;		// ((x + dx) * scaling);
-		rect.y = y;		// ((y + dy) * scaling);
-		rect.width = w;	// (w * scaling);
-		rect.height = h;// (h * scaling);
+		rect.x = (x - dx) / scaling;
+		rect.y = (y - dy) / scaling;
+		rect.width = w / scaling;
+		rect.height = h / scaling;
+		// INFO("[%d] {x:%lf, y:%lf, width:%lf, height:%lf} =={scaling:%f, (dx:%f, dy:%f)}=> {x:%lf, y:%lf, width:%lf, height:%lf}\n", i, x, y, w, h, scaling, dx, dy, rect.x, rect.y, rect.width, rect.height);
 
 		*sel = calloc(1, sizeof(struct selectors));
 		(*sel)->selector = circular_selector_new(rect.width * 0.5f);

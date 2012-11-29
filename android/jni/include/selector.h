@@ -28,12 +28,6 @@ struct __selector
 	void              (*setname)(selector_t *self, const char *name, size_t len);
 	struct rectangle* (*getbounds)(selector_t *self);
 	void              (*setbounds)(selector_t *self, struct rectangle *bounds);
-	float             (*getscaling)(selector_t *self);
-	void              (*setscaling)(selector_t *self, float scaling);
-	int               (*getdeltax)(selector_t *self);
-	void              (*setdeltax)(selector_t *self, int dx);
-	int               (*getdeltay)(selector_t *self);
-	void              (*setdeltay)(selector_t *self, int dy);
 	int               (*contains)(selector_t *self, int x, int y);
 	void              (*free)(selector_t *self);
 };

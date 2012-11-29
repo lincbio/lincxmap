@@ -58,28 +58,30 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 	h = image->getheight(&image);
 
 #ifdef __DEBUG__
-	unsigned char gray;
-	FILE *fimg = detector_open_test_image(w, h);
+	if (!(buf = calloc(w, sizeof(char))))
+		goto skip_debug;
 
+	FILE *fimg = detector_open_test_image(w, h);
 	if (!fimg)
 		goto skip_debug;
 
 	for (y = 0; y < h; y++) {
 		for (x = 0; x < w; x++) {
+			buf[x] = i2gray(image->getpixel(&image, x, y));
+
 			for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
 				selector = sa0->selector;
 
 				if (selector->contains(&selector, x, y)) {
-					gray = 0xff;
-				} else {
-					gray = i2gray(image->getpixel(&image, x, y));
+					buf[x] = 0xff;
 				}
-
-				fwrite(&gray, 1, 1, fimg);
 			}
 		}
+
+		fwrite(buf, sizeof(char), w, fimg);
 	}
 
+	free(buf);
 	fclose(fimg);
 
 skip_debug:
@@ -108,6 +110,7 @@ skip_debug:
 				num++;
 				px = image->getpixel(&image, x, y);
 				rgb = i2rgb(px);
+				rgb->r = rgb->b = rgb->g; // choose green channel
 				sum += rgb2hsl(rgb)->l;
 			}
 		}
