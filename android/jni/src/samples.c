@@ -35,11 +35,9 @@ void samples_free(struct sample **smpa)
 	for (i = *smpa; i; ) {
 		smp = i;
 		i = i->next;
-
-		if (smp->name) {
-			free(smp->name);
-		}
 		free(smp);
 	}
+
 	*smpa = NULL;
 }
+

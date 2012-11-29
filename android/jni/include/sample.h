@@ -19,7 +19,7 @@ extern "C" {
 
 struct sample
 {
-	char *name;
+	char name[256];
 	double bv; /* brigtness value */
 	double cv; /* concentration value */
 	int sum;   /* sum of pixels */

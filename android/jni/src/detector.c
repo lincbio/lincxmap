@@ -11,6 +11,7 @@
  */
 
 #include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,6 +25,7 @@ typedef struct
 	struct __detector super;
 } detectorimpl_t;
 
+#ifdef __DEBUG__
 static FILE* detector_open_test_image(int w, int h)
 {
 	FILE *file = fopen("/sdcard/DCIM/Camera/test.pgm", "wb");
@@ -31,6 +33,7 @@ static FILE* detector_open_test_image(int w, int h)
 
 	return file;
 }
+#endif /* __DEBUG__ */
 
 static struct sample* detector_auto(detector_t *self, image_t image)
 {
@@ -41,32 +44,37 @@ static struct sample* detector_auto(detector_t *self, image_t image)
 static struct sample* detector_manual(detector_t *self, image_t image,
 		struct selectors *sa)
 {
-	int i, px, num;
-	int w, h, x, y, x1, x2, y1, y2;
-	float sum;
-	char *buf;
-	char *name;
-	size_t len;
-	hsl_t *hsl;
+	int i;
+	int px; 			// RGB value of a pixel
+	int nos; 			// number of sample
+	int width, height;	// image size
+	int w, h, x, y;		// bounds of inner square
+	int dx, dy;			// delta between outer square and inner square
+	int x1, x2, y1, y2;	// valid bounds of inner square
+	float radius;		// radius of circular selector
+	float sqrt2;		// sqrtf(2.0f)
+	float sum;			// sum of brightness
 	rgb_t *rgb;
 	selector_t selector;
 	struct rectangle *bounds;
 	struct sample *smpa, **smp = &smpa;
 	struct selectors *sa0;
 
-	w = image->getwidth(&image);
-	h = image->getheight(&image);
+	sqrt2 = sqrtf(2.0f);
+	width = image->getwidth(&image);
+	height = image->getheight(&image);
 
 #ifdef __DEBUG__
-	if (!(buf = calloc(w, sizeof(char))))
+	char *buf = calloc(w, sizeof(char));
+	if (!buf)
 		goto skip_debug;
 
-	FILE *fimg = detector_open_test_image(w, h);
+	FILE *fimg = detector_open_test_image(width, height);
 	if (!fimg)
 		goto skip_debug;
 
-	for (y = 0; y < h; y++) {
-		for (x = 0; x < w; x++) {
+	for (y = 0; y < height; y++) {
+		for (x = 0; x < width; x++) {
 			buf[x] = i2gray(image->getpixel(&image, x, y));
 
 			for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
@@ -89,39 +97,41 @@ skip_debug:
 
 	// calculate valid boundary
 	for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
-		num = 0;
-		sum = 0;
 		selector = sa0->selector;
 		bounds = selector->getbounds(&selector);
-		x1 = MAX(0, bounds->x);
-		y1 = MAX(0, bounds->y);
-		x2 = MIN(w, bounds->x + bounds->width);
-		y2 = MIN(h, bounds->y + bounds->height);
+
+		// calculate the bounds of the inner square of circular selector
+		radius = bounds->width / 2.0f;
+		dx = dy = radius - (radius / sqrt2);
+		x = bounds->x + dx;
+		y = bounds->y + dy;
+		w = h = radius * sqrt2;
+		x1 = MAX(0, x);
+		y1 = MAX(0, y);
+		x2 = MIN(width, x + w);
+		y2 = MIN(height, y + h);
 
 		*smp = calloc(1, sizeof(struct sample));
 		if (!*smp)
 			continue;
 
+		nos = 0;
+		sum = 0;
+
 		for (y = y1; y < y2; y++) {
 			for (x = x1; x < x2; x++) {
-				if (!selector->contains(&selector, x, y))
-					continue;
-
-				num++;
+				nos++;
 				px = image->getpixel(&image, x, y);
 				rgb = i2rgb(px);
 				rgb->r = rgb->b = rgb->g; // choose green channel
 				sum += rgb2hsl(rgb)->l;
 			}
 		}
-		name = (char*) selector->getname(&selector);
-		len = strlen(name);
-		buf = calloc(len + 1, sizeof(char));
-		if (buf) {
-			(*smp)->name = memcpy(buf, name, len);
-		}
-		(*smp)->sum = num;
-		(*smp)->bv = sum / num;
+
+		(*smp)->sum = nos;
+		(*smp)->bv = sum / nos;
+		sprintf((*smp)->name, "%s", selector->getname(&selector));
+
 		smp = &(*smp)->next;
 	}
 

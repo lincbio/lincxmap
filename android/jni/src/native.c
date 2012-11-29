@@ -42,6 +42,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	jsize len;
 	jobject jbounds;
 	jobject jdata;
+	jstring jstr;
 	jstring jname;
 	jobject jsel;
 	jobject jsmp;
@@ -56,13 +57,15 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		jdata = (*env)->CallObjectMethod(env, jsel, fun_sample_selector_get_data);
 
 		if ((*env)->IsInstanceOf(env, jdata, cls_product)) {
-			jname = (*env)->CallObjectMethod(env, jdata, fun_product_get_name);
-			len = (*env)->GetStringUTFLength(env, jname);
-			name = (char*) (*env)->GetStringUTFChars(env, jname, JNI_FALSE);
+			jstr = jname = (*env)->CallObjectMethod(env, jdata, fun_product_get_name);
+			len = (*env)->GetStringUTFLength(env, jstr);
+			name = (char*) (*env)->GetStringUTFChars(env, jstr, JNI_FALSE);
 		} else if ((*env)->IsInstanceOf(env, jdata, cls_string)) {
-			name = (char*) (*env)->GetStringUTFChars(env, jdata, JNI_FALSE);
+			jstr = jdata;
+			name = (char*) (*env)->GetStringUTFChars(env, jstr, JNI_FALSE);
 			len = (*env)->GetStringUTFLength(env, jdata);
 		} else {
+			jstr = NULL;
 			sprintf(buf, "%d", i);
 			len = strlen(buf);
 			name = buf;
@@ -89,7 +92,10 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		(*sel)->selector->setname(&(*sel)->selector, name, len);
 		(*sel)->selector->setbounds(&(*sel)->selector, &rect);
 
-		(*env)->ReleaseStringUTFChars(env, jname, name);
+		if (jstr) {
+			(*env)->ReleaseStringUTFChars(env, jstr, name);
+		}
+
 		sel = &(*sel)->next;
 	}
 
