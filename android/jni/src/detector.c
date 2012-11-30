@@ -20,6 +20,10 @@
 #include <colorspace.h>
 #include <detector.h>
 
+#ifndef __LINCXMAP_PRECISION__
+#define __LINCXMAP_PRECISION__ 100000
+#endif /* __LINCXMAP_PRECISION__ */
+
 typedef struct
 {
 	struct __detector super;
@@ -130,6 +134,7 @@ skip_debug:
 
 		(*smp)->sum = nos;
 		(*smp)->bv = sum / nos;
+		(*smp)->cv = (int) ((*smp)->bv * __LINCXMAP_PRECISION__);
 		sprintf((*smp)->name, "%s", selector->getname(&selector));
 
 		smp = &(*smp)->next;

@@ -4,8 +4,8 @@
     <string name="app_name">LincXmap</string>
     <string name="default_cols">4</string>
     <string name="default_rows">4</string>
-    <string name="default_selector_gap">10</string>
-    <string name="default_selector_size">100</string>
+    <string name="default_selector_gap">20</string>
+    <string name="default_selector_size">80</string>
     <string name="zero">0</string>
     <string name="one">1</string>
     <string name="detection_policy_auto">0</string>

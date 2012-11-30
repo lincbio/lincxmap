@@ -7,12 +7,20 @@ public class CircleSampleSelector extends SampleSelector implements
 		Serializable {
 	private static final long serialVersionUID = 8718955066112977963L;
 
-	public float radius;
+	protected float radius;
 
 	public CircleSampleSelector(float x, float y, float r) {
 		this.x = x;
 		this.y = y;
 		this.radius = r;
+	}
+
+	public float getRadius() {
+		return this.radius;
+	}
+
+	public void setRadius(float radius) {
+		this.radius = radius;
 	}
 
 	public final boolean contains(float x, float y) {

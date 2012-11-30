@@ -121,7 +121,7 @@ static inline hsl_t* rgb2hsl(rgb_t *rgb)
 	return &hsl;
 }
 
-static hsv_t* rgb2hsv(rgb_t *rgb)
+static inline hsv_t* rgb2hsv(rgb_t *rgb)
 {
 	static hsv_t hsv;
 

@@ -35,14 +35,38 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
 public class XmapView extends SurfaceView implements Callback, Constants {
-	private final static PathEffect DASH = new DashPathEffect(new float[] { 5, 5, 5, 5 }, 1);
+	private final static PathEffect DASH = new DashPathEffect(new float[] { 10, 10, 10, 10 }, 1);
 
 	private final Paint paint = new Paint();
+
+	/**
+	 * Cursor position
+	 */
 	private final Point pos = new Point();
+
+	/**
+	 * Screen bounds
+	 */
 	private final Rect bgbounds0 = new Rect();
+
+	/**
+	 * Image bounds
+	 */
 	private final Rect bgbounds1 = new Rect();
+
+	/**
+	 * Scaled image bounds
+	 */
 	private final Rect bgbounds2 = new Rect();
+
+	/**
+	 * Text bounds
+	 */
 	private final Rect txtbounds = new Rect();
+
+	/**
+	 * Selector list
+	 */
 	private final List<CircleSampleSelector> selectors = new ArrayList<CircleSampleSelector>();
 	private final Display display;
 	private final DatabaseHelper dbHelper;
@@ -90,6 +114,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		if (null != bmp) {
 			bmp.recycle();
 		}
+
 		this.repaint();
 	}
 
@@ -136,6 +161,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 
 			try {
 				CircleSampleSelector c = circles[ti.getX()][ti.getY()];
+
 				if (ssid.equals(sin)) {
 					c.setData(this.dbHelper.getProduct(ti.getProductId()));
 				} else {
@@ -192,6 +218,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			if (null != bmp) {
 				bmp.recycle();
 			}
+
 			this.selection = null;
 		}
 	}
@@ -209,17 +236,21 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		float sr = sw * 1.0f / sh;
 		float dr = _w * 1.0f / _h;
 		float scaling = 1.0f;
+		final int bg = Color.BLACK;
+		final int fill = Color.BLACK;
+		final int stroke = Color.BLACK;
 
-		if (sr > dr) {
+		if (sr > dr) { // vertical
 			dw = _w;
 			dh = (int) (_w / sr);
-		} else if (sr < dr) {
+		} else if (sr < dr) { // landscape
 			dw = (int) (_h * sr);
 			dh = _h;
 		} else {
 			dw = _w;
 			dh = _h;
 		}
+
 		scaling = dw * 1.0f / sw;
 		dx = (int) ((_w - dw) / 2.0f);
 		dy = (int) ((_h - dh) / 2.0f);
@@ -227,48 +258,55 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		this.bgbounds0.set(0, 0, _w, _h);
 		this.bgbounds1.set(0 , 0, sw, sh);
 		this.bgbounds2.set(dx, dy, dw + dx, dh + dy);
-		this.paint.setColor(Color.BLACK);
+		this.paint.setColor(bg);
 		this.paint.setStyle(Style.FILL);
 
 		// clear background with black
-		canvas.drawRect(this.bgbounds0, this.paint);
+		canvas.clipRect(this.bgbounds2);
+
 		// draw background image
 		canvas.drawBitmap(this.background, this.bgbounds1, this.bgbounds2, null);
 
-		if (null != this.template) {
-			this.paint.setColor(Color.GREEN);
-			this.paint.setStyle(Style.STROKE);
+		if (null == this.template)
+			return;
 
-			if (null != this.selection) {
-				CircleSampleSelector c = this.selection;
+		this.paint.setColor(stroke);
+		this.paint.setStyle(Style.STROKE);
 
-				synchronized (this.selection) {
-					this.paint.setColor((Color.BLUE & 0x00FFFFFF) | 0x3F000000);
-					this.paint.setStyle(Style.FILL);
-					canvas.drawCircle(c.getX(), c.getY(), c.radius, this.paint);
-					this.paint.setColor(Color.GREEN);
-					this.paint.setStyle(Style.STROKE);
-				}
+		// highlight current selection
+		if (null != this.selection) {
+			CircleSampleSelector c = this.selection;
+
+			synchronized (this.selection) {
+				this.paint.setColor((fill & 0x00FFFFFF) | 0x3F000000);
+				this.paint.setStyle(Style.FILL);
+				canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
+				this.paint.setColor(stroke);
+				this.paint.setStyle(Style.STROKE);
 			}
+		}
 
-			for (int i = 0; i < this.selectors.size(); ++i) {
-				CircleSampleSelector c = this.selectors.get(i);
-				c.setDeltaX(dx);
-				c.setDeltaY(dy);
-				c.setScaling(scaling);
+		// draw all selectors
+		for (int i = 0; i < this.selectors.size(); ++i) {
+			CircleSampleSelector c = this.selectors.get(i);
+			c.setDeltaX(dx);
+			c.setDeltaY(dy);
+			c.setScaling(scaling);
 
-				this.paint.setPathEffect(XmapView.DASH);
-				canvas.drawCircle(c.getX(), c.getY(), c.radius, this.paint);
-				this.paint.setPathEffect(null);
-				Object data = c.getData();
-				String text = data instanceof Product
-							? ((Product) data).getName()
-							: String.valueOf(i + 1);
-				this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);
-				float top = c.getY() - this.paint.ascent() / 2.0f;
-				float left = c.getX() - this.txtbounds.width() / 2.0f;
-				canvas.drawText(text, left, top, this.paint);
-			}
+			// draw sample selector
+			this.paint.setPathEffect(XmapView.DASH);
+			canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
+			this.paint.setPathEffect(null);
+
+			// draw sample name
+			Object data = c.getData();
+			String text = data instanceof Product
+						? ((Product) data).getName()
+						: String.valueOf(i + 1);
+			this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);
+			float top = c.getY() - this.paint.ascent() / 2.0f;
+			float left = c.getX() - this.txtbounds.width() / 2.0f;
+			canvas.drawText(text, left, top, this.paint);
 		}
 	}
 
