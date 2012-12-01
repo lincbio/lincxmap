@@ -4,12 +4,12 @@
 
     <PreferenceCategory android:title="@string/title_sample_settings" >
         <EditTextPreference
-            android:defaultValue="100"
+            android:defaultValue="@string/default_selector_size"
             android:key="key_sample_selector_size"
             android:summary="@string/summary_sample_selector_size"
             android:title="@string/title_sample_selector_size" />
         <EditTextPreference
-            android:defaultValue="10"
+            android:defaultValue="@string/default_selector_gap"
             android:key="key_sample_selector_gap"
             android:summary="@string/summary_sample_selector_gap"
             android:title="@string/title_sample_selector_gap" />
@@ -33,16 +33,6 @@
             android:key="key_detection_policy"
             android:summary="@string/summary_detection_policy"
             android:title="@string/title_detection_policy" />
-    </PreferenceCategory>
-    <PreferenceCategory android:title="@string/title_printer_settings" >
-        <Preference
-            android:key="key_scan_for_devices"
-            android:summary="@string/summary_scan_for_devices"
-            android:title="@string/title_scan_for_devices" />
-    </PreferenceCategory>
-    <PreferenceCategory
-        android:key="key_printer_list"
-        android:title="@string/title_bluetooth_printer" >
     </PreferenceCategory>
 
 </PreferenceScreen>

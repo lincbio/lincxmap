@@ -35,7 +35,8 @@ import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
 public class XmapView extends SurfaceView implements Callback, Constants {
-	private final static PathEffect DASH = new DashPathEffect(new float[] { 10, 10, 10, 10 }, 1);
+	private final static int GAP = 5;
+	private final static PathEffect DASH = new DashPathEffect(new float[] { 5, 5, 5, 5 }, 1);
 
 	private final Paint paint = new Paint();
 
@@ -236,6 +237,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		float sr = sw * 1.0f / sh;
 		float dr = _w * 1.0f / _h;
 		float scaling = 1.0f;
+		final int alpha = 0x5F000000;
 		final int bg = Color.BLACK;
 		final int fill = Color.BLACK;
 		final int stroke = Color.BLACK;
@@ -270,22 +272,6 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		if (null == this.template)
 			return;
 
-		this.paint.setColor(stroke);
-		this.paint.setStyle(Style.STROKE);
-
-		// highlight current selection
-		if (null != this.selection) {
-			CircleSampleSelector c = this.selection;
-
-			synchronized (this.selection) {
-				this.paint.setColor((fill & 0x00FFFFFF) | 0x3F000000);
-				this.paint.setStyle(Style.FILL);
-				canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
-				this.paint.setColor(stroke);
-				this.paint.setStyle(Style.STROKE);
-			}
-		}
-
 		// draw all selectors
 		for (int i = 0; i < this.selectors.size(); ++i) {
 			CircleSampleSelector c = this.selectors.get(i);
@@ -293,16 +279,33 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			c.setDeltaY(dy);
 			c.setScaling(scaling);
 
-			// draw sample selector
+			// draw the outer circle of sample selector
+			this.paint.setColor(stroke);
+			this.paint.setStyle(Style.STROKE);
 			this.paint.setPathEffect(XmapView.DASH);
-			canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
+			canvas.drawCircle(c.getX(), c.getY(), c.getRadius() + GAP, this.paint);
 			this.paint.setPathEffect(null);
+
+			// highlight current selection if it has been selected
+			if (c == this.selection) {
+				canvas.drawLine(c.getX() - c.getRadius() - GAP, c.getY(), c.getX() - c.getRadius(), c.getY(), this.paint);
+				canvas.drawLine(c.getX(), c.getY() - c.getRadius() - GAP, c.getX(), c.getY() - c.getRadius(), this.paint);
+				canvas.drawLine(c.getX() + c.getRadius(), c.getY(), c.getX() + c.getRadius() + GAP, c.getY(), this.paint);
+				canvas.drawLine(c.getX(), c.getY() + c.getRadius(), c.getX(), c.getY() + c.getRadius() + GAP, this.paint);
+			}
+
+			// draw sample selector
+			this.paint.setColor((fill & 0xFFFFFF) | alpha);
+			this.paint.setStyle(Style.FILL);
+			canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
 
 			// draw sample name
 			Object data = c.getData();
 			String text = data instanceof Product
 						? ((Product) data).getName()
 						: String.valueOf(i + 1);
+			this.paint.setColor(stroke);
+			this.paint.setStyle(Style.STROKE);
 			this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);
 			float top = c.getY() - this.paint.ascent() / 2.0f;
 			float left = c.getX() - this.txtbounds.width() / 2.0f;
