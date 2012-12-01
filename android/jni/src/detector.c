@@ -29,7 +29,7 @@ typedef struct
 	struct __detector super;
 } detectorimpl_t;
 
-#ifdef __DEBUG__
+#ifndef NDEBUG
 static FILE* detector_open_test_image(int w, int h)
 {
 	FILE *file = fopen("/sdcard/DCIM/Camera/test.pgm", "wb");
@@ -37,7 +37,7 @@ static FILE* detector_open_test_image(int w, int h)
 
 	return file;
 }
-#endif /* __DEBUG__ */
+#endif /* !NDEBUG */
 
 static struct sample* detector_auto(detector_t *self, image_t image)
 {
@@ -68,8 +68,8 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 	width = image->getwidth(&image);
 	height = image->getheight(&image);
 
-#ifdef __DEBUG__
-	char *buf = calloc(w, sizeof(char));
+#ifndef NDEBUG
+	char *buf = calloc(width, sizeof(char));
 	if (!buf)
 		goto skip_debug;
 
@@ -79,6 +79,13 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
+#if defined(__EXTRACT_RED_CHANNEL__)
+			buf[x] = i2rgb(image->getpixel(&image, x, y))->r;
+#elif defined(__EXTRACT_GREEN_CHANNEL__)
+			buf[x] = i2rgb(image->getpixel(&image, x, y))->g;
+#elif defined(__EXTRACT_BLUE_CHANNEL__)
+			buf[x] = i2rgb(image->getpixel(&image, x, y))->b;
+#else
 			buf[x] = i2gray(image->getpixel(&image, x, y));
 
 			for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
@@ -88,16 +95,17 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 					buf[x] = 0xff;
 				}
 			}
+#endif
 		}
 
-		fwrite(buf, sizeof(char), w, fimg);
+		fwrite(buf, sizeof(char), width, fimg);
 	}
 
 	free(buf);
 	fclose(fimg);
 
 skip_debug:
-#endif /* __DEBUG__ */
+#endif /* !NDEBUG */
 
 	// calculate valid boundary
 	for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {

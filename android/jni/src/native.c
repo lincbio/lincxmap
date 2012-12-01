@@ -85,7 +85,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		rect.y = (y - dy) / scaling;
 		rect.width = w / scaling;
 		rect.height = h / scaling;
-		// INFO("[%d] {x:%lf, y:%lf, width:%lf, height:%lf} =={scaling:%f, (dx:%f, dy:%f)}=> {x:%lf, y:%lf, width:%lf, height:%lf}\n", i, x, y, w, h, scaling, dx, dy, rect.x, rect.y, rect.width, rect.height);
+		DEBUG("[%d] {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf} =={scaling:%f, (dx:%.0f, dy:%.0f)}=> {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf}\n", i, x, y, w, h, scaling, dx, dy, rect.x, rect.y, rect.width, rect.height);
 
 		*sel = calloc(1, sizeof(struct selectors));
 		(*sel)->selector = circular_selector_new(rect.width * 0.5f);
