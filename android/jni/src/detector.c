@@ -39,6 +39,71 @@ static FILE* detector_open_test_image(int w, int h)
 }
 #endif /* !NDEBUG */
 
+/**
+ * Choose the best channel of the specified image
+ * 
+ * 1st: Red
+ * 2nd: Green
+ * 3rd: Blue
+ * 4th: Gray
+ */
+static uint8_t detector_choose_channel(detector_t *self, image_t image)
+{
+	const static int nchannel = 4;
+
+	int i, j;
+	int x, y;			// coordinate of pixel 
+	int avg[4];			// average of histogram
+	int dim[2];			// image dimension
+	int hist[4][256];	// histogram of 3 channels
+	uint8_t channel;	// selected channel
+	double sd[4];		// standard deviation of pixels;
+	rgb_t *rgb;
+
+	bzero(avg, sizeof(avg));
+	bzero(dim, sizeof(dim));
+	bzero(hist, sizeof(hist));
+	bzero(sd, sizeof(sd));
+
+	channel = 0;
+	dim[0] = image->getwidth(&image);
+	dim[1] = image->getheight(&image);
+
+	// calculate histogram
+	for (y = 0; y < dim[1]; y++) {
+		for (x = 0; x < dim[0]; x++) {
+			rgb = i2rgb(image->getpixel(&image, x, y));
+			hist[0][rgb->r]++;
+			hist[1][rgb->g]++;
+			hist[2][rgb->b]++;
+			hist[3][rgb2gray(rgb)]++;
+		}
+	}
+
+	// calculate the standard deviation of histogram
+	for (i = 0; i < nchannel; i++) {
+		for (j = 0; j <= 0xff; j++) {
+			avg[i] += hist[i][j];
+		}
+
+		avg[i] /= 0xff;
+
+		for (j = 0; j <= 0xff; j++) {
+			sd[i] += pow(hist[i][j] - avg[i], 2);
+		}
+
+		sd[i] = sqrt(sd[i] / 0xff);
+
+		if (sd[i] < sd[channel]) {
+			channel = i;
+		}
+
+		INFO("The Standard Deviation of Channel [%d]: %lf\n", i, sd[i]);
+	}
+
+	return channel; 
+}
+
 static struct sample* detector_auto(detector_t *self, image_t image)
 {
 	// TODO detect automatically
@@ -49,63 +114,89 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 		struct selectors *sa)
 {
 	int i;
-	int px; 			// RGB value of a pixel
-	int nos; 			// number of sample
-	int width, height;	// image size
-	int w, h, x, y;		// bounds of inner square
-	int dx, dy;			// delta between outer square and inner square
-	int x1, x2, y1, y2;	// valid bounds of inner square
-	float radius;		// radius of circular selector
-	float sqrt2;		// sqrtf(2.0f)
-	float sum;			// sum of brightness
-	rgb_t *rgb;
-	selector_t selector;
+	int px; 							// RGB value of a pixel
+	int nos; 							// number of sample
+	int dx, dy;							// delta between outer square and inner square
+	int w, h, x, y;						// bounds of inner square
+	int x1, x2, y1, y2;					// valid bounds of inner square
+	int dim[2];							// image dimension
+	double sum;							// sum of brightness
+	double sqrt2;
+	double radius;						// radius of circular selector
 	struct rectangle *bounds;
 	struct sample *smpa, **smp = &smpa;
 	struct selectors *sa0;
+	uint8_t *channel;					// selected channel
+	rgba_t rgb;
+	selector_t selector;
 
-	sqrt2 = sqrtf(2.0f);
-	width = image->getwidth(&image);
-	height = image->getheight(&image);
+	sqrt2 = sqrt(2);
+	dim[0] = image->getwidth(&image);
+	dim[1] = image->getheight(&image);
 
 #ifndef NDEBUG
-	char *buf = calloc(width, sizeof(char));
-	if (!buf)
+	char *pixels = calloc(dim[0] * dim[1], sizeof(char));
+	if (!pixels)
 		goto skip_debug;
 
-	FILE *fimg = detector_open_test_image(width, height);
+	FILE *fimg = detector_open_test_image(dim[0], dim[1]);
 	if (!fimg)
 		goto skip_debug;
 
-	for (y = 0; y < height; y++) {
-		for (x = 0; x < width; x++) {
-#if defined(__EXTRACT_RED_CHANNEL__)
-			buf[x] = i2rgb(image->getpixel(&image, x, y))->r;
-#elif defined(__EXTRACT_GREEN_CHANNEL__)
-			buf[x] = i2rgb(image->getpixel(&image, x, y))->g;
-#elif defined(__EXTRACT_BLUE_CHANNEL__)
-			buf[x] = i2rgb(image->getpixel(&image, x, y))->b;
-#else
-			buf[x] = i2gray(image->getpixel(&image, x, y));
+	for (y = 0; y < dim[1]; y++) {
+		for (x = 0; x < dim[0]; x++) {
+			memcpy(&rgb, i2rgb(image->getpixel(&image, x, y)), sizeof(rgb_t));
 
-			for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
+#ifdef __CHANNEL_MODE__
+	#if defined(__RED__)
+			pixels[x] = rgb.r;
+	#elif defined(__BLUE__)
+			pixels[x] = rgb.b;
+	#else
+			pixels[x] = rgb.g;
+	#endif
+#else /* __CHANNEL_MODE__ */
+			px = i2gray(image->getpixel(&image, x, y));
+
+			for (sa0 = sa; sa0; sa0 = sa0->next) {
 				selector = sa0->selector;
 
 				if (selector->contains(&selector, x, y)) {
-					buf[x] = 0xff;
+					px = 0xff;
 				}
 			}
-#endif
+
+			pixels[x] = px;
+#endif /* !__CHANNEL_MODE__ */
 		}
 
-		fwrite(buf, sizeof(char), width, fimg);
+		fwrite(pixels, sizeof(char), dim[0], fimg);
 	}
 
-	free(buf);
+	free(pixels);
 	fclose(fimg);
 
 skip_debug:
 #endif /* !NDEBUG */
+
+	switch (detector_choose_channel(self, image)) {
+	case 0: //red
+		INFO("Channel Red\n");
+		channel = &rgb.r;
+		break;
+	case 1: // green
+		INFO("Channel Green\n");
+		channel = &rgb.g;
+		break;
+	case 2: // blue
+		INFO("Channel Blue\n");
+		channel = &rgb.b;
+		break;
+	default: // gray
+		INFO("Channel Gray\n");
+		channel = &rgb.alpha;
+		break;
+	}
 
 	// calculate valid boundary
 	for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
@@ -120,8 +211,8 @@ skip_debug:
 		w = h = radius * sqrt2;
 		x1 = MAX(0, x);
 		y1 = MAX(0, y);
-		x2 = MIN(width, x + w);
-		y2 = MIN(height, y + h);
+		x2 = MIN(dim[0], x + w);
+		y2 = MIN(dim[1], y + h);
 
 		*smp = calloc(1, sizeof(struct sample));
 		if (!*smp)
@@ -134,9 +225,10 @@ skip_debug:
 			for (x = x1; x < x2; x++) {
 				nos++;
 				px = image->getpixel(&image, x, y);
-				rgb = i2rgb(px);
-				rgb->r = rgb->b = rgb->g; // choose green channel
-				sum += rgb2hsl(rgb)->l;
+				memcpy(&rgb, i2rgb(px), sizeof(rgb_t));
+				rgb.alpha = i2gray(px);
+				rgb.r = rgb.b = rgb.g = *channel;
+				sum += rgb2hsl((rgb_t*) &rgb)->l;
 			}
 		}
 
