@@ -1,0 +1,6 @@
+bin
+gen
+gdb.setup
+gdbserver
+obj
+.*.swp

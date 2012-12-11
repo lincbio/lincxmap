@@ -20,66 +20,96 @@
 typedef struct
 {
 	struct __image super;
-	struct image_options ops;
+	struct image_opts opts;
 	void *data;
-} imageimpl_t;
+} image_impl_t;
 
-static void image_free(image_t *self)
+static void lincxmap_image_free(image_t *self)
 {
 	assert(self && *self);
+
+	image_impl_t *impl = (image_impl_t*) *self;
+
+	if (impl->opts.free) {
+		impl->opts.free(self);
+	}
 
 	free(*self);
 	*self = NULL;
 }
 
-static void* image_get_data(image_t *self)
+static void** lincxmap_image_get_data(image_t *self)
 {
 	assert(self && *self);
 
-	return ((imageimpl_t*) *self)->data;
+	return &((image_impl_t*) *self)->data;
 }
 
-static uint32_t image_get_pixel(image_t *self, int x, int y)
+static int lincxmap_image_get_pixel(image_t *self, int x, int y)
 {
-	return (uint32_t) ((imageimpl_t*) *self)->ops.get_pixel(self, x, y);
+	return ((image_impl_t*) *self)->opts.getpixel(self, x, y);
 }
 
-static uint32_t image_get_width(image_t *self)
+static void lincxmap_image_set_pixel(image_t *self, int x, int y, int px)
 {
-	return (uint32_t) ((imageimpl_t*) *self)->ops.get_width(self);
+	((image_impl_t*) *self)->opts.setpixel(self, x, y, px);
 }
 
-static uint32_t image_get_height(image_t *self)
+static size_t lincxmap_image_get_width(image_t *self)
 {
-	return (uint32_t) ((imageimpl_t*) *self)->ops.get_height(self);
+	return ((image_impl_t*) *self)->opts.getwidth(self);
 }
 
-static uint32_t image_get_stride(image_t *self)
+static size_t lincxmap_image_get_height(image_t *self)
 {
-	return (uint32_t) ((imageimpl_t*) *self)->ops.get_stride(self);
+	return ((image_impl_t*) *self)->opts.getheight(self);
+}
+
+static size_t lincxmap_image_get_stride(image_t *self)
+{
+	return ((image_impl_t*) *self)->opts.getstride(self);
+}
+
+static int lincxmap_image_is_mutable(image_t *self)
+{
+	return ((image_impl_t*) *self)->opts.ismutable(self);
 }
 
 const static struct __image gs_image = {
-	.getpixel  = image_get_pixel,
-	.getwidth  = image_get_width,
-	.getheight = image_get_height,
-	.getstride = image_get_stride,
-	.getdata   = image_get_data,
-	.free      = image_free,
+	free      : lincxmap_image_free,
+	getpixel  : lincxmap_image_get_pixel,
+	getwidth  : lincxmap_image_get_width,
+	getheight : lincxmap_image_get_height,
+	getstride : lincxmap_image_get_stride,
+	getdata   : lincxmap_image_get_data,
+	ismutable : lincxmap_image_is_mutable,
+	setpixel  : lincxmap_image_set_pixel,
 };
 
-image_t image_new(struct image_options *ops, void *arg)
+image_t image_new(size_t *w, size_t *h, struct image_opts *opts, void *arg)
 {
-	assert(ops);
+	assert(opts);
 
-	imageimpl_t *impl = calloc(1, sizeof(imageimpl_t));
+	image_impl_t *impl = calloc(1, sizeof(image_impl_t));
 
 	if (!impl)
 		return NULL;
 
 	impl->data = arg;
-	memcpy(&impl->ops, ops, sizeof(struct image_options));
+	memcpy(&impl->opts, opts, sizeof(struct image_opts));
 	memcpy(&impl->super, &gs_image, sizeof(struct __image));
+
+	if (opts->new && w && h) {
+		opts->new((image_t*) &impl, *w, *h);
+	}
+
+	if (w) {
+		*w = opts->getwidth((image_t*) &impl);
+	}
+
+	if (h) {
+		*h = opts->getheight((image_t*) &impl);
+	}
 
 	return &impl->super;
 }

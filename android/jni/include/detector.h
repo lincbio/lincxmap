@@ -10,6 +10,10 @@
  * @version 1.0
  */
 
+#if _MSC_VER > 1000
+#pragma once
+#endif
+
 #ifndef __LINCXMAP_DETECTOR_H__
 #define __LINCXMAP_DETECTOR_H__
 
@@ -17,7 +21,7 @@
 #include <stdint.h>
 
 #include <image.h>
-#include <sample.h>
+#include <samples.h>
 #include <selectors.h>
 
 #ifdef __cplusplus
@@ -39,7 +43,7 @@ struct __detector
 	 * @param n
 	 *           number of selectors
 	 */
-	struct sample* (*detect)(detector_t *self, image_t image, struct selectors *sa);
+	struct sample* (*detect)(detector_t *self, image_t *image, struct selectors *sa);
 
 	/**
 	 * Free this object

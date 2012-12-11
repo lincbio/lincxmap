@@ -10,10 +10,14 @@
  * @version 1.0
  */
 
-#include "selector.h"
+#if _MSC_VER > 1000
+#pragma once
+#endif
 
 #ifndef __LINCXMAP_CIRCULAR_SELECTOR_H__
 #define __LINCXMAP_CIRCULAR_SELECTOR_H__
+
+#include "selectors.h"
 
 #ifdef __cplusplus
 extern "C" {

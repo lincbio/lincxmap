@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2010-2012, linc-bio Inc. All Rights Reserved.
  *
- * native.h
+ * native.c
  *
  * @date    Sep 01, 2012
  *
@@ -23,7 +23,7 @@
 
 #define SIG_DETECT "(L"CLASS_BITMAP";L"CLASS_TEMPLATE";[L"CLASS_SAMPLE_SELECTOR";)L"CLASS_LIST";"
 
-extern struct image_options bmp_options;
+extern struct image_opts bmp_opts;
 
 JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		jobject jbmp, jobject jtpl, jobjectArray jsela)
@@ -37,7 +37,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	struct rectangle rect;
 	struct sample *smp, *smpa;
 	struct selectors *sela, **sel = &sela;
-	struct image_arg bmp_arg = { env, jbmp };
+	struct bmparg bmp_arg = { jbmp, env };
 
 	jsize len;
 	jobject jbounds;
@@ -48,7 +48,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	jobject jsmp;
 
 	detector_t detector = detector_new();
-	image_t image = image_new(&bmp_options, &bmp_arg);
+	image_t image = image_new(NULL, NULL, &bmp_opts, &bmp_arg);
 	jsize n = (*env)->GetArrayLength(env, jsela);
 	jobject jlist = (*env)->NewObject(env, cls_array_list, fun_array_list_new);
 
@@ -99,7 +99,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		sel = &(*sel)->next;
 	}
 
-	smpa = detector->detect(&detector, image, sela);
+	smpa = detector->detect(&detector, &image, sela);
 	for (smp = smpa; smp; smp = smp->next) {
 		jsmp = (*env)->NewObject(env, cls_sample, fun_sample_new);
 		jname = (*env)->NewStringUTF(env, smp->name);
@@ -118,11 +118,11 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	return jlist;
 }
 
-const static JNINativeMethod gs_methods[] = {
+const static JNINativeMethod gs_jni_methods[] = {
 	{ "detect", SIG_DETECT, (void*) native_detect },
 };
 
-static void native_init(JNIEnv *env)
+static void lincxmap_native_init(JNIEnv *env)
 {
 	cls_string = (*env)->FindClass(env, CLASS_STRING);
 	cls_array_list = (*env)->FindClass(env, CLASS_ARRAY_LIST);
@@ -143,6 +143,8 @@ static void native_init(JNIEnv *env)
 	fun_bitmap_get_width = (*env)->GetMethodID(env, cls_bitmap, "getWidth", "()I");
 	fun_bitmap_get_height = (*env)->GetMethodID(env, cls_bitmap, "getHeight", "()I");
 	fun_bitmap_get_pixel = (*env)->GetMethodID(env, cls_bitmap, "getPixel", "(II)I");
+	fun_bitmap_is_mutable = (*env)->GetMethodID(env, cls_bitmap, "isMutable", "()Z");
+	fun_bitmap_set_pixel = (*env)->GetMethodID(env, cls_bitmap, "setPixel", "(III)V");
 
 	fun_rectangle_get_x = (*env)->GetMethodID(env, cls_rectangle, "getX", "()D");
 	fun_rectangle_get_y = (*env)->GetMethodID(env, cls_rectangle, "getY", "()D");
@@ -166,10 +168,10 @@ static void native_init(JNIEnv *env)
 	fun_progress_listener_on_progress_changed = (*env)->GetMethodID(env, cls_progress_listener, "onProgressChanged", "(I)V");
 }
 
-static void native_register(JNIEnv *env)
+static void lincxmap_native_register(JNIEnv *env)
 {
-	size_t n = sizeof(gs_methods) / sizeof(JNINativeMethod);
-	(*env)->RegisterNatives(env, cls_sample_detector, gs_methods, n);
+	size_t n = sizeof(gs_jni_methods) / sizeof(JNINativeMethod);
+	(*env)->RegisterNatives(env, cls_sample_detector, gs_jni_methods, n);
 }
 
 void native_setup(JavaVM *vm, void *reserved)
@@ -179,8 +181,8 @@ void native_setup(JavaVM *vm, void *reserved)
 	if (JNI_OK != (*vm)->GetEnv(vm, (void**) &env, JNI_VERSION_1_4))
 		return;
 
-	native_init(env);
-	native_register(env);
+	lincxmap_native_init(env);
+	lincxmap_native_register(env);
 }
 
 void native_release(JavaVM *vm, void *reserved)

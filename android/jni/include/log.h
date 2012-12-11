@@ -10,6 +10,10 @@
  * @version 1.0
  */
 
+#if _MSC_VER > 1000
+#pragma once
+#endif
+
 #ifndef __LINCXMAP_LOG_H__
 #define __LINCXMAP_LOG_H__
 

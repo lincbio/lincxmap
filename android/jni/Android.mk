@@ -1,11 +1,25 @@
+#
+# Copyright (c) 2010-2012, linc-bio Inc. All Rights Reserved.
+#
+# Android.mk
+#
+# @date    Sep 09, 2012
+#
+# @author  Johnson Lee <g.johnsonlee@gmail.com>
+#
+# @version 1.0
+#
+
 LOCAL_PATH := $(call my-dir)
 
 lincxmap_sources := \
-	bitmap.c \
+	bmp.c \
 	circularselector.c \
 	detector.c \
+	filter.c \
 	image.c \
 	native.c \
+	pgm.c \
 	samples.c \
 	selectors.c \
 

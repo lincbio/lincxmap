@@ -34,6 +34,12 @@ extern "C" {
 #define CLASS_SAMPLE_SELECTOR   CLASS(com/lincbio/lincxmap/dip/SampleSelector)
 #define CLASS_PROGRESS_LISTENER CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
 
+struct bmparg
+{
+	jobject *obj;
+	JNIEnv *env;
+} ;
+
 JavaVM *jvm;
 
 jclass cls_string;
@@ -82,9 +88,19 @@ jmethodID fun_bitmap_get_width;
 jmethodID fun_bitmap_get_height;
 
 /**
+ * Bitmap#isMutable()
+ */
+jmethodID fun_bitmap_is_mutable;
+
+/**
  * Bitmap#getPixel(int, int)
  */
 jmethodID fun_bitmap_get_pixel;
+
+/**
+ * Bitmap#setPixel(int, int)
+ */
+jmethodID fun_bitmap_set_pixel;
 
 /**
  * Rectangle#getX()
@@ -165,12 +181,6 @@ jmethodID fun_sample_selector_get_delta_y;
  * ProgressListener#onProgressChanged(int)
  */
 jmethodID fun_progress_listener_on_progress_changed;
-
-struct image_arg
-{
-	JNIEnv *env;
-	jobject *obj;
-};
 
 extern void native_setup(JavaVM*, void*);
 
