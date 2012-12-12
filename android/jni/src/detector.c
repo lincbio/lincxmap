@@ -24,10 +24,20 @@
 #define __LINCXMAP_PRECISION__ 100000
 #endif /* __LINCXMAP_PRECISION__ */
 
+#define NLEVEL 256
+#define NCHANNEL 4
+
 typedef struct
 {
 	struct __detector super;
 } detector_impl_t;
+
+#ifdef __MEDIAN_SMOOTH__
+static int cmp_uint8(const void *a, const void *b)
+{
+	return *((uint8_t*) a) - *((uint8_t*) b);
+}
+#endif
 
 #ifndef NDEBUG
 static FILE* lincxmap_detector_open_test_image(int w, int h)
@@ -39,6 +49,37 @@ static FILE* lincxmap_detector_open_test_image(int w, int h)
 }
 #endif /* !NDEBUG */
 
+static void lincxmap_detector_get_histogram(uint32_t *pixels, uint32_t w, uint32_t h, int hist[NCHANNEL][NLEVEL], struct rgbx *min, struct rgbx *max)
+{
+	assert(pixels);
+
+	int i, x, y;
+	struct rgbx rgbx;
+
+	// calculate histogram
+	for (y = 0; y < h; y++) {
+		for (x = 0; x < w; x++) {
+			i = y * w + x;
+			i2rgbx(pixels[i], &rgbx);
+
+			hist[0][rgbx.r]++;
+			hist[1][rgbx.g]++;
+			hist[2][rgbx.b]++;
+			hist[3][rgbx.x]++;
+
+			min->r = MIN(min->r, rgbx.r);
+			min->g = MIN(min->g, rgbx.g);
+			min->b = MIN(min->b, rgbx.b);
+			min->x = MIN(min->x, rgbx.x);
+
+			max->r = MAX(max->r, rgbx.r);
+			max->g = MAX(max->g, rgbx.g);
+			max->b = MAX(max->b, rgbx.b);
+			max->x = MAX(max->x, rgbx.x);
+		}
+	}
+}
+
 /**
  * Choose the best channel of the specified image
  * 
@@ -47,58 +88,48 @@ static FILE* lincxmap_detector_open_test_image(int w, int h)
  * 3rd: Blue
  * 4th: Gray
  */
-static uint8_t lincxmap_detector_choose_channel(detector_t *self, image_t *image, uint32_t *pixels)
+static uint8_t lincxmap_detector_choose_channel(uint32_t w, uint32_t h, int hist[NCHANNEL][NLEVEL], double pd[NCHANNEL][NLEVEL], double cd[NCHANNEL][NLEVEL])
 {
-	const static int nchannel = 4;
+	int size;
+	int i, j, k;
+	int avg[NCHANNEL];			// average of histogram
+	double entropy[NCHANNEL];	// the entropy of image
+	double sd[NCHANNEL];		// standard deviation of pixels;
+	uint8_t channel;			// selected channel
 
-	int i, j;
-	int x, y;			// coordinate of pixel
-	int avg[4];			// average of histogram
-	int dim[2];			// image dimension
-	int hist[4][256];	// histogram of 3 channels
-	uint8_t channel;	// selected channel
-	double sd[4];		// standard deviation of pixels;
-	struct rgb rgb;
-
-	bzero(avg, sizeof(avg));
-	bzero(dim, sizeof(dim));
-	bzero(hist, sizeof(hist));
-	bzero(sd, sizeof(sd));
-
-	channel = 0;
-	dim[0] = (*image)->getwidth(image);
-	dim[1] = (*image)->getheight(image);
-
-	// calculate histogram
-	for (y = 0; y < dim[1]; y++) {
-		for (x = 0; x < dim[0]; x++) {
-			i = y * dim[1] + x;
-			i2rgb(pixels[i], &rgb);
-			hist[0][rgb.r]++;
-			hist[1][rgb.g]++;
-			hist[2][rgb.b]++;
-			hist[3][rgb2gray(&rgb)]++;
-		}
-	}
+	size = w * h;
+	memset(avg, 0, sizeof(avg));
+	memset(sd, 0, sizeof(sd));
+	memset(entropy, 0, sizeof(entropy));
 
 	// calculate the standard deviation of histogram
-	for (i = 0; i < nchannel; i++) {
-		for (j = 0; j < 256; j++) {
+	for (i = 0, channel = 0; i < NCHANNEL; i++) {
+		for (j = 0; j < NLEVEL; j++) {
+			if (hist[i][j] <= 0)
+				continue;
+
 			avg[i] += hist[i][j];
+			pd[i][j] = hist[i][j] * 1.0f / size;
+			entropy[i] -= pd[i][j] * log(pd[i][j]);
 		}
 
-		avg[i] /= 256;
+		for (j = 0; j < NLEVEL; j++) {
+			for (k = 0; k <= j; k++) {
+				cd[i][j] += pd[i][k];
+			}
+		}
 
-		for (j = 0; j < 256; j++) {
+		for (avg[i] /= NLEVEL, j = 0; j < NLEVEL; j++) {
 			sd[i] += pow(hist[i][j] - avg[i], 2);
 		}
 
-		sd[i] = sqrt(sd[i] / 256);
+		sd[i] = sqrt(sd[i] / NLEVEL);
 
 		if (sd[i] < sd[channel]) {
 			channel = i;
 		}
 
+		INFO("The Entropy of Channel [%d]: %lf\n", i, entropy[i]);
 		INFO("The Standard Deviation of Channel [%d]: %lf\n", i, sd[i]);
 	}
 
@@ -111,31 +142,51 @@ static struct sample* lincxmap_detector_auto(detector_t *self, image_t *image)
 	return NULL;
 }
 
-static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
-		struct selectors *sa)
+static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image, struct selectors *sa)
 {
 	int i;
 	int nos; 							// number of sample
 	int dx, dy;							// delta between outer square and inner square
 	int w, h, x, y;						// bounds of inner square
-	int x1, x2, y1, y2;					// valid bounds of inner square
+	int x1, y1, x2, y2;					// valid bounds of inner square
 	int dim[2];							// image dimension
+	int area[9];						// area for smooth
+	int hist[NCHANNEL][NLEVEL];			// histogram
+	double pd[NCHANNEL][NLEVEL];		// probility distribution
+	double cd[NCHANNEL][NLEVEL];		// cumulative distribution
 	double sum;							// sum of brightness
 	double sqrt2;
 	double radius;						// radius of circular selector
 	struct rectangle *bounds;
 	struct sample *smpa, **smp = &smpa;
 	struct selectors *sa0;
+	uint8_t nth;						// selected channel number
 	uint8_t *channel;					// selected channel
+	uint8_t *pmin, *pmax;				// min & max pixel of specified channel
 	uint32_t *pixels;					// pixels of image
-	struct rgba rgba;
+	struct rgbx max;					// max pixel value of each channel
+	struct rgbx min;					// min pixel value of each channel
+	struct rgbx rgbx;
 	struct hsl hsl;
 	selector_t selector;
+
+	memset(dim, 0, sizeof(dim));
+	memset(area, 0, sizeof(area));
+	memset(hist, 0, sizeof(hist));
+	memset(pd, 0, sizeof(pd));
+	memset(cd, 0, sizeof(cd));
 
 	sqrt2 = sqrt(2);
 	dim[0] = (*image)->getwidth(image);
 	dim[1] = (*image)->getheight(image);
 	pixels = calloc(dim[0] * dim[1], sizeof(uint32_t));
+	i2rgbx(pixels[0], &rgbx);
+	max.r = min.r = rgbx.r;
+	max.g = min.g = rgbx.g;
+	max.b = min.b = rgbx.b;
+	max.x = min.x = rgbx.x;
+
+	DEBUG("Image Size: %u x %u\n", dim[0], dim[1]);
 
 	if (!pixels) {
 		ERROR("Out of memory!\n");
@@ -143,9 +194,34 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	}
 
 	(*image)->getpixels(image, pixels, 0, dim[0], 0, 0, dim[0], dim[1]);
+	lincxmap_detector_get_histogram(pixels, dim[0], dim[1], hist, &min, &max);
+	nth = lincxmap_detector_choose_channel(dim[0], dim[1], hist, pd, cd);
+
+	switch (nth) {
+	case 0: //red
+		INFO("Channel Red\n");
+		channel = &rgbx.r;
+		break;
+	case 1: // green
+		INFO("Channel Green\n");
+		channel = &rgbx.g;
+		break;
+	case 2: // blue
+		INFO("Channel Blue\n");
+		channel = &rgbx.b;
+		break;
+	default: // gray
+		INFO("Channel Gray\n");
+		channel = &rgbx.x;
+		break;
+	}
+
+	pmin = (uint8_t*)((void*) &min + ((size_t) channel - (size_t) &rgbx));
+	pmax = (uint8_t*)((void*) &max + ((size_t) channel - (size_t) &rgbx));
+	DEBUG("min=%p pmin=%p rgbx=%p channel=%p\n", &min, pmin, &rgbx, channel);
+	DEBUG("max=%p pmax=%p rgbx=%p channel=%p\n", &max, pmax, &rgbx, channel);
 
 #ifndef NDEBUG
-	DEBUG("Image Size: %u x %u\n", dim[0], dim[1]);
 
 	char *row = calloc(dim[0], sizeof(char));
 	if (!row) {
@@ -160,19 +236,26 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	for (y = 0; y < dim[1]; y++) {
 		for (x = 0; x < dim[0]; x++) {
 			i = y * dim[0] + x;
-			i2rgba(pixels[i], &rgba);
+			i2rgbx(pixels[i], &rgbx);
+
+#ifdef __EQUALIZE__
+			rgbx.r = rgbx.g = rgbx.b = rgbx.x = cd[nth][*channel] * (*pmax - *pmin) + *pmin;
+			pixels[i] = rgb2i((struct rgb*) &rgbx);
+#endif
 
 #ifdef __CHANNEL_MODE__
 	#if defined(__RED__)
-			row[x] = rgba.r;
+			row[x] = rgbx.r;
+	#elif defined(__GREEN__)
+			row[x] = rgbx.g;
 	#elif defined(__BLUE__)
-			row[x] = rgba.b;
+			row[x] = rgbx.b;
 	#else
-			row[x] = rgba.g;
+			row[x] = rgbx.x;
 	#endif
 #else /* __CHANNEL_MODE__ */
 
-			row[x] = i2gray(pixels[i]);
+			row[x] = rgbx.x;
 
 	#ifdef __USER_MODE__
 			for (sa0 = sa; sa0; sa0 = sa0->next) {
@@ -194,25 +277,6 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 
 skip_debug:
 #endif /* !NDEBUG */
-
-	switch (lincxmap_detector_choose_channel(self, image, pixels)) {
-	case 0: //red
-		INFO("Channel Red\n");
-		channel = &rgba.r;
-		break;
-	case 1: // green
-		INFO("Channel Green\n");
-		channel = &rgba.g;
-		break;
-	case 2: // blue
-		INFO("Channel Blue\n");
-		channel = &rgba.b;
-		break;
-	default: // gray
-		INFO("Channel Gray\n");
-		channel = &rgba.alpha;
-		break;
-	}
 
 	// calculate valid boundary
 	for (sa0 = sa; sa0; sa0 = sa0->next) {
@@ -240,11 +304,40 @@ skip_debug:
 		// calculate the brightness of each selector
 		for (y = y1; y < y2; y++) {
 			for (x = x1; x < x2; x++) {
+				i = 0;
 				nos++;
+
+#if defined(__MEDIAN_SMOOTH__) || defined(__MEAN_SMOOTH__)
+				i2rgbx(pixels[(y - 1) * dim[0] + x - 1], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[(y - 1) * dim[0] + x], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[(y - 1) * dim[0] + x + 1], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[y * dim[0] + x - 1], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[y * dim[0] + x], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[y * dim[0] + x + 1], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[(y + 1) * dim[0] + x - 1], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[(y + 1) * dim[0] + x], &rgbx);
+				area[i++] = *channel;
+				i2rgbx(pixels[(y + 1) * dim[0] + x + 1], &rgbx);
+				area[i++] = *channel;
+	#if defined(__MEDIAN_SMOOTH__)
+				qsort(area, 9, sizeof(uint8_t), cmp_uint8);
+				rgbx.r = rgbx.b = rgbx.g = area[4];
+	#elif defined(__MEAN_SMOOTH__)
+				rgbx.r = rgbx.b = rgbx.g = (area[0] + area[1] + area[2] + area[3] + area[4] + area[5] + area[6] + area[7] + area[8]) / 9;
+	#endif
+#else
 				i = y * dim[0] + x;
-				i2rgba(pixels[i], &rgba);
-				rgba.r = rgba.b = rgba.g = *channel;
-				sum += rgb2hsl((struct rgb*) &rgba, &hsl)->l;
+				i2rgbx(pixels[i], &rgbx);
+				rgbx.r = rgbx.b = rgbx.g = rgbx.x = *channel;
+#endif
+				sum += rgb2hsl((struct rgb*) &rgbx, &hsl)->l;
 			}
 		}
 

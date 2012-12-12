@@ -36,6 +36,14 @@ struct rgba
 	uint8_t alpha;
 };
 
+struct rgbx
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t x;
+};
+
 struct hsl
 {
 	float h;
@@ -95,6 +103,16 @@ static inline struct rgba* i2rgba(uint32_t i, struct rgba *rgba)
 	rgba->b = i & 0xff;
 
 	return rgba;
+}
+
+static inline struct rgbx* i2rgbx(uint32_t i, struct rgbx *rgbx)
+{
+	rgbx->r = (i >> 16) & 0xff;
+	rgbx->g = (i >> 8) & 0xff;
+	rgbx->b = i & 0xff;
+	rgbx->x = (rgbx->r * 30 + rgbx->g * 59 + rgbx->b * 11) / 100;
+
+	return rgbx;
 }
 
 static inline struct hsl* rgb2hsl(struct rgb *rgb, struct hsl *hsl)
