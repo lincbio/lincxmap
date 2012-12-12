@@ -16,41 +16,65 @@
 #include <stdarg.h>
 #include <stdint.h>
 
-typedef struct __image* image_t;
-struct __image
+typedef struct image* image_t;
+struct image
 {
-	uint32_t (*getpixel)(image_t *self, int x, int y);
-	uint32_t (*getwidth)(image_t *self);
-	uint32_t (*getheight)(image_t *self);
-	uint32_t (*getstride)(image_t *self);
-	void*    (*getdata)(image_t *self);
-
 	void (*free)(image_t *self);
+
+	void* (*getdata)(image_t *self);
+
+	uint32_t (*getheight)(image_t *self);
+
+	uint32_t  (*getpixel)(image_t *self, uint32_t x, uint32_t y);
+
+	void (*getpixels)(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+
+	uint32_t (*getstride)(image_t *self);
+
+	uint32_t (*getwidth)(image_t *self);
+
+	void (*setpixel)(image_t *self, uint32_t x, uint32_t y, uint32_t px);
+
+	void (*setpixels)(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 };
 
-typedef void* (*image_option_f)(image_t *self, ...);
-
+typedef struct image_options* image_options_t;
 struct image_options
 {
-	image_option_f get_pixel;
-	image_option_f get_width;
-	image_option_f get_height;
-	image_option_f get_stride;
+	uint32_t (*getpixel)(image_t *self, uint32_t x, uint32_t y);
+
+	void (*getpixels)(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
+
+	uint32_t (*getwidth)(image_t *self);
+
+	uint32_t (*getheight)(image_t *self);
+
+	uint32_t (*getstride)(image_t *self);
+
+	int (*ismutable)(image_t *self);
+
+	void (*setpixel)(image_t *self, uint32_t x, uint32_t y, uint32_t px);
+
+	void (*setpixels)(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 };
 
-#define IMAGE_OPTS(x) \
+#define IMAGE_OPTIONS(x) \
 	{ \
-		.get_pixel = x##_get_pixel, \
-		.get_width = x##_get_width, \
-		.get_height = x##_get_height, \
-		.get_stride = x##_get_stride, \
+		getpixel  : lincxmap_##x##_get_pixel,  \
+		getpixels : lincxmap_##x##_get_pixels, \
+		getwidth  : lincxmap_##x##_get_width,  \
+		getheight : lincxmap_##x##_get_height, \
+		getstride : lincxmap_##x##_get_stride, \
+		ismutable : lincxmap_##x##_is_mutable, \
+		setpixel  : lincxmap_##x##_set_pixel,  \
+		setpixels : lincxmap_##x##_set_pixels, \
 	}
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern image_t image_new(struct image_options *ops, void *arg);
+extern image_t image_new(image_options_t *ops, void *arg);
 
 #ifdef __cplusplus
 }

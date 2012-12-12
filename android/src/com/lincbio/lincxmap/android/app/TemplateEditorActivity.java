@@ -13,6 +13,7 @@ import com.lincbio.lincxmap.pojo.TemplateItem;
 
 import android.app.Activity;
 import android.content.ContentValues;
+import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
@@ -137,7 +138,8 @@ public class TemplateEditorActivity extends Activity implements
 				});
 			}
 		}
-		this.finish();
+
+		startActivity(new Intent(this, TemplateListActivity.class));
 	}
 
 	public void onButtonPrevClicked(View v) {

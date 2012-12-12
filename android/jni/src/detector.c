@@ -27,10 +27,10 @@
 typedef struct
 {
 	struct __detector super;
-} detectorimpl_t;
+} detector_impl_t;
 
 #ifndef NDEBUG
-static FILE* detector_open_test_image(int w, int h)
+static FILE* lincxmap_detector_open_test_image(int w, int h)
 {
 	FILE *file = fopen("/sdcard/DCIM/Camera/test.pgm", "wb");
 	fprintf(file,"P5\n%u %u 255\n", w, h);
@@ -47,18 +47,18 @@ static FILE* detector_open_test_image(int w, int h)
  * 3rd: Blue
  * 4th: Gray
  */
-static uint8_t detector_choose_channel(detector_t *self, image_t image)
+static uint8_t lincxmap_detector_choose_channel(detector_t *self, image_t *image, uint32_t *pixels)
 {
 	const static int nchannel = 4;
 
 	int i, j;
-	int x, y;			// coordinate of pixel 
+	int x, y;			// coordinate of pixel
 	int avg[4];			// average of histogram
 	int dim[2];			// image dimension
 	int hist[4][256];	// histogram of 3 channels
 	uint8_t channel;	// selected channel
 	double sd[4];		// standard deviation of pixels;
-	rgb_t *rgb;
+	struct rgb rgb;
 
 	bzero(avg, sizeof(avg));
 	bzero(dim, sizeof(dim));
@@ -66,33 +66,34 @@ static uint8_t detector_choose_channel(detector_t *self, image_t image)
 	bzero(sd, sizeof(sd));
 
 	channel = 0;
-	dim[0] = image->getwidth(&image);
-	dim[1] = image->getheight(&image);
+	dim[0] = (*image)->getwidth(image);
+	dim[1] = (*image)->getheight(image);
 
 	// calculate histogram
 	for (y = 0; y < dim[1]; y++) {
 		for (x = 0; x < dim[0]; x++) {
-			rgb = i2rgb(image->getpixel(&image, x, y));
-			hist[0][rgb->r]++;
-			hist[1][rgb->g]++;
-			hist[2][rgb->b]++;
-			hist[3][rgb2gray(rgb)]++;
+			i = y * dim[1] + x;
+			i2rgb(pixels[i], &rgb);
+			hist[0][rgb.r]++;
+			hist[1][rgb.g]++;
+			hist[2][rgb.b]++;
+			hist[3][rgb2gray(&rgb)]++;
 		}
 	}
 
 	// calculate the standard deviation of histogram
 	for (i = 0; i < nchannel; i++) {
-		for (j = 0; j <= 0xff; j++) {
+		for (j = 0; j < 256; j++) {
 			avg[i] += hist[i][j];
 		}
 
-		avg[i] /= 0xff;
+		avg[i] /= 256;
 
-		for (j = 0; j <= 0xff; j++) {
+		for (j = 0; j < 256; j++) {
 			sd[i] += pow(hist[i][j] - avg[i], 2);
 		}
 
-		sd[i] = sqrt(sd[i] / 0xff);
+		sd[i] = sqrt(sd[i] / 256);
 
 		if (sd[i] < sd[channel]) {
 			channel = i;
@@ -104,17 +105,16 @@ static uint8_t detector_choose_channel(detector_t *self, image_t image)
 	return channel; 
 }
 
-static struct sample* detector_auto(detector_t *self, image_t image)
+static struct sample* lincxmap_detector_auto(detector_t *self, image_t *image)
 {
 	// TODO detect automatically
 	return NULL;
 }
 
-static struct sample* detector_manual(detector_t *self, image_t image,
+static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 		struct selectors *sa)
 {
 	int i;
-	int px; 							// RGB value of a pixel
 	int nos; 							// number of sample
 	int dx, dy;							// delta between outer square and inner square
 	int w, h, x, y;						// bounds of inner square
@@ -127,79 +127,95 @@ static struct sample* detector_manual(detector_t *self, image_t image,
 	struct sample *smpa, **smp = &smpa;
 	struct selectors *sa0;
 	uint8_t *channel;					// selected channel
-	rgba_t rgb;
+	uint32_t *pixels;					// pixels of image
+	struct rgba rgba;
+	struct hsl hsl;
 	selector_t selector;
 
 	sqrt2 = sqrt(2);
-	dim[0] = image->getwidth(&image);
-	dim[1] = image->getheight(&image);
+	dim[0] = (*image)->getwidth(image);
+	dim[1] = (*image)->getheight(image);
+	pixels = calloc(dim[0] * dim[1], sizeof(uint32_t));
+
+	if (!pixels) {
+		ERROR("Out of memory!\n");
+		return NULL;
+	}
+
+	(*image)->getpixels(image, pixels, 0, dim[0], 0, 0, dim[0], dim[1]);
 
 #ifndef NDEBUG
-	char *pixels = calloc(dim[0] * dim[1], sizeof(char));
-	if (!pixels)
-		goto skip_debug;
+	DEBUG("Image Size: %u x %u\n", dim[0], dim[1]);
 
-	FILE *fimg = detector_open_test_image(dim[0], dim[1]);
+	char *row = calloc(dim[0], sizeof(char));
+	if (!row) {
+		ERROR("Out of memory!\n");
+		goto skip_debug;
+	}
+
+	FILE *fimg = lincxmap_detector_open_test_image(dim[0], dim[1]);
 	if (!fimg)
 		goto skip_debug;
 
 	for (y = 0; y < dim[1]; y++) {
 		for (x = 0; x < dim[0]; x++) {
-			memcpy(&rgb, i2rgb(image->getpixel(&image, x, y)), sizeof(rgb_t));
+			i = y * dim[0] + x;
+			i2rgba(pixels[i], &rgba);
 
 #ifdef __CHANNEL_MODE__
 	#if defined(__RED__)
-			pixels[x] = rgb.r;
+			row[x] = rgba.r;
 	#elif defined(__BLUE__)
-			pixels[x] = rgb.b;
+			row[x] = rgba.b;
 	#else
-			pixels[x] = rgb.g;
+			row[x] = rgba.g;
 	#endif
 #else /* __CHANNEL_MODE__ */
-			px = i2gray(image->getpixel(&image, x, y));
 
+			row[x] = i2gray(pixels[i]);
+
+	#ifdef __USER_MODE__
 			for (sa0 = sa; sa0; sa0 = sa0->next) {
 				selector = sa0->selector;
 
 				if (selector->contains(&selector, x, y)) {
-					px = 0xff;
+					row[x] = 0xff;
 				}
 			}
-
-			pixels[x] = px;
+	#endif /* __USER_MODE__ */
 #endif /* !__CHANNEL_MODE__ */
 		}
 
-		fwrite(pixels, sizeof(char), dim[0], fimg);
+		fwrite(row, sizeof(char), dim[0], fimg);
 	}
 
-	free(pixels);
+	free(row);
 	fclose(fimg);
 
 skip_debug:
 #endif /* !NDEBUG */
 
-	switch (detector_choose_channel(self, image)) {
+	switch (lincxmap_detector_choose_channel(self, image, pixels)) {
 	case 0: //red
 		INFO("Channel Red\n");
-		channel = &rgb.r;
+		channel = &rgba.r;
 		break;
 	case 1: // green
 		INFO("Channel Green\n");
-		channel = &rgb.g;
+		channel = &rgba.g;
 		break;
 	case 2: // blue
 		INFO("Channel Blue\n");
-		channel = &rgb.b;
+		channel = &rgba.b;
 		break;
 	default: // gray
 		INFO("Channel Gray\n");
-		channel = &rgb.alpha;
+		channel = &rgba.alpha;
 		break;
 	}
 
 	// calculate valid boundary
-	for (i = 0, sa0 = sa; sa0; sa0 = sa0->next, i++) {
+	for (sa0 = sa; sa0; sa0 = sa0->next) {
 		selector = sa0->selector;
 		bounds = selector->getbounds(&selector);
 
@@ -221,42 +237,43 @@ skip_debug:
 		nos = 0;
 		sum = 0;
 
+		// calculate the brightness of each selector
 		for (y = y1; y < y2; y++) {
 			for (x = x1; x < x2; x++) {
 				nos++;
-				px = image->getpixel(&image, x, y);
-				memcpy(&rgb, i2rgb(px), sizeof(rgb_t));
-				rgb.alpha = i2gray(px);
-				rgb.r = rgb.b = rgb.g = *channel;
-				sum += rgb2hsl((rgb_t*) &rgb)->l;
+				i = y * dim[0] + x;
+				i2rgba(pixels[i], &rgba);
+				rgba.r = rgba.b = rgba.g = *channel;
+				sum += rgb2hsl((struct rgb*) &rgba, &hsl)->l;
 			}
 		}
 
 		(*smp)->sum = nos;
 		(*smp)->bv = sum / nos;
-		(*smp)->cv = (int) ((*smp)->bv * __LINCXMAP_PRECISION__);
+		(*smp)->cv = (*smp)->bv * __LINCXMAP_PRECISION__;
 		sprintf((*smp)->name, "%s", selector->getname(&selector));
 
 		smp = &(*smp)->next;
 	}
 
+	free(pixels);
+
 	return smpa;
 }
 
-static struct sample* detector_detect(detector_t *self, image_t image,
-		struct selectors *sa)
+static struct sample* lincxmap_detector_detect(detector_t *self, image_t *image, struct selectors *sa)
 {
 	assert(self && *self);
 	assert(image);
 
 	if (sa) {
-		return detector_manual(self, image, sa);
+		return lincxmap_detector_manual(self, image, sa);
 	} else {
-		return detector_auto(self, image);
+		return lincxmap_detector_auto(self, image);
 	}
 }
 
-static void detector_free(detector_t *self)
+static void lincxmap_detector_free(detector_t *self)
 {
 	assert(self && *self);
 
@@ -264,17 +281,22 @@ static void detector_free(detector_t *self)
 	*self = NULL;
 }
 
-const static struct __detector gs_detector = {
-	.detect = detector_detect,
-	.free   = detector_free,
-};
-
 extern detector_t detector_new()
 {
-	detectorimpl_t *impl = calloc(1, sizeof(detectorimpl_t));
+	const static struct __detector ks_detector = {
+		detect : lincxmap_detector_detect,
+		free   : lincxmap_detector_free,
+	};
 
-	assert(impl);
-	memcpy(&impl->super, &gs_detector, sizeof(struct __detector));
+	detector_impl_t *impl = calloc(1, sizeof(detector_impl_t));
+
+	if (!impl) {
+		ERROR("Out of memory!\n");
+		return NULL;
+	}
+
+	memcpy(&impl->super, &ks_detector, sizeof(struct __detector));
 
 	return &impl->super;
 }
+

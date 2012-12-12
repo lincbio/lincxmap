@@ -1,6 +1,7 @@
 package com.lincbio.lincxmap.android.app;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.List;
 
 import com.lincbio.lincxmap.R;
@@ -21,6 +22,8 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 public class DetectionResultActivity extends ListActivity implements Constants {
+	private static final DecimalFormat CV_FORMAT = new DecimalFormat("0.00");
+
 	private MenuManager menuManager = new MenuManager(this) {
 
 		@Override
@@ -124,7 +127,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			this.txtSampleSum.setText(String.valueOf(sample.getSum()));
 			this.txtSampleName.setText(sample.getName());
 			this.txtSampleBv.setText(String.valueOf(sample.getBrightness()));
-			this.txtSampleCv.setText(String.valueOf(sample.getConcentration()));
+			this.txtSampleCv.setText(CV_FORMAT.format(sample.getConcentration()));
 			
 			return view;
 		}

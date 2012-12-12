@@ -17,7 +17,7 @@
 #include <stdint.h>
 
 #include <image.h>
-#include <sample.h>
+#include <samples.h>
 #include <selectors.h>
 
 #ifdef __cplusplus
@@ -39,7 +39,7 @@ struct __detector
 	 * @param n
 	 *           number of selectors
 	 */
-	struct sample* (*detect)(detector_t *self, image_t image, struct selectors *sa);
+	struct sample* (*detect)(detector_t *self, image_t *image, struct selectors *sa);
 
 	/**
 	 * Free this object

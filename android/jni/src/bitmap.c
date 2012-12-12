@@ -19,53 +19,91 @@
 
 #include "native.h"
 
-static void* bitmap_get_pixel(image_t *self, ...)
+static uint32_t lincxmap_bitmap_get_pixel(image_t *self, uint32_t x, uint32_t y)
 {
 	assert(self && *self);
 
-	int x, y;
-	JNIEnv *env;
-	va_list ap;
-	struct image_arg *arg;
-
-	arg = (struct image_arg*) (*self)->getdata(self);
-	env = arg->env;
-	va_start(ap, self);
-	x = va_arg(ap, int);
-	y = va_arg(ap, int);
-	va_end(ap);
-
-	return (void*) (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_pixel, x, y);
-}
-
-static void* bitmap_get_width(image_t *self, ...)
-{
-	assert(self && *self);
-
-	struct image_arg *arg = (struct image_arg*) (*self)->getdata(self);
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
 	JNIEnv *env = arg->env;
 
-	return (void*) (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_width);
+	return (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_pixel, x, y);
 }
 
-static void* bitmap_get_height(image_t *self, ...)
+static void lincxmap_bitmap_get_pixels(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
 {
 	assert(self && *self);
 
-	struct image_arg *arg = (struct image_arg*) (*self)->getdata(self);
+	size_t len = (width - y) * height - x;
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
+	jint *buf;
+	JNIEnv *env = arg->env;
+	jintArray *arr = (*env)->NewIntArray(env, len);
+
+	(*env)->CallVoidMethod(env, arg->obj, fun_bitmap_get_pixels, arr, offset, stride, x, y, width, height);
+	buf = (*env)->GetIntArrayElements(env, arr, NULL);
+	memcpy(pixels, buf, len * sizeof(uint32_t));
+	(*env)->ReleaseIntArrayElements(env, arr, buf, 0);
+}
+
+static uint32_t lincxmap_bitmap_get_width(image_t *self)
+{
+	assert(self && *self);
+
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
 	JNIEnv *env = arg->env;
 
-	return (void*) (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_height);
+	return (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_width);
 }
 
-static void* bitmap_get_stride(image_t *self, ...)
+static uint32_t lincxmap_bitmap_get_height(image_t *self)
 {
-	return bitmap_get_width(self);
+	assert(self && *self);
+
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
+	JNIEnv *env = arg->env;
+
+	return (*env)->CallIntMethod(env, arg->obj, fun_bitmap_get_height);
 }
 
-const struct image_options bmp_options = {
-	.get_pixel  = bitmap_get_pixel,
-	.get_width  = bitmap_get_width,
-	.get_height = bitmap_get_height,
-	.get_stride = bitmap_get_stride,
-};
+static uint32_t lincxmap_bitmap_get_stride(image_t *self)
+{
+	return lincxmap_bitmap_get_width(self);
+}
+
+static void lincxmap_bitmap_set_pixel(image_t *self, uint32_t x, uint32_t y, uint32_t px)
+{
+	assert(self && *self);
+
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
+	JNIEnv *env = arg->env;
+
+	(*env)->CallVoidMethod(env, arg->obj, fun_bitmap_set_pixel, x, y, px);
+}
+
+static void lincxmap_bitmap_set_pixels(image_t *self, uint32_t *pixels, uint32_t offset, uint32_t stride, uint32_t x, uint32_t y, uint32_t width, uint32_t height)
+{
+	assert(self && *self);
+
+	size_t len = (width - y) * height - x;
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
+	JNIEnv *env = arg->env;
+	jintArray *arr = (*env)->NewIntArray(env, len);
+	jint *buf = (*env)->GetIntArrayElements(env, arr, NULL);
+
+	memcpy(buf, pixels, len * sizeof(uint32_t));
+	(*env)->ReleaseIntArrayElements(env, arr, buf, 0);
+	(*env)->CallVoidMethod(env, arg->obj, fun_bitmap_set_pixels, arr, offset, stride, x, y, width, height);
+}
+
+static int lincxmap_bitmap_is_mutable(image_t *self)
+{
+	assert(self && *self);
+
+	struct bmparg *arg = (struct bmparg*) (*self)->getdata(self);
+	JNIEnv *env = arg->env;
+
+	return (*env)->CallBooleanMethod(env, arg->obj, fun_bitmap_is_mutable);
+}
+
+const struct image_options bmp_opts = IMAGE_OPTIONS(bitmap);
+

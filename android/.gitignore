@@ -1,4 +1,6 @@
 bin
+gdb.setup
+gdbserver
 gen
 obj
 .*.swp

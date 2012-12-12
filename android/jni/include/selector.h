@@ -14,6 +14,7 @@
 #define __LINCXMAP_SELECTOR_H__
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #include "rectangle.h"
 
@@ -21,15 +22,20 @@
 extern "C" {
 #endif
 
-typedef struct __selector* selector_t;
-struct __selector
+typedef struct selector* selector_t;
+struct selector
 {
-	const char*       (*getname)(selector_t *self);
-	void              (*setname)(selector_t *self, const char *name, size_t len);
+	int (*contains)(selector_t *self, uint32_t x, uint32_t y);
+
+	void (*free)(selector_t *self);
+
 	struct rectangle* (*getbounds)(selector_t *self);
-	void              (*setbounds)(selector_t *self, struct rectangle *bounds);
-	int               (*contains)(selector_t *self, int x, int y);
-	void              (*free)(selector_t *self);
+
+	const char* (*getname)(selector_t *self);
+
+	void (*setbounds)(selector_t *self, struct rectangle *bounds);
+
+	void (*setname)(selector_t *self, const char *name, size_t len);
 };
 
 #ifdef __cplusplus
@@ -37,3 +43,4 @@ struct __selector
 #endif
 
 #endif /* __LINCXMAP_SELECTOR_H__ */
+

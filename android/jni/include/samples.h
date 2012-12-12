@@ -13,11 +13,19 @@
 #ifndef __LINCXMAP_SAMPLES_H__
 #define __LINCXMAP_SAMPLES_H__
 
-#include <sample.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+struct sample
+{
+	char name[256];	/* sample name */
+	double bv;		/* brigtness value */
+	double cv;		/* concentration value */
+	int sum;		/* sum of pixels */
+
+	struct sample *next;
+};
 
 extern void samples_add(struct sample **smpa, struct sample *smp);
 
@@ -28,3 +36,4 @@ extern void samples_free(struct sample **smpa);
 #endif
 
 #endif /* __LINCXMAP_SAMPLES_H__ */
+

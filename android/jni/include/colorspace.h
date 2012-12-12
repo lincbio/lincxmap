@@ -21,46 +21,51 @@
 extern "C" {
 #endif
 
-typedef struct
+struct rgb
 {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-} rgb_t;
+};
 
-typedef struct
+struct rgba
 {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
 	uint8_t alpha;
-} rgba_t;
+};
 
-typedef struct
+struct hsl
 {
 	float h;
 	float s;
 	float l;
-} hsl_t;
+};
 
-typedef struct
+struct hsv
 {
 	float h;
 	float s;
 	float v;
-} hsv_t;
+};
 
-typedef struct
+struct cmyk
 {
 	float c;
 	float m;
 	float y;
 	float k;
-} cmyk_t;
+};
 
-static inline uint32_t rgb2i(rgb_t *rgb)
+static inline uint32_t rgb2i(struct rgb *rgb)
 {
 	return ((rgb->r & 0xff) << 16) | ((rgb->g & 0xff) << 8) | (rgb->b & 0xff);
+}
+
+static inline uint32_t rgba2i(struct rgba *rgba)
+{
+	return ((rgba->alpha & 0xff) << 24) | ((rgba->r & 0xff) << 16) | ((rgba->g & 0xff) << 8) | (rgba->b & 0xff);
 }
 
 static inline uint8_t i2gray(uint32_t i)
@@ -68,26 +73,32 @@ static inline uint8_t i2gray(uint32_t i)
 	return (((i >> 16) & 0xff) * 30 + ((i >> 8) & 0xff) * 59 + (i & 0xff) * 11) / 100;
 }
 
-static inline uint8_t rgb2gray(rgb_t *rgb)
+static inline uint8_t rgb2gray(struct rgb *rgb)
 {
 	return (rgb->r * 30 + rgb->g * 59 + rgb->b * 11) / 100;
 }
 
-static inline rgb_t* i2rgb(uint32_t i)
+static inline struct rgb* i2rgb(uint32_t i, struct rgb *rgb)
 {
-	static rgb_t rgb;
+	rgb->r = (i >> 16) & 0xff;
+	rgb->g = (i >> 8) & 0xff;
+	rgb->b = i & 0xff;
 
-	rgb.r = (i >> 16) & 0xff;
-	rgb.g = (i >> 8) & 0xff;
-	rgb.b = i & 0xff;
-
-	return &rgb;
+	return rgb;
 }
 
-static inline hsl_t* rgb2hsl(rgb_t *rgb)
+static inline struct rgba* i2rgba(uint32_t i, struct rgba *rgba)
 {
-	static hsl_t hsl;
+	rgba->alpha = (i >> 24) & 0xff;
+	rgba->r = (i >> 16) & 0xff;
+	rgba->g = (i >> 8) & 0xff;
+	rgba->b = i & 0xff;
 
+	return rgba;
+}
+
+static inline struct hsl* rgb2hsl(struct rgb *rgb, struct hsl *hsl)
+{
 	register float r = rgb->r / 255.0f;
 	register float g = rgb->g / 255.0f;
 	register float b = rgb->b / 255.0f;
@@ -96,35 +107,33 @@ static inline hsl_t* rgb2hsl(rgb_t *rgb)
 	register float delta = max - min;
 
 	if (max == min) {
-		hsl.h = 0;
-		hsl.s = 0;
+		hsl->h = 0;
+		hsl->s = 0;
 	} else if (max == r && g >= b) {
-		hsl.h = 60 * (g - b) / delta;
+		hsl->h = 60 * (g - b) / delta;
 	} else if (max == r && g < b) {
-		hsl.h = 60 * (g - b) / delta + 360;
+		hsl->h = 60 * (g - b) / delta + 360;
 	} else if (max == g) {
-		hsl.h = 60 * (b - r) / delta + 120;
+		hsl->h = 60 * (b - r) / delta + 120;
 	} else if (max == b) {
-		hsl.h = 60 * (r - g) / delta + 240;
+		hsl->h = 60 * (r - g) / delta + 240;
 	}
 
-	hsl.l = (max + min) / 2.0f;
+	hsl->l = (max + min) / 2.0f;
 
-	if (hsl.l == 0) {
-		hsl.s = 0;
-	} else if (hsl.l > 0 && hsl.l <= 0.5f) {
-		hsl.s = delta / (2 * hsl.l);
+	if (hsl->l == 0) {
+		hsl->s = 0;
+	} else if (hsl->l > 0 && hsl->l <= 0.5f) {
+		hsl->s = delta / (2 * hsl->l);
 	} else {
-		hsl.s = delta / (2 - 2 * hsl.l);
+		hsl->s = delta / (2 - 2 * hsl->l);
 	}
 
-	return &hsl;
+	return hsl;
 }
 
-static inline hsv_t* rgb2hsv(rgb_t *rgb)
+static inline struct hsv* rgb2hsv(struct rgb *rgb, struct hsv *hsv)
 {
-	static hsv_t hsv;
-
 	register float r = rgb->r / 255.0f;
 	register float g = rgb->g / 255.0f;
 	register float b = rgb->b / 255.0f;
@@ -133,20 +142,20 @@ static inline hsv_t* rgb2hsv(rgb_t *rgb)
 	register float delta = max - min;
 
 	if (max == min) {
-		hsv.h = 0;
+		hsv->h = 0;
 	} else if (max == r && g >= b) {
-		hsv.h = 60 * (g - b) / delta;
+		hsv->h = 60 * (g - b) / delta;
 	} else if (max == r && g < b) {
-		hsv.h = 60 * (g - b) / delta + 360;
+		hsv->h = 60 * (g - b) / delta + 360;
 	} else if (max == g) {
-		hsv.h = 60 * (b - r) / delta + 120;
+		hsv->h = 60 * (b - r) / delta + 120;
 	} else if (max == b) {
-		hsv.h = 60 * (r - g) / delta + 240;
+		hsv->h = 60 * (r - g) / delta + 240;
 	}
-	hsv.s = max == 0 ? 0 : 1 - min / max;
-	hsv.v = max;
+	hsv->s = max == 0 ? 0 : 1 - min / max;
+	hsv->v = max;
 
-	return &hsv;
+	return hsv;
 }
 
 #ifdef __cplusplus
@@ -154,3 +163,4 @@ static inline hsv_t* rgb2hsv(rgb_t *rgb)
 #endif
 
 #endif /* __LINCXMAP_COLORSPACE_H__ */
+
