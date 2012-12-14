@@ -79,7 +79,7 @@ typedef int (*image_writer_t)(image_t *image, int fd);
 
 struct image
 {
-	void (*equalize)(image_t *self, histogram_t *hist);
+	image_t (*equalize)(image_t *self, histogram_t *hist);
 
 	void (*free)(image_t *self);
 

@@ -21,25 +21,29 @@ static void lincxmap_histogram_free(histogram_t *self)
 {
 	assert(self && *self);
 
-	histogram_t hist = *self;
+	if ((*self)->avg)
+		free((*self)->avg);
 
-	if (hist->cumu)
-		free(hist->cumu);
+	if ((*self)->cumu)
+		free((*self)->cumu);
 
-	if (hist->entropy)
-		free(hist->entropy);
+	if ((*self)->entropy)
+		free((*self)->entropy);
 
-	if (hist->freq)
-		free(hist->freq);
+	if ((*self)->freq)
+		free((*self)->freq);
 
-	if (hist->max)
-		free(hist->freq);
+	if ((*self)->max)
+		free((*self)->max);
 
-	if (hist->min)
-		free(hist->min);
+	if ((*self)->min)
+		free((*self)->min);
 
-	if (hist->prob)
-		free(hist->prob);
+	if ((*self)->prob)
+		free((*self)->prob);
+
+	if ((*self)->stddev)
+		free((*self)->stddev);
 
 	free(*self);
 	*self = NULL;

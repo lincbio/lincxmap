@@ -33,9 +33,12 @@ typedef struct
 	image_type_t type;
 } pixbuf_t;
 
-static void lincxmap_pixbuf_equalize(image_t *self, histogram_t *hist)
+static image_t lincxmap_pixbuf_equalize(image_t *self, histogram_t *hist)
 {
 	assert(self && *self);
+	assert(hist && *hist);
+
+	return *self;
 }
 
 static void lincxmap_pixbuf_free(image_t *self)

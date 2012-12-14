@@ -208,6 +208,8 @@ skip_debug:
 		smp = &(*smp)->next;
 	}
 
+	hist->free(&hist);
+
 	return smpa;
 }
 
