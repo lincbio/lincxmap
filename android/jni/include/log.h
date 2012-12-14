@@ -38,16 +38,16 @@
 #define DEBUG(fmt, ...)
 #else /* NDEBUG */
 #define DEBUG(fmt, ...) \
-	printf("%s#%d: ", __FUNCTION__, __LINE__); \
+	printf("%s:%d#%s: ", __FILE__, __LINE__, __FUNCTION__); \
 	printf(fmt, ##__VA_ARGS__)
 #endif /* !NDEBUG */
 
 #define INFO(fmt, ...) \
-	printf("%s#%d: ", __FUNCTION__, __LINE__); \
+	printf("%s:%d#%s: ", __FILE__, __LINE__, __FUNCTION__); \
 	printf(fmt, ##__VA_ARGS__)
 
 #define ERROR(fmt, ...) \
-	fprintf(stderr, "%s#%d: ", __FUNCTION__, __LINE__); \
+	printf("%s:%d#%s: ", __FILE__, __LINE__, __FUNCTION__); \
 	fprintf(stderr, fmt, ##__VA_ARGS__)
 
 #endif /* !__ANDROID__ */
