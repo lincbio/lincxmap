@@ -11,10 +11,14 @@
  */
 
 #include <assert.h>
+#include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 #include <log.h>
 #include <colorspace.h>
@@ -24,8 +28,7 @@
 #define __LINCXMAP_PRECISION__ 100000
 #endif /* __LINCXMAP_PRECISION__ */
 
-#define NLEVEL 256
-#define NCHANNEL 4
+#define TEST_PGM_FILE "/sdcard/DCIM/Camera/test.pgm"
 
 typedef struct
 {
@@ -33,12 +36,16 @@ typedef struct
 } detector_impl_t;
 
 #ifndef NDEBUG
-static FILE* lincxmap_detector_open_test_image(int w, int h)
+static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
 {
-	FILE *file = fopen("/sdcard/DCIM/Camera/test.pgm", "wb");
-	fprintf(file,"P5\n%u %u 255\n", w, h);
+	uint32_t w = (*image)->getwidth(image);
+	uint32_t h = (*image)->getheight(image);
+	uint32_t n = (*image)->getnchannels(image);
+	uint8_t *data = (*image)->getpixels(image);
 
-	return file;
+	fdprintf(fd,"P5\n%u %u 255\n", w, h);
+
+	return write(fd, data, w * h * n * sizeof(uint8_t));
 }
 #endif /* !NDEBUG */
 
@@ -107,62 +114,16 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	DEBUG("Image size: %d x %d : %d [%d]\n", dim[0], dim[1], dim[2], nchannels);
 
 #ifndef NDEBUG
-
-	char *row = calloc(dim[0], sizeof(char));
-	if (!row) {
-		ERROR("Out of memory!\n");
-		goto skip_debug;
-	}
-
-	FILE *fimg = lincxmap_detector_open_test_image(dim[0], dim[1]);
-	if (!fimg)
+	
+	int fd = open(TEST_PGM_FILE, O_CREAT | O_RDWR);
+	if (fd <= 0)
 		goto skip_debug;
 
-	image_type_t type = (*image)->gettype(image);
-	uint32_t offset = image_get_component_offset(type);
-	uint8_t *off = (uint8_t*) &offset;
-
-	DEBUG("ARGB[%08x]{ %d, %d, %d, %d }\n", offset, off[0], off[1], off[2], off[3]);
-
-	for (y = 0; y < dim[1]; y++) {
-		for (x = 0; x < dim[0]; x++) {
-			px = pixels + y * dim[2] + x * nchannels;
-			rgbx.b = px[off[0]];
-			rgbx.g = px[off[1]];
-			rgbx.r = px[off[2]];
-			rgbx.x = px[off[3]];
-
-#ifdef __CHANNEL_MODE__
-	#if defined(__RED__)
-			row[x] = rgbx.r;
-	#elif defined(__GREEN__)
-			row[x] = rgbx.g;
-	#elif defined(__BLUE__)
-			row[x] = rgbx.b;
-	#else
-			row[x] = rgbx.x;
-	#endif
-#else /* __CHANNEL_MODE__ */
-
-			row[x] = rgbx.x;
-
-	#ifdef __USER_MODE__
-			for (sa0 = sa; sa0; sa0 = sa0->next) {
-				selector = sa0->selector;
-
-				if (selector->contains(&selector, x, y)) {
-					row[x] = 0xff;
-				}
-			}
-	#endif /* __USER_MODE__ */
-#endif /* !__CHANNEL_MODE__ */
-		}
-
-		fwrite(row, sizeof(char), dim[0], fimg);
-	}
-
-	free(row);
-	fclose(fimg);
+	image_t img = (*image)->getchannel(image, nth);
+	image_writer_t pgm_writer = lincxmap_detector_write_to_pgm;
+	img->write(&img, fd, &pgm_writer);
+	img->free(&img);
+	close(fd);
 
 skip_debug:
 #endif /* !NDEBUG */

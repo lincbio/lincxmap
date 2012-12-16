@@ -29,8 +29,7 @@ uninstall:
 	@ant uninstall
 
 clean:
-	@ndk-build clean
-	@ant clean
+	@ndk-build clean && ant clean
 
 .PHONY: all debug release install install-release uninstall clean 
 

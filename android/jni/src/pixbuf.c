@@ -17,8 +17,8 @@
 #include <string.h>
 
 #include <colorspace.h>
-#include <image.h>
 #include <log.h>
+#include <pixbuf.h>
 #include <utils.h>
 
 #include "histogram.c"
@@ -118,6 +118,30 @@ static uint32_t lincxmap_pixbuf_get_n_channels(image_t *self)
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->nchannels;
+}
+
+static image_t lincxmap_pixbuf_get_channel(image_t *self, uint32_t nth)
+{
+	assert(self && *self);
+
+	int x, y;
+	uint8_t *p;
+	image_t img;
+	pixbuf_t *src, *pbf;
+	
+	src = (pixbuf_t*) *self;
+	assert(nth >= 0 && nth < src->nchannels);
+	img = pixbuf_new(src->size[0], src->size[1], IMAGE_TYPE_GRAY);
+	pbf = (pixbuf_t*) img;
+
+	for (y = 0; y < src->size[1]; y++) {
+		for (x = 0; x < src->size[0]; x++) {
+			p = src->data + y * src->stride + x * src->nchannels;
+			pbf->data[y * src->size[0] + x] = p[nth];
+		}
+	}
+
+	return img;
 }
 
 static uint32_t lincxmap_pixbuf_get_height(image_t *self)
@@ -245,6 +269,7 @@ image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
 	const static struct image ks_image = {
 		equalize     : lincxmap_pixbuf_equalize,
 		free         : lincxmap_pixbuf_free,
+		getchannel   : lincxmap_pixbuf_get_channel,
 		getheight    : lincxmap_pixbuf_get_height,
 		gethistogram : lincxmap_pixbuf_get_histogram,
 		getnchannels : lincxmap_pixbuf_get_n_channels,

@@ -83,6 +83,8 @@ struct image
 
 	void (*free)(image_t *self);
 
+	image_t (*getchannel)(image_t *self, uint32_t nth);
+
 	uint32_t (*getheight)(image_t *self);
 
 	histogram_t (*gethistogram)(image_t *self);
