@@ -28,12 +28,12 @@ struct rgb
 	uint8_t b;
 };
 
-struct rgba
+struct argb
 {
 	uint8_t r;
 	uint8_t g;
 	uint8_t b;
-	uint8_t alpha;
+	uint8_t a;
 };
 
 struct rgbx
@@ -71,9 +71,9 @@ static inline uint32_t rgb2i(struct rgb *rgb)
 	return ((rgb->r & 0xff) << 16) | ((rgb->g & 0xff) << 8) | (rgb->b & 0xff);
 }
 
-static inline uint32_t rgba2i(struct rgba *rgba)
+static inline uint32_t rgba2i(struct argb *rgba)
 {
-	return ((rgba->alpha & 0xff) << 24) | ((rgba->r & 0xff) << 16) | ((rgba->g & 0xff) << 8) | (rgba->b & 0xff);
+	return ((rgba->a & 0xff) << 24) | ((rgba->r & 0xff) << 16) | ((rgba->g & 0xff) << 8) | (rgba->b & 0xff);
 }
 
 static inline uint8_t i2gray(uint32_t i)
@@ -95,9 +95,9 @@ static inline struct rgb* i2rgb(uint32_t i, struct rgb *rgb)
 	return rgb;
 }
 
-static inline struct rgba* i2rgba(uint32_t i, struct rgba *rgba)
+static inline struct argb* i2rgba(uint32_t i, struct argb *rgba)
 {
-	rgba->alpha = (i >> 24) & 0xff;
+	rgba->a = (i >> 24) & 0xff;
 	rgba->r = (i >> 16) & 0xff;
 	rgba->g = (i >> 8) & 0xff;
 	rgba->b = i & 0xff;
