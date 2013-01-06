@@ -14,14 +14,45 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-        <activity android:name=".android.app.AboutActivity" />
+        <activity
+            android:name=".android.app.ProductsActivity"
+            android:label="@string/label_toolbar_catalog" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="lincxmap.intent.category.toolbar" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".android.app.HistoryActivity"
+            android:label="@string/label_toolbar_query" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="lincxmap.intent.category.toolbar" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".android.app.SettingsActivity"
+            android:label="@string/label_toolbar_settings" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="lincxmap.intent.category.toolbar" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".android.app.AboutActivity"
+            android:label="@string/label_toolbar_help" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="lincxmap.intent.category.toolbar" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".android.app.TemplateSpecActivity" />
         <activity android:name=".android.app.DetectionActivity" />
         <activity android:name=".android.app.DetectionResultActivity" />
-        <activity android:name=".android.app.MainActivity" />
-        <activity android:name=".android.app.ProductsActivity" />
-        <activity android:name=".android.app.SettingsActivity"/>
-        <activity android:name=".android.app.TemplateListActivity" />
-        <activity android:name=".android.app.TemplateSpecActivity" />
         <activity android:name=".android.app.TemplateEditorActivity" />
         <activity
             android:name=".android.app.LauncherActivity"

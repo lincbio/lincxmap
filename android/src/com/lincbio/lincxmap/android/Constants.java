@@ -2,6 +2,8 @@ package com.lincbio.lincxmap.android;
 
 public interface Constants {
 
+	public static final String CATEGORY_TOOLBAR = "lincxmap.intent.category.toolbar";
+	
 	public static final String KEY_DETECTION_POLICY = "key_detection_policy";
 
 	public static final String VALUE_DETECTION_POLICY_AUTO = "0";

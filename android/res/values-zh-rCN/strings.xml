@@ -28,6 +28,12 @@
     <string name="label_sample_sum">采样</string>
     <string name="label_sample_bv">亮度</string>
     <string name="label_sample_cv">浓度</string>
+    
+    <string name="label_toolbar_new">新建模板</string>
+    <string name="label_toolbar_query">查询结果</string>
+    <string name="label_toolbar_catalog">产品目录</string>
+    <string name="label_toolbar_settings">设置</string>
+    <string name="label_toolbar_help">帮助</string>
 
     <string name="title_choose_image">选择图片来源</string>
     <string name="title_choose_product">选择产品</string>
