@@ -9,12 +9,14 @@
     <string name="button_finish">完成</string>
     <string name="button_cancel">取消</string>
     <string name="button_detect">检测</string>
+    
     <string name="menu_about">关于</string>
     <string name="menu_settings">设置</string>
     <string name="menu_new_template">新建模板</string>
     <string name="menu_mod_template">编辑模板</string>
     <string name="menu_del_template">删除模板</string>
     <string name="menu_send_result">发送</string>
+    
     <string name="label_loading">正在加载中…</string>
     <string name="label_new_template">新建模板</string>
     <string name="label_new_template_detail">创建新的检测样本模板</string>
@@ -27,13 +29,11 @@
     <string name="label_sample_bv">亮度</string>
     <string name="label_sample_cv">浓度</string>
 
-    <string name="title_bluetooth_printer">蓝牙打印机</string>
     <string name="title_choose_image">选择图片来源</string>
-    <string name="title_choose_printer">选择打印机</string>
     <string name="title_choose_product">选择产品</string>
     <string name="title_detection_policy">检测策略</string>
     <string name="title_detection_settings">检测设置</string>
-    <string name="title_printer_settings">打印机设置</string>
+    <string name="title_launcher">LincXmap桌面</string>
     <string name="title_sample_identifier">样本标识</string>
     <string name="title_sample_settings">样本设置</string>
     <string name="title_sample_selector_gap">样本选择器间隙</string>
@@ -45,7 +45,6 @@
     <string name="summary_sample_identifier">设置样本标识</string>
     <string name="summary_sample_selector_size">设置样本选择器尺寸</string>
     <string name="summary_sample_selector_gap">设置样本选择器间隙</string>
-    <string name="summary_scan_for_devices">扫描蓝牙打印机</string>
 
     <string name="hint_template_name">模板名称</string>
     <string name="hint_template_rows">模板行数</string>
