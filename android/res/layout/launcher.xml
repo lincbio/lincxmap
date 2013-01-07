@@ -3,30 +3,24 @@
     xmlns:app="http://schemas.android.com/apk/res/com.lincbio.lincxmap"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/desktop"
     android:orientation="vertical" >
 
-    <HorizontalScrollView
+    <LinearLayout
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:layout_weight="0"
         android:background="@drawable/bg_toolbar"
-        android:scrollbars="none" >
-
-        <LinearLayout
-            android:id="@+id/toolbar"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_gravity="center_vertical"
-            android:padding="@dimen/padding_medium" >
-        </LinearLayout>
-    </HorizontalScrollView>
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_small" />
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:layout_weight="1"
-        android:background="@drawable/desktop" >
+        android:layout_weight="1" >
 
         <com.lincbio.lincxmap.android.view.FlowLayout
             android:id="@+id/desktop"
