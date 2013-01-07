@@ -1,14 +1,17 @@
 package com.lincbio.lincxmap.android.app;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
+import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.utils.Toasts;
 import com.lincbio.lincxmap.android.view.XmapView;
 import com.lincbio.lincxmap.dip.SampleDetector;
 import com.lincbio.lincxmap.dip.SampleDetector.ProgressListener;
+import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Sample;
 import com.lincbio.lincxmap.pojo.Template;
 
@@ -33,11 +36,13 @@ import android.view.View;
  */
 public class DetectionActivity extends Activity implements Constants, Callback,
 		Runnable, ProgressListener {
+	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
+	private final Handler handler = new Handler(this);
+	private final MenuManager menuManager = new MenuManager(this);
+	private final SampleDetector detector = new SampleDetector(this);
+
 	private XmapView xmapView;
 	private ProgressDialog dlgProgress;
-	private Handler handler = new Handler(this);
-	private MenuManager menuManager = new MenuManager(this);
-	private SampleDetector detector = new SampleDetector(this);
 	private String image;
 	private Template tpl;
 
@@ -73,6 +78,8 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 		List<Sample> samples = this.detector.detect(bmp, this.tpl,
 				this.xmapView.getSelectors());
+		this.dbhelper.addHistory(new History(0, 0, "Anonymous", this.tpl.getName(),
+				new Date().toLocaleString()), samples);
 		this.handler.sendMessage(this.handler.obtainMessage(1, samples));
 		bmp.recycle();
 		System.gc();

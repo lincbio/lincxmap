@@ -3,7 +3,7 @@ package com.lincbio.lincxmap.android;
 public interface Constants {
 
 	public static final String CATEGORY_TOOLBAR = "lincxmap.intent.category.toolbar";
-	
+
 	public static final String KEY_DETECTION_POLICY = "key_detection_policy";
 
 	public static final String VALUE_DETECTION_POLICY_AUTO = "0";
@@ -36,6 +36,8 @@ public interface Constants {
 
 	public static final String TABLE_CATALOGUE = "catalogue";
 
+	public static final String TABLE_HISTORY = "history";
+
 	public static final String TABLE_PRODUCT = "product";
 
 	public static final String TABLE_TEMPLATE = "template";
@@ -52,9 +54,17 @@ public interface Constants {
 
 	public static final String TABLE_COL_CATALOGUE_ID = "catalogue_id";
 
-	public static final String TABLE_COL_TEMPLATE_ID = "template_id";
+	public static final String TABLE_COL_LABEL = "label";
+
+	public static final String TABLE_COL_OWNER = "owner";
 
 	public static final String TABLE_COL_PRODUCT_ID = "product_id";
+
+	public static final String TABLE_COL_RESULT_ID = "result_id";
+
+	public static final String TABLE_COL_TEMPLATE_ID = "template_id";
+
+	public static final String TABLE_COL_TIME = "time";
 
 	public static final String TABLE_COL_X = "x";
 
@@ -62,6 +72,10 @@ public interface Constants {
 
 	public static final String[] TABLE_CATALOGUE_COLS = { TABLE_COL_ID,
 			TABLE_COL_NAME };
+
+	public static final String[] TABLE_HISTORY_COLS = { TABLE_COL_ID,
+			TABLE_COL_RESULT_ID, TABLE_COL_OWNER, TABLE_COL_LABEL,
+			TABLE_COL_TIME };
 
 	public static final String[] TABLE_PRODUCT_COLS = { TABLE_COL_ID,
 			TABLE_COL_CATALOGUE_ID, TABLE_COL_NAME };
@@ -72,6 +86,9 @@ public interface Constants {
 	public static final String[] TABLE_TEMPLATE_ITEM_COLS = { TABLE_COL_ID,
 			TABLE_COL_TEMPLATE_ID, TABLE_COL_PRODUCT_ID, TABLE_COL_X,
 			TABLE_COL_Y };
+
+	public static final String[] ALL_TABLES = { TABLE_CATALOGUE, TABLE_HISTORY,
+			TABLE_PRODUCT, TABLE_TEMPLATE, TABLE_TEMPLATE_ITEM };
 
 	public static final String XML_TAG_CATALOGUE = "catalogue";
 

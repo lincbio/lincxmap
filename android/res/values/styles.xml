@@ -1,6 +1,6 @@
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <style name="AppTheme" parent="@android:style/Theme.NoTitleBar.Fullscreen" />
+    <style name="AppTheme" parent="@android:style/Theme.DeviceDefault" />
 
     <style name="Theme.Dialog.Light" parent="@android:style/Theme.Dialog">
         <item name="@android:listViewStyle">@style/Widget.ListView.Light</item>

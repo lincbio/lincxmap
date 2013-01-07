@@ -92,7 +92,7 @@ public class TemplateSpecActivity extends Activity implements Constants {
 			if (null == name || name.length() <= 0)
 				Toasts.show(this, R.string.msg_empty_template_name);
 			tpl = new Template(0, name, rows, cols);
-			tpl.setId(this.dbHelper.newTemplate(tpl));
+			tpl.setId(this.dbHelper.addTemplate(tpl));
 		} else {
 			tpl = (Template) extras.getSerializable(PARAM_TEMPLATE_OBJECT);
 

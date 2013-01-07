@@ -7,7 +7,9 @@ import com.lincbio.lincxmap.LincXmapException;
 import com.lincbio.lincxmap.Version;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.pojo.Catalogue;
+import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Product;
+import com.lincbio.lincxmap.pojo.Sample;
 import com.lincbio.lincxmap.pojo.Template;
 import com.lincbio.lincxmap.pojo.TemplateItem;
 
@@ -118,7 +120,26 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 
 		return list;
 	}
-	
+
+	public List<History> getHistories() {
+		Cursor c = null;
+		List<History> list = new ArrayList<History>();
+
+		try {
+			c = getReadableDatabase().query(TABLE_HISTORY, TABLE_HISTORY_COLS,
+					null, null, null, null, TABLE_COL_ID + " desc");
+
+			while (c.moveToNext()) {
+				list.add(new History(c.getInt(0), c.getInt(1), c.getString(2),
+						c.getString(3), c.getString(4)));
+			}
+		} finally {
+			close(c);
+		}
+
+		return list;
+	}
+
 	public List<TemplateItem> getTemplateItems(int templateId) {
 		Cursor c = null;
 		String sql = TABLE_COL_TEMPLATE_ID + "=?";
@@ -130,8 +151,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					TABLE_TEMPLATE_ITEM_COLS, sql, args, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new TemplateItem(c.getInt(0), c.getInt(1), c.getInt(2),
-						c.getInt(3), c.getInt(4)));
+				list.add(new TemplateItem(c.getInt(0), c.getInt(1),
+						c.getInt(2), c.getInt(3), c.getInt(4)));
 			}
 		} finally {
 			close(c);
@@ -179,7 +200,22 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return list;
 	}
 
-	public int newTemplate(Template template) throws LincXmapException {
+	public void addHistory(final History history, final List<Sample> samples) {
+		this.execute(new Transaction() {
+			@Override
+			public void run(SQLiteDatabase db) throws Exception {
+				ContentValues values = new ContentValues();
+				values.putNull(TABLE_COL_ID);
+				values.put(TABLE_COL_RESULT_ID, history.getResultId());
+				values.put(TABLE_COL_OWNER, history.getOwner());
+				values.put(TABLE_COL_LABEL, history.getLabel());
+				values.put(TABLE_COL_TIME, history.getTime());
+				db.insert(TABLE_HISTORY, null, values);
+			}
+		});
+	}
+
+	public int addTemplate(Template template) throws LincXmapException {
 		Cursor c = null;
 
 		try {
@@ -200,6 +236,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		values.put(TABLE_COL_NAME, template.getName());
 		values.put(TABLE_COL_ROWS, template.getRowCount());
 		values.put(TABLE_COL_COLS, template.getColumnCount());
+
 		return (int) getWritableDatabase().insert(TABLE_TEMPLATE, null, values);
 	}
 
@@ -255,6 +292,12 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
 				+ TABLE_COL_NAME + " text not null)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_HISTORY + "("
+				+ TABLE_COL_ID
+				+ " integer primary key autoincrement not null, "
+				+ TABLE_COL_RESULT_ID + " integer not null, " + TABLE_COL_OWNER
+				+ " text not null, " + TABLE_COL_LABEL + " text not null, "
+				+ TABLE_COL_TIME + " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCT + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
@@ -274,10 +317,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 	}
 
 	protected static void dropTables(SQLiteDatabase db) {
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_CATALOGUE);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCT);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEMPLATE);
-		db.execSQL("DROP TABLE IF EXISTS " + TABLE_TEMPLATE_ITEM);
+		for (int i = 0; i < ALL_TABLES.length; i++) {
+			db.execSQL("DROP TABLE IF EXISTS " + ALL_TABLES[i]);
+		}
 	}
 
 	public static void close(Cursor c) {

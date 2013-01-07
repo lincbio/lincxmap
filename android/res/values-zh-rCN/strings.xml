@@ -10,7 +10,9 @@
     <string name="button_cancel">取消</string>
     <string name="button_detect">检测</string>
     
+    <string name="menu_add">添加</string>
     <string name="menu_about">关于</string>
+    <string name="menu_clear">清空</string>
     <string name="menu_settings">设置</string>
     <string name="menu_new_template">新建模板</string>
     <string name="menu_mod_template">编辑模板</string>
