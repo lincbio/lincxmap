@@ -167,4 +167,20 @@ public class GenericListAdapter<E> extends BaseAdapter {
 		v.setText(text);
 	}
 
+	public void clearData() {
+		this.list.clear();
+		super.notifyDataSetChanged();
+	}
+
+	public void appendData(List<E> data) {
+		this.list.addAll(data);
+		super.notifyDataSetChanged();
+	}
+
+	public void setData(List<E> data) {
+		this.list.clear();
+		this.list.addAll(data);
+		super.notifyDataSetChanged();
+	}
+
 }

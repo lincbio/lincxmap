@@ -1,37 +1,68 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <products>
 
-    <catalogue name="肿瘤类" >
+    <catalog name="肿瘤类" >
         <product name="Anti-Bata-HCG" />
         <product name="Anti-alfa-HCG" />
         <product name="Anti-CEA" />
         <product name="Anti-AFP" />
-    </catalogue>
-    <catalogue name="肝炎类" >
+    </catalog>
+    <catalog name="肝炎类" >
         <product name="HAV-Ag" />
         <product name="HBS-Ag" />
         <product name="HBc-Ag" />
         <product name="HDV-Ag" />
         <product name="HEV-Ag" />
         <product name="HGV-Ag" />
-    </catalogue>
-    <catalogue name="传染病类" >
-    </catalogue>
-    <catalogue name="脑血管疾病类" >
-    </catalogue>
-    <catalogue name="胰岛素类" >
-    </catalogue>
-    <catalogue name="心脏病类" >
-    </catalogue>
-    <catalogue name="激素类" >
-    </catalogue>
-    <catalogue name="优生优育类" >
-    </catalogue>
-    <catalogue name="不孕不育类" >
-    </catalogue>
-    <catalogue name="毒品药品类" >
-    </catalogue>
-    <catalogue name="免疫球蛋白类" >
-    </catalogue>
+    </catalog>
+    <catalog name="传染病类" >
+        <product name="TB ESAT-antigen" />
+        <product name="TB-16&amp;TB-18" />
+        <product name="HIV-1 gp41" />
+        <product name="HIV-1 gp24" />
+        <product name="HIV-1 gp36" />
+        <product name="HIV-1 gp120" />
+        <product name="TP17 Ag" />
+        <product name="TP47 Ag" />
+    </catalog>
+    <catalog name="脑血管疾病类" >
+        <product name="S100-Ag" />
+        <product name="S100A1B-Ag" />
+        <product name="S100BB-Ag" />
+    </catalog>
+    <catalog name="胰岛素类" >
+        <product name="Anti-INS" />
+        <product name="Anti-C-P" />
+        <product name="Anti-TT" />
+    </catalog>
+    <catalog name="心脏病类" >
+        <product name="Anti-CK-Mb" />
+        <product name="Anti-CTnT" />
+        <product name="Anti-CTnI" />
+        <product name="Anti-Pro-BNP" />
+    </catalog>
+    <catalog name="激素类" >
+        <product name="Anti-PRL" />
+        <product name="Anti-TSH" />
+        <product name="Anti-FSH" />
+    </catalog>
+    <catalog name="优生优育类" >
+        <product name="RV-Ag" />
+        <product name="CMV-Ag" />
+        <product name="ToX-Ag" />
+        <product name="HSV-I-Ag" />
+        <product name="HSV-II-Ag" />
+    </catalog>
+    <catalog name="不孕不育类" >
+        <product name="SMAg" />
+        <product name="E-Ag" />
+        <product name="O-Ag" />
+        <product name="TB-Ag" />
+        <product name="ZP-Ag" />
+    </catalog>
+    <catalog name="毒品药品类" >
+    </catalog>
+    <catalog name="免疫球蛋白类" >
+    </catalog>
 
 </products>

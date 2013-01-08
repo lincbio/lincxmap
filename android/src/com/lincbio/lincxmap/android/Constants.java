@@ -90,7 +90,7 @@ public interface Constants {
 	public static final String[] ALL_TABLES = { TABLE_CATALOGUE, TABLE_HISTORY,
 			TABLE_PRODUCT, TABLE_TEMPLATE, TABLE_TEMPLATE_ITEM };
 
-	public static final String XML_TAG_CATALOGUE = "catalogue";
+	public static final String XML_TAG_CATALOG = "catalog";
 
 	public static final String XML_TAG_PRODUCT = "product";
 

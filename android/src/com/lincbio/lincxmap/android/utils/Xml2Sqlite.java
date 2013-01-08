@@ -57,7 +57,7 @@ public final class Xml2Sqlite implements Constants {
 
 						tag = new XmlTag(tagName, attrs);
 
-						if (XML_TAG_CATALOGUE.equals(tagName)) {
+						if (XML_TAG_CATALOG.equals(tagName)) {
 							ncatalog++;
 							String[] args = { tag.getAttribute(TABLE_COL_NAME) };
 

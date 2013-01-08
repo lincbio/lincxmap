@@ -1,7 +1,5 @@
 package com.lincbio.lincxmap.android.app;
 
-import java.util.List;
-
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.widget.GenericListAdapter;
@@ -17,7 +15,6 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ListAdapter;
 
 /**
  * Detection history UI
@@ -38,7 +35,8 @@ public class HistoryActivity extends ListActivity {
 				OnClickListener ok = new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						HistoryActivity.this.dbHelper.deleteAllHistory();
+						dbHelper.deleteAllHistory();
+						listAdapter.clearData();
 					}
 				};
 				OnClickListener cancel = new OnClickListener() {
@@ -48,10 +46,11 @@ public class HistoryActivity extends ListActivity {
 					}
 				};
 				new AlertDialog.Builder(HistoryActivity.this)
-						.setTitle(R.string.msg_confirm_clear)
+						.setTitle(android.R.string.dialog_alert_title)
+						.setMessage(R.string.msg_confirm_clear)
 						.setIcon(android.R.drawable.ic_dialog_alert)
 						.setPositiveButton(android.R.string.ok, ok)
-						.setPositiveButton(android.R.string.cancel, cancel)
+						.setNegativeButton(android.R.string.cancel, cancel)
 						.show();
 				break;
 			}
@@ -59,15 +58,15 @@ public class HistoryActivity extends ListActivity {
 
 	};
 
+	private GenericListAdapter<History> listAdapter;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.getListView().setCacheColorHint(Color.TRANSPARENT);
-
-		List<History> histories = this.dbHelper.getHistories();
-		ListAdapter adapter = new GenericListAdapter<History>(this, histories,
-				R.layout.history_item);
-		setListAdapter(adapter);
+		this.listAdapter = new GenericListAdapter<History>(this,
+				this.dbHelper.getHistories(), R.layout.history_item);
+		this.setListAdapter(this.listAdapter);
 	}
 
 	@Override
