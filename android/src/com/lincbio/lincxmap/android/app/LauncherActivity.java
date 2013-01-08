@@ -13,6 +13,7 @@ import com.lincbio.lincxmap.android.utils.Xml2Sqlite;
 import com.lincbio.lincxmap.android.view.FlowLayout;
 import com.lincbio.lincxmap.pojo.ImageSource;
 import com.lincbio.lincxmap.pojo.Template;
+import com.lincbio.lincxmap.pojo.TemplateItem;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -38,7 +39,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup.LayoutParams;
@@ -161,7 +161,12 @@ public class LauncherActivity extends Activity implements Callback, Constants,
 
 			if (null == this.selectedImage)
 				return;
-
+			
+			long id = this.selectedTemplate.getId();
+			List<TemplateItem> items = this.dbhelper.getTemplateItems(id);
+			this.selectedTemplate.getItems().clear();
+			this.selectedTemplate.getItems().addAll(items);
+			
 			Intent intent = new Intent(this, DetectionActivity.class);
 			intent.putExtra(PARAM_IMAGE_SOURCE, this.selectedImage);
 			intent.putExtra(PARAM_TEMPLATE_OBJECT, this.selectedTemplate);
@@ -188,7 +193,6 @@ public class LauncherActivity extends Activity implements Callback, Constants,
 		ImageView sep;
 		ImageView icon;
 		TextView label;
-		final Context ctx = this;
 
 		// create tool bar
 		Intent intent = new Intent(Intent.ACTION_MAIN, null);
@@ -226,6 +230,41 @@ public class LauncherActivity extends Activity implements Callback, Constants,
 			}
 		}
 
+		File tmpdir = FileUtils.getTempDir();
+		if (!tmpdir.exists()) {
+			tmpdir.mkdirs();
+		}
+
+		if (this.pref.getBoolean(KEY_INITIALIZED, false)) {
+			this.handler.sendMessage(this.handler.obtainMessage(0));
+		} else {
+			this.pref = PreferenceManager.getDefaultSharedPreferences(this);
+			new Thread(this).start();
+		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		this.menuManager.createMenu(menu, R.menu.opt_common);
+		return super.onCreateOptionsMenu(menu);
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		this.menuManager.onMenuItemSelected(item);
+		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		ImageView icon;
+		TextView label;
+		final Context ctx = this;
+
+		this.desktop.removeAllViews();
+		
 		// query database to fetch detection templates
 		String text = getString(R.string.label_toolbar_new);
 		List<Template> templates = this.dbhelper.getTemplates();
@@ -266,8 +305,7 @@ public class LauncherActivity extends Activity implements Callback, Constants,
 				item.setOnLongClickListener(new OnLongClickListener() {
 					@Override
 					public boolean onLongClick(View v) {
-						ViewGroup parent = (ViewGroup) v.getParent();
-						View del = parent.findViewById(R.id.desktop_item_del);
+						View del = v.findViewById(R.id.desktop_item_del);
 						del.setVisibility(View.VISIBLE);
 						return true;
 					}
@@ -293,44 +331,6 @@ public class LauncherActivity extends Activity implements Callback, Constants,
 			}
 
 			this.desktop.addView(item);
-		}
-
-		File tmpdir = FileUtils.getTempDir();
-		if (!tmpdir.exists()) {
-			tmpdir.mkdirs();
-		}
-
-		if (this.pref.getBoolean(KEY_INITIALIZED, false)) {
-			this.handler.sendMessage(this.handler.obtainMessage(0));
-		} else {
-			this.pref = PreferenceManager.getDefaultSharedPreferences(this);
-			new Thread(this).start();
-		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menuManager.createMenu(menu, R.menu.opt_common);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		this.menuManager.onMenuItemSelected(item);
-		return super.onOptionsItemSelected(item);
-	}
-
-	@Override
-	protected void onStart() {
-		super.onStart();
-
-		for (int i = 0; i < this.desktop.getChildCount(); i++) {
-			View item = this.desktop.getChildAt(i);
-			View del = item.findViewById(R.id.desktop_item_del);
-
-			if (View.VISIBLE == del.getVisibility()) {
-				del.setVisibility(View.GONE);
-			}
 		}
 	}
 

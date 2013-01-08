@@ -66,7 +66,7 @@ public class GenericListAdapter<E> extends BaseAdapter {
 		return adapt(view, this.list.get(position));
 	}
 
-	protected View adapt(View view, E object) {
+	protected View adapt(View view, Object object) {
 		Field[] fields = object.getClass().getDeclaredFields();
 		byte[] adaptable = new byte[fields.length];
 

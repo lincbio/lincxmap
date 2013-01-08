@@ -63,7 +63,26 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				groupBy, having, orderBy);
 	}
 
-	public Product getProduct(int productId) {
+	public Catalogue getCatalogue(long catalogueId) {
+		Cursor c = null;
+		String sql = TABLE_COL_ID + "=?";
+		String[] args = { String.valueOf(catalogueId) };
+
+		try {
+			c = getReadableDatabase().query(TABLE_CATALOGUE,
+					TABLE_CATALOGUE_COLS, sql, args, null, null, null);
+
+			if (c.moveToNext()) {
+				return new Catalogue(c.getLong(0), c.getString(1));
+			}
+		} finally {
+			close(c);
+		}
+
+		return null;
+	}
+
+	public Product getProduct(long productId) {
 		Cursor c = null;
 		String sql = TABLE_COL_ID + "=?";
 		String[] args = { String.valueOf(productId) };
@@ -73,17 +92,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					sql, args, null, null, null);
 
 			if (c.moveToNext()) {
-				return new Product(c.getInt(0), c.getInt(1), c.getString(2));
+				return new Product(c.getLong(0), c.getLong(1), c.getString(2));
 			}
 		} finally {
 			close(c);
 		}
 
 		return null;
-
 	}
 
-	public TemplateItem getTemplateItem(int itemId) {
+	public TemplateItem getTemplateItem(long itemId) {
 		Cursor c = null;
 		String sql = TABLE_COL_ID + "=?";
 		String[] args = { String.valueOf(itemId) };
@@ -93,8 +111,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					TABLE_TEMPLATE_ITEM_COLS, sql, args, null, null, null);
 
 			if (c.moveToNext()) {
-				return new TemplateItem(c.getInt(0), c.getInt(1), c.getInt(2),
-						c.getInt(3), c.getInt(4));
+				return new TemplateItem(c.getLong(0), c.getLong(1),
+						c.getLong(2), c.getInt(3), c.getInt(4));
 			}
 		} finally {
 			close(c);
@@ -112,7 +130,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					TABLE_CATALOGUE_COLS, null, null, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new Catalogue(c.getInt(0), c.getString(1)));
+				list.add(new Catalogue(c.getLong(0), c.getString(1)));
 			}
 		} finally {
 			close(c);
@@ -130,8 +148,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null, null, null, TABLE_COL_ID + " desc");
 
 			while (c.moveToNext()) {
-				list.add(new History(c.getInt(0), c.getInt(1), c.getString(2),
-						c.getString(3), c.getString(4)));
+				list.add(new History(c.getLong(0), c.getLong(1),
+						c.getString(2), c.getString(3), c.getString(4)));
 			}
 		} finally {
 			close(c);
@@ -140,7 +158,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return list;
 	}
 
-	public List<TemplateItem> getTemplateItems(int templateId) {
+	public List<TemplateItem> getTemplateItems(long templateId) {
 		Cursor c = null;
 		String sql = TABLE_COL_TEMPLATE_ID + "=?";
 		String[] args = { String.valueOf(templateId) };
@@ -151,8 +169,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					TABLE_TEMPLATE_ITEM_COLS, sql, args, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new TemplateItem(c.getInt(0), c.getInt(1),
-						c.getInt(2), c.getInt(3), c.getInt(4)));
+				list.add(new TemplateItem(c.getLong(0), c.getLong(1), c
+						.getLong(2), c.getInt(3), c.getInt(4)));
 			}
 		} finally {
 			close(c);
@@ -170,7 +188,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new Product(c.getInt(0), c.getInt(1), c.getString(2)));
+				list.add(new Product(c.getLong(0), c.getLong(1), c.getString(2)));
 			}
 		} finally {
 			close(c);
@@ -188,7 +206,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					TABLE_TEMPLATE_COLS, null, null, null, null, null);
 
 			while (c.moveToNext()) {
-				Template t = new Template(c.getInt(0), c.getString(1),
+				Template t = new Template(c.getLong(0), c.getString(1),
 						c.getInt(2), c.getInt(3));
 				t.getItems().addAll(getTemplateItems(t.getId()));
 				list.add(t);
@@ -215,7 +233,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		});
 	}
 
-	public int addTemplate(Template template) throws LincXmapException {
+	public long addTemplate(final Template template,
+			final List<TemplateItem> items) throws LincXmapException {
 		Cursor c = null;
 
 		try {
@@ -225,19 +244,36 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null);
 
 			if (c.moveToNext())
-				throw new LincXmapException("Template `" + template.getName()
+				throw new LincXmapException("Template '" + template.getName()
 						+ "' already exists");
 		} finally {
 			close(c);
 		}
 
-		ContentValues values = new ContentValues();
-		values.putNull(TABLE_COL_ID);
-		values.put(TABLE_COL_NAME, template.getName());
-		values.put(TABLE_COL_ROWS, template.getRowCount());
-		values.put(TABLE_COL_COLS, template.getColumnCount());
+		this.execute(new Transaction() {
 
-		return (int) getWritableDatabase().insert(TABLE_TEMPLATE, null, values);
+			@Override
+			public void run(SQLiteDatabase db) throws Exception {
+				ContentValues tplValues = new ContentValues();
+				tplValues.putNull(TABLE_COL_ID);
+				tplValues.put(TABLE_COL_NAME, template.getName());
+				tplValues.put(TABLE_COL_ROWS, template.getRowCount());
+				tplValues.put(TABLE_COL_COLS, template.getColumnCount());
+				template.setId(db.insert(TABLE_TEMPLATE, null, tplValues));
+
+				for (TemplateItem item : items) {
+					ContentValues itemValues = new ContentValues();
+					itemValues.putNull(TABLE_COL_ID);
+					itemValues.put(TABLE_COL_TEMPLATE_ID, template.getId());
+					itemValues.put(TABLE_COL_PRODUCT_ID, item.getProductId());
+					itemValues.put(TABLE_COL_X, item.getX());
+					itemValues.put(TABLE_COL_Y, item.getY());
+					item.setId(db.insert(TABLE_TEMPLATE_ITEM, null, itemValues));
+				}
+			}
+		});
+
+		return template.getId();
 	}
 
 	public int updateTempldate(Template template) {
@@ -253,7 +289,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null);
 
 			if (c.moveToNext())
-				throw new LincXmapException("Template `" + template.getName()
+				throw new LincXmapException("Template '" + template.getName()
 						+ "' already exists");
 		} finally {
 			close(c);
@@ -269,7 +305,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				new String[] { String.valueOf(template.getId()) });
 	}
 
-	public void deleteTemplate(final int id) throws LincXmapException {
+	public void deleteTemplate(final long id) throws LincXmapException {
 		try {
 			execute(new Transaction() {
 
@@ -285,6 +321,10 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		} catch (Throwable t) {
 			throw new LincXmapException(t);
 		}
+	}
+
+	public int deleteAllHistory() {
+		return getWritableDatabase().delete(TABLE_HISTORY, null, null);
 	}
 
 	protected static void createTables(SQLiteDatabase db) {

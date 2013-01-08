@@ -5,32 +5,32 @@ import java.io.Serializable;
 public class Product implements Serializable {
 	private static final long serialVersionUID = -8429715707676901318L;
 
-	private int id;
-	private int catalogueId;
+	private long id;
+	private long catalogueId;
 	private String name;
 
 	public Product() {
 	}
 
-	public Product(int id, int catalogueId, String name) {
+	public Product(long id, long catalogueId, String name) {
 		this.id = id;
 		this.catalogueId = catalogueId;
 		this.name = name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public int getCatalogueId() {
+	public long getCatalogueId() {
 		return catalogueId;
 	}
 
-	public void setCatalogueId(int catalogueId) {
+	public void setCatalogueId(long catalogueId) {
 		this.catalogueId = catalogueId;
 	}
 
@@ -40,6 +40,11 @@ public class Product implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	@Override
+	public int hashCode() {
+		return (int) this.id;
 	}
 
 	@Override

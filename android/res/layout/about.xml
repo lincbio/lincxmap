@@ -8,14 +8,10 @@
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="@string/about_version" />
-
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="1dp"
-        android:layout_marginTop="@dimen/margin_small"
-        android:layout_marginBottom="@dimen/padding_small"
-        android:background="@drawable/hdivider" />
+        android:layout_marginBottom="@dimen/margin_medium"
+        android:layout_marginTop="@dimen/margin_medium"
+        android:text="@string/about_version"
+        android:textAppearance="@android:style/TextAppearance.Medium" />
 
     <TextView
         android:layout_width="fill_parent"

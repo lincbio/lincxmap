@@ -5,22 +5,22 @@ import java.io.Serializable;
 public class Catalogue implements Serializable {
 	private static final long serialVersionUID = 8594097451764011433L;
 
-	private int id;
+	private long id;
 	private String name;
 
 	public Catalogue() {
 	}
 
-	public Catalogue(int id, String name) {
+	public Catalogue(long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -32,6 +32,11 @@ public class Catalogue implements Serializable {
 		this.name = name;
 	}
 
+	@Override
+	public int hashCode() {
+		return (int) this.id;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Catalogue))

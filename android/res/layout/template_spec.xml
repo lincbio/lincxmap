@@ -86,11 +86,13 @@
             android:text="@string/button_next" />
 
         <Button
+            android:id="@+id/btn_finish"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="onButtonFinishClicked"
-            android:text="@string/button_finish" />
+            android:text="@string/button_finish"
+            android:visibility="gone" />
     </LinearLayout>
 
 </LinearLayout>

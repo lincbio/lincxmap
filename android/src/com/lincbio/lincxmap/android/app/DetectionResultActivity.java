@@ -11,6 +11,7 @@ import com.lincbio.lincxmap.pojo.Sample;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -59,6 +60,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 
 		@SuppressWarnings("unchecked")
 		List<Sample> samples = (List<Sample>) obj;
+		getListView().setCacheColorHint(Color.TRANSPARENT);
 		setListAdapter(new SampleAdapter(this, samples));
 	}
 

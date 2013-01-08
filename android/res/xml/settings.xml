@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
-    android:title="Settings" >
+    android:title="@string/label_toolbar_settings" >
 
     <PreferenceCategory android:title="@string/title_sample_settings" >
         <EditTextPreference
@@ -13,6 +13,7 @@
             android:key="key_sample_selector_gap"
             android:summary="@string/summary_sample_selector_gap"
             android:title="@string/title_sample_selector_gap" />
+
         <ListPreference
             android:defaultValue="@string/sample_identifier_name"
             android:dialogIcon="@android:drawable/ic_dialog_info"

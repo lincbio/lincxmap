@@ -25,8 +25,7 @@ public class SettingsActivity extends PreferenceActivity implements Constants {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		addPreferencesFromResource(R.xml.settings);
+		super.addPreferencesFromResource(R.xml.settings);
 
 		this.dpPref = (ListPreference) findPreference(KEY_DETECTION_POLICY);
 		this.ssgPref = (EditTextPreference) findPreference(KEY_SAMPLE_SELECTOR_GAP);

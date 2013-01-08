@@ -6,15 +6,11 @@ import java.util.List;
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
-import com.lincbio.lincxmap.android.database.Transaction;
 import com.lincbio.lincxmap.pojo.Product;
 import com.lincbio.lincxmap.pojo.Template;
 import com.lincbio.lincxmap.pojo.TemplateItem;
 
 import android.app.Activity;
-import android.content.ContentValues;
-import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -33,7 +29,7 @@ import android.widget.TableRow.LayoutParams;
  * @author Johnson Lee
  * 
  */
-public class TemplateEditorActivity extends Activity implements
+public class SampleLayoutActivity extends Activity implements
 		OnItemSelectedListener, Constants {
 	private DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private MenuManager menuManager = new MenuManager(this);
@@ -69,7 +65,8 @@ public class TemplateEditorActivity extends Activity implements
 		setContentView(R.layout.template_edit);
 
 		Bundle extras = getIntent().getExtras();
-		this.template = (Template) extras.getSerializable(PARAM_TEMPLATE_OBJECT);
+		this.template = (Template) extras
+				.getSerializable(PARAM_TEMPLATE_OBJECT);
 		this.matrix = (TableLayout) findViewById(R.id.matrix);
 
 		if (null == template)
@@ -120,26 +117,16 @@ public class TemplateEditorActivity extends Activity implements
 	}
 
 	public void onButtonFinishClicked(View v) {
+		List<TemplateItem> items = new ArrayList<TemplateItem>();
+		
 		for (Spinner spin : this.spinners) {
 			if (spin.getTag() instanceof TemplateItem) {
-				final TemplateItem ti = (TemplateItem) spin.getTag();
-				this.dbHelper.execute(new Transaction() {
-
-					@Override
-					public void run(SQLiteDatabase db) throws Exception {
-						ContentValues cv = new ContentValues();
-						cv.put(TABLE_COL_TEMPLATE_ID, ti.getTemplateId());
-						cv.put(TABLE_COL_PRODUCT_ID, ti.getProductId());
-						cv.put(TABLE_COL_X, ti.getX());
-						cv.put(TABLE_COL_Y, ti.getY());
-						db.insert(TABLE_TEMPLATE_ITEM, null, cv);
-					}
-
-				});
+				items.add((TemplateItem) spin.getTag());
 			}
 		}
-
-		startActivity(new Intent(this, TemplateListActivity.class));
+		
+		this.dbHelper.addTemplate(this.template, items);
+		this.finish();
 	}
 
 	public void onButtonPrevClicked(View v) {

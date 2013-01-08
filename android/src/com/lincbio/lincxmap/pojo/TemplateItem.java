@@ -5,16 +5,16 @@ import java.io.Serializable;
 public class TemplateItem implements Serializable {
 	private static final long serialVersionUID = 2302658716404424029L;
 
-	private int id;
-	private int templateId;
-	private int productId;
+	private long id;
+	private long templateId;
+	private long productId;
 	private int x;
 	private int y;
 
 	public TemplateItem() {
 	}
 
-	public TemplateItem(int id, int templateId, int productId, int x, int y) {
+	public TemplateItem(long id, long templateId, long productId, int x, int y) {
 		this.id = id;
 		this.templateId = templateId;
 		this.productId = productId;
@@ -22,27 +22,27 @@ public class TemplateItem implements Serializable {
 		this.y = y;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public int getTemplateId() {
+	public long getTemplateId() {
 		return templateId;
 	}
 
-	public void setTemplateId(int templateId) {
+	public void setTemplateId(long templateId) {
 		this.templateId = templateId;
 	}
 
-	public int getProductId() {
+	public long getProductId() {
 		return productId;
 	}
 
-	public void setProductId(int productId) {
+	public void setProductId(long productId) {
 		this.productId = productId;
 	}
 

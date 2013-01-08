@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".android.app.ProductsActivity"
+            android:name=".android.app.ProductActivity"
             android:icon="@android:drawable/ic_menu_agenda"
             android:label="@string/label_toolbar_catalog" >
             <intent-filter>
@@ -54,10 +54,12 @@
                 <category android:name="lincxmap.intent.category.toolbar" />
             </intent-filter>
         </activity>
-        <activity android:name=".android.app.TemplateSpecActivity" />
+        <activity
+            android:name=".android.app.TemplateSpecActivity"
+            android:noHistory="true" />
         <activity android:name=".android.app.DetectionActivity" />
         <activity android:name=".android.app.DetectionResultActivity" />
-        <activity android:name=".android.app.TemplateEditorActivity" />
+        <activity android:name=".android.app.SampleLayoutActivity" />
         <activity
             android:name=".android.app.LauncherActivity"
             android:label="@string/title_launcher" >

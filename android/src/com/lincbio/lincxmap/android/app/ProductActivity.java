@@ -4,14 +4,16 @@ import java.util.List;
 
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
-import com.lincbio.lincxmap.android.widget.GenericListAdapter;
+import com.lincbio.lincxmap.android.widget.GenericGroupedListAdapter;
+import com.lincbio.lincxmap.android.widget.GenericGroupedListAdapter.Groupable;
 import com.lincbio.lincxmap.pojo.Product;
 
-import android.app.ListActivity;
+import android.app.ExpandableListActivity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ListAdapter;
+import android.widget.ExpandableListAdapter;
 
 /**
  * Product List(classified by product catalogue) Activity
@@ -19,8 +21,8 @@ import android.widget.ListAdapter;
  * @author Johnson Lee
  * 
  */
-public class ProductsActivity extends ListActivity {
-	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
+public class ProductActivity extends ExpandableListActivity {
+	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final MenuManager menuManager = new MenuManager(this) {
 
 		@Override
@@ -39,10 +41,14 @@ public class ProductsActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		List<Product> products = this.dbhelper.getProducts();
-		ListAdapter adapter = new GenericListAdapter<Product>(this, products,
+		this.getExpandableListView().setCacheColorHint(Color.TRANSPARENT);
+
+		List<Product> products = this.dbHelper.getProducts();
+		Groupable<Product> groupBy = new ProductGroup();
+		ExpandableListAdapter adapter = new GenericGroupedListAdapter<Product>(
+				this, products, groupBy, R.layout.catalogue_item,
 				R.layout.product_item);
-		this.getListView().setAdapter(adapter);
+		setListAdapter(adapter);
 	}
 
 	@Override
@@ -55,6 +61,15 @@ public class ProductsActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		this.menuManager.onMenuItemSelected(item);
 		return super.onOptionsItemSelected(item);
+	}
+
+	private class ProductGroup implements Groupable<Product> {
+
+		@Override
+		public Object getGroupId(Product e) {
+			return dbHelper.getCatalogue(e.getCatalogueId());
+		}
+
 	}
 
 }

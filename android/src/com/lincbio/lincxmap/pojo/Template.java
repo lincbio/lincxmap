@@ -7,7 +7,7 @@ import java.util.List;
 public class Template implements Serializable {
 	private static final long serialVersionUID = -8541926956447408880L;
 
-	private int id;
+	private long id;
 	private String name;
 	private int rows;
 	private int cols;
@@ -16,18 +16,18 @@ public class Template implements Serializable {
 	public Template() {
 	}
 
-	public Template(int id, String name, int rows, int cols) {
+	public Template(long id, String name, int rows, int cols) {
 		this.id = id;
 		this.name = name;
 		this.rows = rows;
 		this.cols = cols;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
@@ -59,6 +59,11 @@ public class Template implements Serializable {
 		return items;
 	}
 
+	@Override
+	public int hashCode() {
+		return (int) this.id;
+	}
+	
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Template))

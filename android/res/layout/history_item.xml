@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
     android:orientation="horizontal"
     android:paddingBottom="@dimen/padding_medium"
     android:paddingTop="@dimen/padding_medium" >
@@ -16,7 +16,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/padding_small"
+        android:paddingRight="@dimen/padding_small" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:tag="owner"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,32 +38,29 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:tag="owner"
-                android:text="Owner"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:tag="label"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="0"
-                android:gravity="center_vertical"
-                android:tag="label"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:tag="time"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
         </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:tag="time"
-            android:text="Time"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
     </LinearLayout>
+
+    <ImageView
+        android:layout_width="1px"
+        android:layout_height="match_parent"
+        android:layout_weight="0"
+        android:background="@android:color/darker_gray" />
 
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_weight="0"
-        android:src="@android:drawable/ic_menu_send"
-        android:onClick="onButtonSendClick" />
+        android:onClick="onButtonSendClick"
+        android:src="@android:drawable/ic_menu_send" />
 
 </LinearLayout>

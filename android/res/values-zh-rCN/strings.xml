@@ -32,7 +32,7 @@
     <string name="label_sample_cv">浓度</string>
     
     <string name="label_toolbar_new">新建模板</string>
-    <string name="label_toolbar_query">查询结果</string>
+    <string name="label_toolbar_query">历史查询</string>
     <string name="label_toolbar_catalog">产品目录</string>
     <string name="label_toolbar_settings">设置</string>
     <string name="label_toolbar_help">帮助</string>
@@ -65,4 +65,5 @@
     <string name="msg_empty_template_name">模板名称不能为空</string>
     <string name="msg_detecting">正在检测中&#8230;</string>
     <string name="msg_invalid_image">无效的图像</string>
+    <string name="msg_confirm_clear">确定全部清空？</string>
 </resources>

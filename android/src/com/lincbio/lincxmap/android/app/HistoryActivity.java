@@ -7,7 +7,12 @@ import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.widget.GenericListAdapter;
 import com.lincbio.lincxmap.pojo.History;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -21,7 +26,7 @@ import android.widget.ListAdapter;
  * 
  */
 public class HistoryActivity extends ListActivity {
-	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
+	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final MenuManager menuManager = new MenuManager(this) {
 
 		@Override
@@ -30,7 +35,24 @@ public class HistoryActivity extends ListActivity {
 
 			switch (item.getItemId()) {
 			case R.id.menu_clear:
-				// TODO
+				OnClickListener ok = new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						HistoryActivity.this.dbHelper.deleteAllHistory();
+					}
+				};
+				OnClickListener cancel = new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				};
+				new AlertDialog.Builder(HistoryActivity.this)
+						.setTitle(R.string.msg_confirm_clear)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setPositiveButton(android.R.string.ok, ok)
+						.setPositiveButton(android.R.string.cancel, cancel)
+						.show();
 				break;
 			}
 		}
@@ -40,10 +62,12 @@ public class HistoryActivity extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		List<History> histories = this.dbhelper.getHistories();
+		this.getListView().setCacheColorHint(Color.TRANSPARENT);
+
+		List<History> histories = this.dbHelper.getHistories();
 		ListAdapter adapter = new GenericListAdapter<History>(this, histories,
 				R.layout.history_item);
-		this.getListView().setAdapter(adapter);
+		setListAdapter(adapter);
 	}
 
 	@Override
@@ -59,7 +83,13 @@ public class HistoryActivity extends ListActivity {
 	}
 
 	public void onButtonSendClick(View view) {
-		// TODO
+		String subject = getString(R.string.title_send_result);
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.setType("text/plain");
+		intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+		intent.putExtra(Intent.EXTRA_TEXT, "");
+		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(Intent.createChooser(intent, subject));
 	}
 
 }

@@ -11,8 +11,8 @@ import java.io.Serializable;
 public class History implements Serializable {
 	private static final long serialVersionUID = 3167860739963308096L;
 
-	private int id;
-	private int resultId;
+	private long id;
+	private long resultId;
 	private String owner;
 	private String label;
 	private String time;
@@ -20,7 +20,7 @@ public class History implements Serializable {
 	public History() {
 	}
 
-	public History(int id, int resultId, String owner, String label, String time) {
+	public History(long id, long resultId, String owner, String label, String time) {
 		this.id = id;
 		this.resultId = resultId;
 		this.owner = owner;
@@ -28,19 +28,19 @@ public class History implements Serializable {
 		this.time = time;
 	}
 
-	public int getId() {
+	public long getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(long id) {
 		this.id = id;
 	}
 
-	public int getResultId() {
+	public long getResultId() {
 		return resultId;
 	}
 
-	public void setResultId(int resultId) {
+	public void setResultId(long resultId) {
 		this.resultId = resultId;
 	}
 

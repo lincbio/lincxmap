@@ -4,14 +4,7 @@
     android:layout_height="?android:attr/listPreferredItemHeight"
     android:layout_gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="@dimen/padding_medium"
-    android:paddingRight="@dimen/padding_medium" >
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_weight="0"
-        android:src="@android:drawable/ic_menu_view" />
+    android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft" >
 
     <TextView
         android:layout_width="match_parent"

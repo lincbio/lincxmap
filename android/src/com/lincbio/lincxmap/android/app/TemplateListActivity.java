@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -154,6 +155,7 @@ public class TemplateListActivity extends ListActivity implements
 
 		lstView.addHeaderView(header);
 		lstView.setOnItemClickListener(this);
+		lstView.setCacheColorHint(Color.TRANSPARENT);
 		registerForContextMenu(lstView);
 	}
 
