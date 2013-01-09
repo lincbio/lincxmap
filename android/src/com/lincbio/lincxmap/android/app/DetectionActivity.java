@@ -12,6 +12,7 @@ import com.lincbio.lincxmap.android.view.XmapView;
 import com.lincbio.lincxmap.dip.SampleDetector;
 import com.lincbio.lincxmap.dip.SampleDetector.ProgressListener;
 import com.lincbio.lincxmap.pojo.History;
+import com.lincbio.lincxmap.pojo.Profile;
 import com.lincbio.lincxmap.pojo.Sample;
 import com.lincbio.lincxmap.pojo.Template;
 
@@ -44,7 +45,8 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	private XmapView xmapView;
 	private ProgressDialog dlgProgress;
 	private String image;
-	private Template tpl;
+	private Profile profile;
+	private Template template;
 
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -76,10 +78,12 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 			return;
 		}
 
-		List<Sample> samples = this.detector.detect(bmp, this.tpl,
+		List<Sample> samples = this.detector.detect(bmp, this.template,
 				this.xmapView.getSelectors());
-		this.dbhelper.addHistory(new History(0, 0, "Anonymous", this.tpl.getName(),
-				new Date().toLocaleString()), samples);
+		History history = new History(0, 0, this.profile.getId(),
+				this.profile.getName(), this.template.getName(),
+				new Date().toLocaleString());
+		this.dbhelper.addHistory(history, samples);
 		this.handler.sendMessage(this.handler.obtainMessage(1, samples));
 		bmp.recycle();
 		System.gc();
@@ -122,15 +126,17 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	protected void onStart() {
 		super.onStart();
 
-		Bundle extras = getIntent().getExtras();
-		if (null == extras || !extras.containsKey(PARAM_IMAGE_SOURCE)
-				|| !extras.containsKey(PARAM_TEMPLATE_OBJECT))
+		Bundle bundle = getIntent().getExtras();
+
+		if (null == bundle || !bundle.containsKey(PARAM_IMAGE_SOURCE)
+				|| !bundle.containsKey(PARAM_TEMPLATE_OBJECT))
 			finish();
 
-		this.tpl = (Template) extras.getSerializable(PARAM_TEMPLATE_OBJECT);
-		this.image = extras.getString(PARAM_IMAGE_SOURCE);
+		this.image = bundle.getString(PARAM_IMAGE_SOURCE);
+		this.profile = (Profile) bundle.getSerializable(PARAM_PROFILE_OBJECT);
+		this.template = (Template) bundle.getSerializable(PARAM_TEMPLATE_OBJECT);
 		this.xmapView = (XmapView) findViewById(R.id.xmap_view);
-		this.xmapView.setTemplate(this.tpl);
+		this.xmapView.setTemplate(this.template);
 		this.xmapView.setBackground(this.image);
 	}
 

@@ -14,15 +14,22 @@ public class GenericGroupedListAdapter<E> extends GenericListAdapter<E>
 		implements ExpandableListAdapter {
 	private final Map<Object, List<E>> groups = new HashMap<Object, List<E>>();
 	private final int childResId;
+	private final Groupable<E> groupBy;
 
 	public interface Groupable<E> {
 		public Object getGroupId(E e);
 	}
 
+	public GenericGroupedListAdapter(Context context, Groupable<E> groupBy,
+			int parentResId, int childResId) {
+		super(context, parentResId);
+		this.groupBy = groupBy;
+		this.childResId = childResId;
+	}
+
 	public GenericGroupedListAdapter(Context context, List<E> list,
 			Groupable<E> groupBy, int parentResId, int childResId) {
-		super(context, list, parentResId);
-		this.childResId = childResId;
+		this(context, groupBy, parentResId, childResId);
 
 		for (E e : list) {
 			Object key = groupBy.getGroupId(e);
@@ -123,6 +130,30 @@ public class GenericGroupedListAdapter<E> extends GenericListAdapter<E>
 	@Override
 	public void onGroupExpanded(int groupPosition) {
 		// TODO
+	}
+
+	@Override
+	public void clearData() {
+		this.groups.clear();
+		super.notifyDataSetChanged();
+	}
+
+	@Override
+	public void setData(List<E> data) {
+		this.groups.clear();
+
+		for (E e : data) {
+			Object key = this.groupBy.getGroupId(e);
+
+			if (!this.groups.containsKey(key)) {
+				List<E> subList = new ArrayList<E>();
+				this.groups.put(key, subList);
+			}
+
+			this.groups.get(key).add(e);
+		}
+
+		super.notifyDataSetChanged();
 	}
 
 }

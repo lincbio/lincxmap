@@ -61,7 +61,7 @@ public final class Xml2Sqlite implements Constants {
 							ncatalog++;
 							String[] args = { tag.getAttribute(TABLE_COL_NAME) };
 
-							db.execSQL("insert into " + TABLE_CATALOGUE
+							db.execSQL("insert into " + TABLE_CATALOG
 									+ " values(null, ?)", args);
 						} else if (XML_TAG_PRODUCT.equals(tagName)) {
 							String[] args = { String.valueOf(ncatalog),

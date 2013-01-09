@@ -18,11 +18,13 @@ public interface Constants {
 
 	public static final String KEY_SCAN_FOR_DEVICES = "scan_for_devices";
 
-	public static final String PARAM_CATALOGUE_ID = "catalogue-id";
+	public static final String PARAM_CATALOG_ID = "catalog-id";
 
 	public static final String PARAM_IMAGE_SOURCE = "image-source";
 
 	public static final String PARAM_PRODUCT_ID = "product-id";
+
+	public static final String PARAM_PROFILE_OBJECT = "profile-object";
 
 	public static final String PARAM_TEMPLATE_OBJECT = "template-object";
 
@@ -32,11 +34,13 @@ public interface Constants {
 
 	public static final String PARAM_SAMPLE_LIST = "sample-list";
 
-	public static final String TABLE_CATALOGUE = "catalogue";
+	public static final String TABLE_CATALOG = "catalog";
 
 	public static final String TABLE_HISTORY = "history";
 
 	public static final String TABLE_PRODUCT = "product";
+
+	public static final String TABLE_PROFILE = "profile";
 
 	public static final String TABLE_TEMPLATE = "template";
 
@@ -50,15 +54,19 @@ public interface Constants {
 
 	public static final String TABLE_COL_COLS = "cols";
 
-	public static final String TABLE_COL_CATALOGUE_ID = "catalogue_id";
+	public static final String TABLE_COL_CATALOGUE_ID = "catalog_id";
 
 	public static final String TABLE_COL_LABEL = "label";
 
 	public static final String TABLE_COL_OWNER = "owner";
 
+	public static final String TABLE_COL_PROFILE_ID = "profile_id";
+
 	public static final String TABLE_COL_PRODUCT_ID = "product_id";
 
 	public static final String TABLE_COL_RESULT_ID = "result_id";
+
+	public static final String TABLE_COL_SERIAL_NUMBER = "serial_number";
 
 	public static final String TABLE_COL_TEMPLATE_ID = "template_id";
 
@@ -68,15 +76,18 @@ public interface Constants {
 
 	public static final String TABLE_COL_Y = "y";
 
-	public static final String[] TABLE_CATALOGUE_COLS = { TABLE_COL_ID,
+	public static final String[] TABLE_CATALOG_COLS = { TABLE_COL_ID,
 			TABLE_COL_NAME };
 
 	public static final String[] TABLE_HISTORY_COLS = { TABLE_COL_ID,
-			TABLE_COL_RESULT_ID, TABLE_COL_OWNER, TABLE_COL_LABEL,
-			TABLE_COL_TIME };
+			TABLE_COL_RESULT_ID, TABLE_COL_PROFILE_ID, TABLE_COL_OWNER,
+			TABLE_COL_LABEL, TABLE_COL_TIME };
 
 	public static final String[] TABLE_PRODUCT_COLS = { TABLE_COL_ID,
 			TABLE_COL_CATALOGUE_ID, TABLE_COL_NAME };
+
+	public static final String[] TABLE_PROFILE_COLS = { TABLE_COL_ID,
+			TABLE_COL_NAME, TABLE_COL_SERIAL_NUMBER };
 
 	public static final String[] TABLE_TEMPLATE_COLS = { TABLE_COL_ID,
 			TABLE_COL_NAME, TABLE_COL_ROWS, TABLE_COL_COLS };
@@ -85,8 +96,8 @@ public interface Constants {
 			TABLE_COL_TEMPLATE_ID, TABLE_COL_PRODUCT_ID, TABLE_COL_X,
 			TABLE_COL_Y };
 
-	public static final String[] ALL_TABLES = { TABLE_CATALOGUE, TABLE_HISTORY,
-			TABLE_PRODUCT, TABLE_TEMPLATE, TABLE_TEMPLATE_ITEM };
+	public static final String[] ALL_TABLES = { TABLE_CATALOG, TABLE_HISTORY,
+			TABLE_PRODUCT, TABLE_PROFILE, TABLE_TEMPLATE, TABLE_TEMPLATE_ITEM };
 
 	public static final String XML_TAG_CATALOG = "catalog";
 

@@ -6,9 +6,10 @@ import java.util.List;
 import com.lincbio.lincxmap.LincXmapException;
 import com.lincbio.lincxmap.Version;
 import com.lincbio.lincxmap.android.Constants;
-import com.lincbio.lincxmap.pojo.Catalogue;
+import com.lincbio.lincxmap.pojo.Catalog;
 import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Product;
+import com.lincbio.lincxmap.pojo.Profile;
 import com.lincbio.lincxmap.pojo.Sample;
 import com.lincbio.lincxmap.pojo.Template;
 import com.lincbio.lincxmap.pojo.TemplateItem;
@@ -63,17 +64,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				groupBy, having, orderBy);
 	}
 
-	public Catalogue getCatalogue(long catalogueId) {
+	public Catalog getCatalogue(long catalogueId) {
 		Cursor c = null;
 		String sql = TABLE_COL_ID + "=?";
 		String[] args = { String.valueOf(catalogueId) };
 
 		try {
-			c = getReadableDatabase().query(TABLE_CATALOGUE,
-					TABLE_CATALOGUE_COLS, sql, args, null, null, null);
+			c = getReadableDatabase().query(TABLE_CATALOG, TABLE_CATALOG_COLS,
+					sql, args, null, null, null);
 
 			if (c.moveToNext()) {
-				return new Catalogue(c.getLong(0), c.getString(1));
+				return new Catalog(c.getLong(0), c.getString(1));
 			}
 		} finally {
 			close(c);
@@ -121,16 +122,16 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return null;
 	}
 
-	public List<Catalogue> getCatalogues() throws LincXmapException {
+	public List<Catalog> getCatalogs() throws LincXmapException {
 		Cursor c = null;
-		List<Catalogue> list = new ArrayList<Catalogue>();
+		List<Catalog> list = new ArrayList<Catalog>();
 
 		try {
-			c = getReadableDatabase().query(TABLE_CATALOGUE,
-					TABLE_CATALOGUE_COLS, null, null, null, null, null);
+			c = getReadableDatabase().query(TABLE_CATALOG, TABLE_CATALOG_COLS,
+					null, null, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new Catalogue(c.getLong(0), c.getString(1)));
+				list.add(new Catalog(c.getLong(0), c.getString(1)));
 			}
 		} finally {
 			close(c);
@@ -148,8 +149,75 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null, null, null, TABLE_COL_ID + " desc");
 
 			while (c.moveToNext()) {
-				list.add(new History(c.getLong(0), c.getLong(1),
-						c.getString(2), c.getString(3), c.getString(4)));
+				list.add(new History(c.getLong(0), c.getLong(1), c.getLong(2),
+						c.getString(3), c.getString(4), c.getString(5)));
+			}
+		} finally {
+			close(c);
+		}
+
+		return list;
+	}
+
+	public List<History> getHistories(Profile profile) {
+		Cursor c = null;
+		List<History> list = new ArrayList<History>();
+		String sql = TABLE_COL_PROFILE_ID + "=?";
+		String[] args = new String[] { String.valueOf(profile.getId()) };
+
+		try {
+			c = getReadableDatabase().query(TABLE_HISTORY, TABLE_HISTORY_COLS,
+					sql, args, null, null, TABLE_COL_ID + " desc");
+
+			while (c.moveToNext()) {
+				list.add(new History(c.getLong(0), c.getLong(1), c.getLong(2),
+						c.getString(3), c.getString(4), c.getString(5)));
+			}
+		} finally {
+			close(c);
+		}
+
+		return list;
+	}
+
+	public List<Profile> getProfiles() {
+		Cursor c = null;
+		List<Profile> list = new ArrayList<Profile>();
+
+		try {
+			c = getReadableDatabase().query(TABLE_PROFILE, TABLE_PROFILE_COLS,
+					null, null, null, null, null);
+
+			while (c.moveToNext()) {
+				list.add(new Profile(c.getLong(0), c.getString(1), c
+						.getString(2)));
+			}
+		} finally {
+			close(c);
+		}
+
+		return list;
+	}
+
+	public List<Profile> getProfiles(String key) {
+		Cursor c = null;
+		List<Profile> list = new ArrayList<Profile>();
+		String sql = TABLE_COL_NAME + " like ? or " + TABLE_COL_SERIAL_NUMBER
+				+ " like ?";
+
+		try {
+			if (!key.startsWith("%"))
+				key = "%" + key;
+
+			if (!key.endsWith("%"))
+				key = key + "%";
+
+			c = getReadableDatabase().query(TABLE_PROFILE, TABLE_PROFILE_COLS,
+					sql, new String[] { key, key }, null, null, null);
+
+			while (c.moveToNext()) {
+				list.add(new Profile(c.getLong(0), c.getString(1), c
+						.getString(2)));
 			}
 		} finally {
 			close(c);
@@ -225,12 +293,24 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				ContentValues values = new ContentValues();
 				values.putNull(TABLE_COL_ID);
 				values.put(TABLE_COL_RESULT_ID, history.getResultId());
+				values.put(TABLE_COL_PROFILE_ID, history.getProfileId());
 				values.put(TABLE_COL_OWNER, history.getOwner());
 				values.put(TABLE_COL_LABEL, history.getLabel());
 				values.put(TABLE_COL_TIME, history.getTime());
 				db.insert(TABLE_HISTORY, null, values);
 			}
 		});
+	}
+
+	public long addProfile(Profile profile) {
+		SQLiteDatabase db = getWritableDatabase();
+		ContentValues values = new ContentValues();
+		values.putNull(TABLE_COL_ID);
+		values.put(TABLE_COL_NAME, profile.getName());
+		values.put(TABLE_COL_SERIAL_NUMBER, profile.getSerialNumber());
+		profile.setId(db.insert(TABLE_PROFILE, null, values));
+
+		return profile.getId();
 	}
 
 	public long addTemplate(final Template template,
@@ -328,21 +408,27 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 	}
 
 	protected static void createTables(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_CATALOGUE + "("
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_CATALOG + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
 				+ TABLE_COL_NAME + " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_HISTORY + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
-				+ TABLE_COL_RESULT_ID + " integer not null, " + TABLE_COL_OWNER
-				+ " text not null, " + TABLE_COL_LABEL + " text not null, "
-				+ TABLE_COL_TIME + " text not null)");
+				+ TABLE_COL_RESULT_ID + " integer not null, "
+				+ TABLE_COL_PROFILE_ID + " integer not null, "
+				+ TABLE_COL_OWNER + " text not null, " + TABLE_COL_LABEL
+				+ " text not null, " + TABLE_COL_TIME + " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCT + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
 				+ TABLE_COL_CATALOGUE_ID + " integer not null, "
 				+ TABLE_COL_NAME + " text not null)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PROFILE + "("
+				+ TABLE_COL_ID
+				+ " integer primary key autoincrement not null, "
+				+ TABLE_COL_NAME + " text not null, " + TABLE_COL_SERIAL_NUMBER
+				+ " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_TEMPLATE + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "

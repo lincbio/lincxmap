@@ -83,7 +83,7 @@ public class TemplateActivity extends Activity implements Constants {
 			this.selectedTemplate.getItems().clear();
 			this.selectedTemplate.getItems().addAll(items);
 
-			Intent intent = new Intent(this, DetectionActivity.class);
+			Intent intent = new Intent(this, ProfileChooser.class);
 			intent.putExtra(PARAM_IMAGE_SOURCE, this.selectedImage);
 			intent.putExtra(PARAM_TEMPLATE_OBJECT, this.selectedTemplate);
 			startActivity(intent);
@@ -183,6 +183,7 @@ public class TemplateActivity extends Activity implements Constants {
 
 			if (null != del && View.VISIBLE == del.getVisibility()) {
 				del.setVisibility(View.GONE);
+				return;
 			}
 
 			CharSequence[] choices = getResources().getTextArray(

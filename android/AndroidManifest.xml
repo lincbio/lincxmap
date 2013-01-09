@@ -54,14 +54,19 @@
                 <category android:name="lincxmap.intent.category.toolbar" />
             </intent-filter>
         </activity>
-        <activity android:name=".android.app.SettingsActivity" />
         <activity android:name=".android.app.AboutActivity" />
         <activity
             android:name=".android.app.TemplateSpecActivity"
             android:noHistory="true" />
         <activity android:name=".android.app.DetectionActivity" />
         <activity android:name=".android.app.DetectionResultActivity" />
+        <activity
+            android:name=".android.app.ProfileChooser"
+            android:label="@string/title_choose_profile"
+            android:noHistory="true"
+            android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".android.app.SampleLayoutActivity" />
+        <activity android:name=".android.app.SettingsActivity" />
         <activity
             android:name=".android.app.LauncherActivity"
             android:label="@string/title_launcher" >

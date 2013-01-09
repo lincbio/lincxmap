@@ -35,6 +35,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
@@ -193,12 +194,12 @@ public class LauncherActivity extends ActivityGroup implements Callback,
 		this.pager.setAdapter(new PagerAdapter() {
 
 			@Override
-			public void destroyItem(View view, int position, Object object) {
+			public void destroyItem(ViewGroup view, int position, Object object) {
 				((ViewPager) view).removeView(pageList.get(position));
 			}
 
 			@Override
-			public Object instantiateItem(View view, int position) {
+			public Object instantiateItem(ViewGroup view, int position) {
 				((ViewPager) view).addView(pageList.get(position), 0);
 				return pageList.get(position);
 			}

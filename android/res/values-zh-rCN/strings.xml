@@ -31,14 +31,18 @@
     <string name="label_sample_sum">采样</string>
     <string name="label_sample_bv">亮度</string>
     <string name="label_sample_cv">浓度</string>
+    <string name="label_profile_name">姓名：</string>
+    <string name="label_profile_sn">编号：</string>
     
     <string name="label_toolbar_template">模板</string>
     <string name="label_toolbar_product">产品</string>
     <string name="label_toolbar_query">查询</string>
     <string name="label_toolbar_profile">档案</string>
 
+    <string name="title_add_profile">添加档案</string>
     <string name="title_choose_image">选择图片来源</string>
     <string name="title_choose_product">选择产品</string>
+    <string name="title_choose_profile">选择档案</string>
     <string name="title_detection_policy">检测策略</string>
     <string name="title_detection_settings">检测设置</string>
     <string name="title_launcher">LincXmap</string>
@@ -67,4 +71,7 @@
     <string name="msg_detecting">正在检测中&#8230;</string>
     <string name="msg_invalid_image">无效的图像</string>
     <string name="msg_confirm_clear">确定全部清空？</string>
+    <string name="msg_profile_name_required">姓名不能为空</string>
+    <string name="msg_profile_sn_required">编号不能为空</string>
+    <string name="msg_add_profile_succeed">添加档案成功</string>
 </resources>

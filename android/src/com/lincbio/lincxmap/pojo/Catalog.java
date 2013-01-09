@@ -2,16 +2,16 @@ package com.lincbio.lincxmap.pojo;
 
 import java.io.Serializable;
 
-public class Catalogue implements Serializable {
+public class Catalog implements Serializable {
 	private static final long serialVersionUID = 8594097451764011433L;
 
 	private long id;
 	private String name;
 
-	public Catalogue() {
+	public Catalog() {
 	}
 
-	public Catalogue(long id, String name) {
+	public Catalog(long id, String name) {
 		this.id = id;
 		this.name = name;
 	}
@@ -39,10 +39,10 @@ public class Catalogue implements Serializable {
 	
 	@Override
 	public boolean equals(Object o) {
-		if (!(o instanceof Catalogue))
+		if (!(o instanceof Catalog))
 			return false;
 
-		return ((Catalogue) o).id == this.id;
+		return ((Catalog) o).id == this.id;
 	}
 	
 	@Override

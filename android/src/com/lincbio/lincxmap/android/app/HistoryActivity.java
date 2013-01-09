@@ -1,9 +1,11 @@
 package com.lincbio.lincxmap.android.app;
 
 import com.lincbio.lincxmap.R;
+import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.widget.GenericListAdapter;
 import com.lincbio.lincxmap.pojo.History;
+import com.lincbio.lincxmap.pojo.Profile;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -22,7 +24,7 @@ import android.view.View;
  * @author Johnson Lee
  * 
  */
-public class HistoryActivity extends ListActivity {
+public class HistoryActivity extends ListActivity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final MenuManager menuManager = new MenuManager(this) {
 
@@ -36,7 +38,7 @@ public class HistoryActivity extends ListActivity {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dbHelper.deleteAllHistory();
-						listAdapter.clearData();
+						historyAdapter.clearData();
 					}
 				};
 				OnClickListener cancel = new OnClickListener() {
@@ -58,15 +60,15 @@ public class HistoryActivity extends ListActivity {
 
 	};
 
-	private GenericListAdapter<History> listAdapter;
+	private GenericListAdapter<History> historyAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.getListView().setCacheColorHint(Color.TRANSPARENT);
-		this.listAdapter = new GenericListAdapter<History>(this,
-				this.dbHelper.getHistories(), R.layout.history_item);
-		this.setListAdapter(this.listAdapter);
+		this.historyAdapter = new GenericListAdapter<History>(this,
+				R.layout.history_item);
+		this.setListAdapter(this.historyAdapter);
 	}
 
 	@Override
@@ -79,6 +81,20 @@ public class HistoryActivity extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		this.menuManager.onMenuItemSelected(item);
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Bundle bundle = this.getIntent().getExtras();
+
+		if (null != bundle && bundle.containsKey(PARAM_PROFILE_OBJECT)) {
+			Profile profile = (Profile) bundle
+					.getSerializable(PARAM_PROFILE_OBJECT);
+			this.historyAdapter.setData(this.dbHelper.getHistories(profile));
+		} else {
+			this.historyAdapter.setData(this.dbHelper.getHistories());
+		}
 	}
 
 	public void onButtonSendClick(View view) {

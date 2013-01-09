@@ -2,6 +2,7 @@ package com.lincbio.lincxmap.android.widget;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,16 +22,23 @@ import android.widget.TextView;
 public class GenericListAdapter<E> extends BaseAdapter {
 	private static final String SERVICE = Context.LAYOUT_INFLATER_SERVICE;
 
+	protected final List<E> list = new ArrayList<E>();
 	protected final Context context;
-	protected final List<E> list;
 	protected final int resId;
 	protected LayoutInflater inflater;
 
-	public GenericListAdapter(Context context, List<E> list, int resId) {
+	public GenericListAdapter(Context context, int resId) {
 		this.context = context;
-		this.list = list;
 		this.resId = resId;
 		this.inflater = (LayoutInflater) context.getSystemService(SERVICE);
+	}
+
+	public GenericListAdapter(Context context, List<E> list, int resId) {
+		this(context, resId);
+
+		if (null != list && !list.isEmpty()) {
+			this.list.addAll(list);
+		}
 	}
 
 	@Override

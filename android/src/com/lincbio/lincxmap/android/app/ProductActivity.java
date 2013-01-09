@@ -13,7 +13,6 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.ExpandableListAdapter;
 
 /**
  * Product List(classified by product catalogue) Activity
@@ -23,32 +22,20 @@ import android.widget.ExpandableListAdapter;
  */
 public class ProductActivity extends ExpandableListActivity {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
-	private final MenuManager menuManager = new MenuManager(this) {
+	private final MenuManager menuManager = new MenuManager(this);
 
-		@Override
-		public void onMenuItemSelected(MenuItem item) {
-			super.onMenuItemSelected(item);
-
-			switch (item.getItemId()) {
-			case R.id.menu_add:
-				// TODO
-				break;
-			}
-		}
-
-	};
-
+	private GenericGroupedListAdapter<Product> productAdapter;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.getExpandableListView().setCacheColorHint(Color.TRANSPARENT);
 
 		List<Product> products = this.dbHelper.getProducts();
-		Groupable<Product> groupBy = new ProductGroup();
-		ExpandableListAdapter adapter = new GenericGroupedListAdapter<Product>(
-				this, products, groupBy, R.layout.catalog_item,
+		this.productAdapter = new GenericGroupedListAdapter<Product>(
+				this, products, new ProductGroup(), R.layout.catalog_item,
 				R.layout.product_item);
-		setListAdapter(adapter);
+		this.setListAdapter(this.productAdapter);
 	}
 
 	@Override
