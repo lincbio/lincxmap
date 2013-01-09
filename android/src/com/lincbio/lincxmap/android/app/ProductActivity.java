@@ -46,7 +46,7 @@ public class ProductActivity extends ExpandableListActivity {
 		List<Product> products = this.dbHelper.getProducts();
 		Groupable<Product> groupBy = new ProductGroup();
 		ExpandableListAdapter adapter = new GenericGroupedListAdapter<Product>(
-				this, products, groupBy, R.layout.catalogue_item,
+				this, products, groupBy, R.layout.catalog_item,
 				R.layout.product_item);
 		setListAdapter(adapter);
 	}

@@ -31,6 +31,7 @@
     <string name="menu_send_result">Send</string>
     
     <string name="label_loading">Loading…</string>
+    <string name="label_new">New</string>
     <string name="label_new_template">New template</string>
     <string name="label_new_template_detail">Create new template</string>
     <string name="label_template_name">Name:</string>
@@ -42,11 +43,10 @@
     <string name="label_sample_bv">Brightness</string>
     <string name="label_sample_cv">Concentration</string>
     
-    <string name="label_toolbar_new">New</string>
+    <string name="label_toolbar_template">Template</string>
+    <string name="label_toolbar_product">Product</string>
     <string name="label_toolbar_query">History</string>
-    <string name="label_toolbar_catalog">Catalog</string>
-    <string name="label_toolbar_settings">Settings</string>
-    <string name="label_toolbar_help">Help</string>
+    <string name="label_toolbar_profile">Profile</string>
     
     <string name="title_choose_image">Choose image source</string>
     <string name="title_choose_product">Choose a product</string>
@@ -58,6 +58,7 @@
     <string name="title_sample_selector_gap">Sample selector gap</string>
     <string name="title_sample_selector_size">Sample selector size</string>
     <string name="title_send_result">Send result</string>
+    <string name="title_settings">Settings</string>
     
     <string name="summary_detection_policy">Choose a detection policy</string>
     <string name="summary_sample_identifier">Choose a sample identifier</string>

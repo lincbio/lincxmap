@@ -15,9 +15,19 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
+            android:name=".android.app.TemplateActivity"
+            android:icon="@android:drawable/ic_menu_slideshow"
+            android:label="@string/label_toolbar_template" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="lincxmap.intent.category.toolbar" />
+            </intent-filter>
+        </activity>
+        <activity
             android:name=".android.app.ProductActivity"
             android:icon="@android:drawable/ic_menu_agenda"
-            android:label="@string/label_toolbar_catalog" >
+            android:label="@string/label_toolbar_product" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -35,25 +45,17 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.SettingsActivity"
-            android:icon="@android:drawable/ic_menu_preferences"
-            android:label="@string/label_toolbar_settings" >
+            android:name=".android.app.ProfileActivity"
+            android:icon="@android:drawable/ic_menu_save"
+            android:label="@string/label_toolbar_profile" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="lincxmap.intent.category.toolbar" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".android.app.AboutActivity"
-            android:icon="@android:drawable/ic_menu_help"
-            android:label="@string/label_toolbar_help" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="lincxmap.intent.category.toolbar" />
-            </intent-filter>
-        </activity>
+        <activity android:name=".android.app.SettingsActivity" />
+        <activity android:name=".android.app.AboutActivity" />
         <activity
             android:name=".android.app.TemplateSpecActivity"
             android:noHistory="true" />

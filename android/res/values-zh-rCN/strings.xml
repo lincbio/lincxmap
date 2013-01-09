@@ -20,6 +20,7 @@
     <string name="menu_send_result">发送</string>
     
     <string name="label_loading">正在加载中…</string>
+    <string name="label_new">新建</string>
     <string name="label_new_template">新建模板</string>
     <string name="label_new_template_detail">创建新的检测样本模板</string>
     <string name="label_template_name">名称：</string>
@@ -31,11 +32,10 @@
     <string name="label_sample_bv">亮度</string>
     <string name="label_sample_cv">浓度</string>
     
-    <string name="label_toolbar_new">新建模板</string>
-    <string name="label_toolbar_query">历史查询</string>
-    <string name="label_toolbar_catalog">产品目录</string>
-    <string name="label_toolbar_settings">设置</string>
-    <string name="label_toolbar_help">帮助</string>
+    <string name="label_toolbar_template">模板</string>
+    <string name="label_toolbar_product">产品</string>
+    <string name="label_toolbar_query">查询</string>
+    <string name="label_toolbar_profile">档案</string>
 
     <string name="title_choose_image">选择图片来源</string>
     <string name="title_choose_product">选择产品</string>
@@ -48,6 +48,7 @@
     <string name="title_sample_selector_size">样本选择器尺寸</string>
     <string name="title_scan_for_devices">扫描设备</string>
     <string name="title_send_result">发送结果</string>
+    <string name="title_settings">设置</string>
 
     <string name="summary_detection_policy">设置检测策略</string>
     <string name="summary_sample_identifier">设置样本标识</string>

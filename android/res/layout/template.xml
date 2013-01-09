@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.lincbio.lincxmap"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:layout_weight="1" >
+
+    <com.lincbio.lincxmap.android.view.FlowLayout
+        android:id="@+id/desktop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/padding_large"
+        app:horizontalSpacing="@dimen/margin_medium"
+        app:verticalSpacing="@dimen/margin_medium" >
+    </com.lincbio.lincxmap.android.view.FlowLayout>
+
+</ScrollView>

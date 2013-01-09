@@ -62,7 +62,7 @@ public class SampleLayoutActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.template_edit);
+		setContentView(R.layout.sample_layout);
 
 		Bundle extras = getIntent().getExtras();
 		this.template = (Template) extras

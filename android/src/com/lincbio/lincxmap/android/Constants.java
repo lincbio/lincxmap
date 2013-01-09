@@ -10,8 +10,6 @@ public interface Constants {
 
 	public static final String VALUE_DETECTION_POLICY_MANUAL = "1";
 
-	public static final String KEY_PRINTER_LIST = "key_printer_list";
-
 	public static final String KEY_SAMPLE_SELECTOR_GAP = "key_sample_selector_gap";
 
 	public static final String KEY_SAMPLE_SELECTOR_SIZE = "key_sample_selector_size";

@@ -20,19 +20,19 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 /**
- * LincXmap Application Main UI
+ * Splash of LincXmap
  * 
  * @author Johnson Lee
  * 
  */
-public class MainActivity extends Activity implements Callback, Constants,
+public class SplashActivity extends Activity implements Callback, Constants,
 		Runnable {
 
 	static {
 		System.loadLibrary("lincxmap");
 	}
 
-	private static final String CLASS_NAME = MainActivity.class.getName();
+	private static final String CLASS_NAME = SplashActivity.class.getName();
 	private static final String KEY_INITIALIZED = "initialized";
 
 	private Handler handler = new Handler(this);
@@ -42,7 +42,7 @@ public class MainActivity extends Activity implements Callback, Constants,
 		SharedPreferences pref = getSharedPreferences(CLASS_NAME, MODE_PRIVATE);
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.main);
+		setContentView(R.layout.splash);
 
 		File tmpdir = FileUtils.getTempDir();
 		if (!tmpdir.exists()) {
