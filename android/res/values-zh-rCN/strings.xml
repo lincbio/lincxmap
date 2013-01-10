@@ -36,7 +36,7 @@
     
     <string name="label_toolbar_template">模板</string>
     <string name="label_toolbar_product">产品</string>
-    <string name="label_toolbar_query">查询</string>
+    <string name="label_toolbar_history">查询</string>
     <string name="label_toolbar_profile">档案</string>
 
     <string name="title_add_profile">添加档案</string>
@@ -46,13 +46,14 @@
     <string name="title_detection_policy">检测策略</string>
     <string name="title_detection_settings">检测设置</string>
     <string name="title_launcher">LincXmap</string>
+    <string name="title_result_detail">检测结果</string>
     <string name="title_sample_identifier">样本标识</string>
     <string name="title_sample_settings">样本设置</string>
     <string name="title_sample_selector_gap">样本选择器间隙</string>
     <string name="title_sample_selector_size">样本选择器尺寸</string>
     <string name="title_scan_for_devices">扫描设备</string>
     <string name="title_send_result">发送结果</string>
-    <string name="title_settings">设置</string>
+    <string name="title_settings">首选项</string>
 
     <string name="summary_detection_policy">设置检测策略</string>
     <string name="summary_sample_identifier">设置样本标识</string>

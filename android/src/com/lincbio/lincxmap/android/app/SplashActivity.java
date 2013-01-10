@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.Message;
-import android.preference.PreferenceManager;
 import android.widget.Toast;
 import android.app.Activity;
 import android.content.Intent;
@@ -35,46 +34,43 @@ public class SplashActivity extends Activity implements Callback, Constants,
 	private static final String CLASS_NAME = SplashActivity.class.getName();
 	private static final String KEY_INITIALIZED = "initialized";
 
-	private Handler handler = new Handler(this);
+	private final Handler handler = new Handler(this);
+	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
+	private final Xml2Sqlite xml2sqlite = new Xml2Sqlite(this, this.dbhelper);
+	private SharedPreferences pref;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		SharedPreferences pref = getSharedPreferences(CLASS_NAME, MODE_PRIVATE);
-
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.splash);
+		this.setContentView(R.layout.splash);
+		this.pref = getSharedPreferences(CLASS_NAME, MODE_PRIVATE);
 
 		File tmpdir = FileUtils.getTempDir();
 		if (!tmpdir.exists()) {
 			tmpdir.mkdirs();
 		}
 
-		if (pref.getBoolean(KEY_INITIALIZED, false)) {
+		if (this.pref.getBoolean(KEY_INITIALIZED, false)) {
 			this.handler.sendMessage(this.handler.obtainMessage(0));
 		} else {
-			pref = PreferenceManager.getDefaultSharedPreferences(this);
 			new Thread(this).start();
 		}
 	}
 
 	@Override
 	public void run() {
-		DatabaseHelper dbhelper = new DatabaseHelper(this);
-		Xml2Sqlite xml2sqlite = new Xml2Sqlite(this, dbhelper);
-		SharedPreferences pref = getSharedPreferences(CLASS_NAME, MODE_PRIVATE);
-
 		try {
-			xml2sqlite.parse(R.xml.products);
+			this.xml2sqlite.parse(R.xml.products);
 
-			Editor editor = pref.edit();
+			Editor editor = this.pref.edit();
 			editor.putBoolean(KEY_INITIALIZED, true);
 			editor.commit();
-			handler.sendMessage(handler.obtainMessage(0));
+			this.handler.sendMessage(this.handler.obtainMessage(0));
 		} catch (Throwable t) {
 			t.printStackTrace();
-			handler.sendMessage(handler.obtainMessage(-1, t));
+			this.handler.sendMessage(this.handler.obtainMessage(-1, t));
 		} finally {
-			dbhelper.close();
+			this.dbhelper.close();
 		}
 	}
 
@@ -85,7 +81,7 @@ public class SplashActivity extends Activity implements Callback, Constants,
 			Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
 			this.finish();
 		} else {
-			startActivity(new Intent(this, TemplateListActivity.class));
+			startActivity(new Intent(this, LauncherActivity.class));
 		}
 
 		return true;

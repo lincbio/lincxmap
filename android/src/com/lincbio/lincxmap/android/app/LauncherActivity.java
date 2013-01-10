@@ -1,20 +1,14 @@
 package com.lincbio.lincxmap.android.app;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
-import com.lincbio.lincxmap.android.database.DatabaseHelper;
-import com.lincbio.lincxmap.android.utils.FileUtils;
-import com.lincbio.lincxmap.android.utils.Xml2Sqlite;
 
 import android.app.ActivityGroup;
 import android.app.LocalActivityManager;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -23,10 +17,6 @@ import android.graphics.Color;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.os.Handler.Callback;
-import android.preference.PreferenceManager;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -43,7 +33,6 @@ import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * LincXmap Launcher UI
@@ -52,58 +41,17 @@ import android.widget.Toast;
  * 
  */
 @SuppressWarnings("deprecation")
-public class LauncherActivity extends ActivityGroup implements Callback,
-		Constants, Runnable, OnPageChangeListener {
-	private static final String KEY_INITIALIZED = "initialized";
-
-	static {
-		System.loadLibrary("lincxmap");
-	}
-
-	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
-	private final Xml2Sqlite xml2sqlite = new Xml2Sqlite(this, this.dbHelper);
-	private final Handler handler = new Handler(this);
+public class LauncherActivity extends ActivityGroup implements Constants,
+		OnPageChangeListener {
 	private final List<View> pageList = new ArrayList<View>();
 	private final MenuManager menuManager = new MenuManager(this);
 
 	private LinearLayout toolbar;
 	private ImageView cursor;
 	private ViewPager pager;
-	private SharedPreferences pref;
 	private int cursorWidth;
 	private int cursorOffset;
 	private int selectedIndex;
-
-	@Override
-	public boolean handleMessage(Message msg) {
-		if (msg.what < 0) {
-			Throwable t = (Throwable) msg.obj;
-			Toast.makeText(this, t.getMessage(), Toast.LENGTH_LONG).show();
-		}
-
-		return true;
-	}
-
-	@Override
-	public void run() {
-		SharedPreferences pref = getSharedPreferences(getClass().getName(),
-				MODE_PRIVATE);
-
-		try {
-			this.xml2sqlite.parse(R.xml.products);
-
-			Editor editor = pref.edit();
-			editor.putBoolean(KEY_INITIALIZED, true);
-			editor.commit();
-
-			this.handler.sendMessage(this.handler.obtainMessage(0));
-		} catch (Throwable t) {
-			t.printStackTrace();
-			this.handler.sendMessage(this.handler.obtainMessage(-1, t));
-		} finally {
-			this.dbHelper.close();
-		}
-	}
 
 	@Override
 	public void onPageScrollStateChanged(int state) {
@@ -134,7 +82,6 @@ public class LauncherActivity extends ActivityGroup implements Callback,
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.launcher);
 
-		this.pref = getSharedPreferences(getClass().getName(), MODE_PRIVATE);
 		this.cursor = (ImageView) findViewById(R.id.cursor);
 		this.toolbar = (LinearLayout) findViewById(R.id.toolbar);
 		this.pager = (ViewPager) findViewById(R.id.pages);
@@ -217,18 +164,6 @@ public class LauncherActivity extends ActivityGroup implements Callback,
 		});
 		this.pager.setCurrentItem(0, true);
 		this.pager.setOnPageChangeListener(this);
-
-		File tmpdir = FileUtils.getTempDir();
-		if (!tmpdir.exists()) {
-			tmpdir.mkdirs();
-		}
-
-		if (this.pref.getBoolean(KEY_INITIALIZED, false)) {
-			this.handler.sendMessage(this.handler.obtainMessage(0));
-		} else {
-			this.pref = PreferenceManager.getDefaultSharedPreferences(this);
-			new Thread(this).start();
-		}
 	}
 
 	@Override

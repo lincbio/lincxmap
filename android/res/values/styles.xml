@@ -4,6 +4,10 @@
         <item name="android:windowBackground">@drawable/desktop</item>
     </style>
 
+    <style name="AppTheme.NoTitleBar.Fullscreen" parent="@android:style/Theme.NoTitleBar.Fullscreen">
+        <item name="android:windowBackground">@drawable/desktop</item>
+    </style>
+
     <style name="Theme.Dialog.Light" parent="@android:style/Theme.Dialog">
         <item name="@android:listViewStyle">@style/Widget.ListView.Light</item>
     </style>

@@ -9,6 +9,7 @@ import com.lincbio.lincxmap.pojo.Profile;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 
 /**
  * Detection history UI
@@ -69,6 +72,19 @@ public class HistoryActivity extends ListActivity implements Constants {
 		this.historyAdapter = new GenericListAdapter<History>(this,
 				R.layout.history_item);
 		this.setListAdapter(this.historyAdapter);
+		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+			Context ctx = HistoryActivity.this;
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				History history = (History) parent.getItemAtPosition(position);
+				Intent intent = new Intent(ctx, ResultDetailActivity.class);
+				intent.putExtra(PARAM_HISTORY_ID, history.getId());
+				startActivity(intent);
+			}
+
+		});
 	}
 
 	@Override
@@ -91,6 +107,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 		if (null != bundle && bundle.containsKey(PARAM_PROFILE_OBJECT)) {
 			Profile profile = (Profile) bundle
 					.getSerializable(PARAM_PROFILE_OBJECT);
+			this.setTitle(profile.getName());
 			this.historyAdapter.setData(this.dbHelper.getHistories(profile));
 		} else {
 			this.historyAdapter.setData(this.dbHelper.getHistories());

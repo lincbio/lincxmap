@@ -11,9 +11,13 @@ public class Catalog implements Serializable {
 	public Catalog() {
 	}
 
-	public Catalog(long id, String name) {
-		this.id = id;
+	public Catalog(String name) {
 		this.name = name;
+	}
+
+	public Catalog(long id, String name) {
+		this(name);
+		this.id = id;
 	}
 
 	public long getId() {
@@ -36,7 +40,7 @@ public class Catalog implements Serializable {
 	public int hashCode() {
 		return (int) this.id;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Catalog))
@@ -44,7 +48,7 @@ public class Catalog implements Serializable {
 
 		return ((Catalog) o).id == this.id;
 	}
-	
+
 	@Override
 	public String toString() {
 		return this.name;

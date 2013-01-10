@@ -35,6 +35,7 @@ public class SampleLayoutActivity extends Activity implements
 	private MenuManager menuManager = new MenuManager(this);
 	private List<Spinner> spinners = new ArrayList<Spinner>();
 
+	private ArrayAdapter<Product> productAdapter;
 	private TableLayout matrix;
 	private Template template;
 
@@ -62,22 +63,18 @@ public class SampleLayoutActivity extends Activity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.sample_layout);
-
-		Bundle extras = getIntent().getExtras();
-		this.template = (Template) extras
-				.getSerializable(PARAM_TEMPLATE_OBJECT);
+		this.setContentView(R.layout.sample_layout);
 		this.matrix = (TableLayout) findViewById(R.id.matrix);
-
-		if (null == template)
-			return;
+		this.template = (Template) getIntent().getExtras().getSerializable(
+				PARAM_TEMPLATE_OBJECT);
+		this.productAdapter = new ArrayAdapter<Product>(this,
+				android.R.layout.simple_spinner_item,
+				this.dbHelper.getProducts());
+		this.productAdapter
+				.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		TableRow row = null;
 		Spinner spin = null;
-		List<Product> products = this.dbHelper.getProducts();
-		ArrayAdapter<Product> adapter = new ArrayAdapter<Product>(this,
-				android.R.layout.simple_spinner_item, products);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
 		for (int y = 0; y < this.template.getRowCount(); ++y) {
 			row = new TableRow(this);
@@ -86,10 +83,10 @@ public class SampleLayoutActivity extends Activity implements
 
 			for (int x = 0; x < this.template.getColumnCount(); ++x) {
 				spin = new Spinner(this);
-				spin.setAdapter(adapter);
+				spin.setAdapter(this.productAdapter);
 				spin.setOnItemSelectedListener(this);
 				spin.setPromptId(R.string.title_choose_product);
-				spin.setTag(new TemplateItem(0, this.template.getId(), 0, x, y));
+				spin.setTag(new TemplateItem(this.template.getId(), 0, x, y));
 				row.addView(spin);
 				this.spinners.add(spin);
 			}
@@ -118,13 +115,13 @@ public class SampleLayoutActivity extends Activity implements
 
 	public void onButtonFinishClicked(View v) {
 		List<TemplateItem> items = new ArrayList<TemplateItem>();
-		
+
 		for (Spinner spin : this.spinners) {
 			if (spin.getTag() instanceof TemplateItem) {
 				items.add((TemplateItem) spin.getTag());
 			}
 		}
-		
+
 		this.dbHelper.addTemplate(this.template, items);
 		this.finish();
 	}

@@ -47,7 +47,7 @@
     
     <string name="label_toolbar_template">Template</string>
     <string name="label_toolbar_product">Product</string>
-    <string name="label_toolbar_query">Query</string>
+    <string name="label_toolbar_history">History</string>
     <string name="label_toolbar_profile">Profile</string>
     
     <string name="title_add_profile">Add profile</string>
@@ -57,6 +57,7 @@
     <string name="title_detection_policy">Detection policy</string>
     <string name="title_detection_settings">Detection settings</string>
     <string name="title_launcher">Lincxmap</string>
+    <string name="title_result_detail">Detection result</string>
     <string name="title_sample_identifier">Sample identifier</string>
     <string name="title_sample_settings">Sample settings</string>
     <string name="title_sample_selector_gap">Sample selector gap</string>

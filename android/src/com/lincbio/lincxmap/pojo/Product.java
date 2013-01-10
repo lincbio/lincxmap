@@ -6,16 +6,20 @@ public class Product implements Serializable {
 	private static final long serialVersionUID = -8429715707676901318L;
 
 	private long id;
-	private long catalogueId;
+	private long catalogId;
 	private String name;
 
 	public Product() {
 	}
 
-	public Product(long id, long catalogueId, String name) {
-		this.id = id;
-		this.catalogueId = catalogueId;
+	public Product(long catalogId, String name) {
+		this.catalogId = catalogId;
 		this.name = name;
+	}
+
+	public Product(long id, long catalogId, String name) {
+		this(catalogId, name);
+		this.id = id;
 	}
 
 	public long getId() {
@@ -26,12 +30,12 @@ public class Product implements Serializable {
 		this.id = id;
 	}
 
-	public long getCatalogueId() {
-		return catalogueId;
+	public long getCatalogId() {
+		return catalogId;
 	}
 
-	public void setCatalogueId(long catalogueId) {
-		this.catalogueId = catalogueId;
+	public void setCatalogId(long catalogId) {
+		this.catalogId = catalogId;
 	}
 
 	public String getName() {
@@ -41,7 +45,7 @@ public class Product implements Serializable {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return (int) this.id;
@@ -54,7 +58,7 @@ public class Product implements Serializable {
 
 		Product p = (Product) o;
 
-		return p.id == this.id && p.catalogueId == this.catalogueId;
+		return p.id == this.id && p.catalogId == this.catalogId;
 	}
 
 	@Override

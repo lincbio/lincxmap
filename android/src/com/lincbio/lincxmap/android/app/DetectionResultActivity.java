@@ -30,7 +30,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 		@Override
 		public void onMenuItemSelected(MenuItem item) {
 			super.onMenuItemSelected(item);
-			
+
 			switch (item.getItemId()) {
 			case R.id.menu_send_result:
 				String subject = getString(R.string.title_send_result);
@@ -46,6 +46,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 		}
 
 	};
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -91,14 +92,16 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 		for (int i = 0; i < n; i++) {
 			Sample sample = (Sample) adapter.getItem(i);
 			buf.append(nm).append(colon).append(sample.getName()).append("\n");
-			buf.append(bv).append(colon).append(sample.getBrightness()).append("\n");
-			buf.append(cv).append(colon).append(sample.getConcentration()).append("\n");
+			buf.append(bv).append(colon).append(sample.getBrightness())
+					.append("\n");
+			buf.append(cv).append(colon).append(sample.getConcentration())
+					.append("\n");
 			buf.append("------------------------------\n");
 		}
 
 		return buf.toString();
 	}
-	
+
 	private static class SampleAdapter extends ArrayAdapter<Sample> {
 		private TextView txtSampleName;
 		private TextView txtSampleSum;
@@ -108,19 +111,20 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 
 		public SampleAdapter(Context context, List<Sample> objects) {
 			super(context, 0, objects);
-			this.inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			this.inflater = (LayoutInflater) context
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			View view;
-			
+
 			if (null == convertView) {
-				view = this.inflater.inflate(R.layout.sample, parent, false);
+				view = this.inflater.inflate(R.layout.sample_item, parent);
 			} else {
 				view = convertView;
 			}
-			
+
 			Sample sample = getItem(position);
 			this.txtSampleName = (TextView) view.findViewById(R.id.sample_name);
 			this.txtSampleBv = (TextView) view.findViewById(R.id.sample_bv);
@@ -129,10 +133,11 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			this.txtSampleSum.setText(String.valueOf(sample.getSum()));
 			this.txtSampleName.setText(sample.getName());
 			this.txtSampleBv.setText(String.valueOf(sample.getBrightness()));
-			this.txtSampleCv.setText(CV_FORMAT.format(sample.getConcentration()));
-			
+			this.txtSampleCv
+					.setText(CV_FORMAT.format(sample.getConcentration()));
+
 			return view;
 		}
-		
+
 	}
 }

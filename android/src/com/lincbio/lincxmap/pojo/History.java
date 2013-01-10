@@ -12,7 +12,6 @@ public class History implements Serializable {
 	private static final long serialVersionUID = 3167860739963308096L;
 
 	private long id;
-	private long resultId;
 	private long profileId;
 	private String owner;
 	private String label;
@@ -21,14 +20,17 @@ public class History implements Serializable {
 	public History() {
 	}
 
-	public History(long id, long resultId, long profileId, String owner, String label,
-			String time) {
-		this.id = id;
-		this.resultId = resultId;
+	public History(long profileId, String owner, String label, String time) {
 		this.profileId = profileId;
 		this.owner = owner;
 		this.label = label;
 		this.time = time;
+	}
+
+	public History(long id, long profileId, String owner, String label,
+			String time) {
+		this(profileId, owner, label, time);
+		this.id = id;
 	}
 
 	public long getId() {
@@ -37,14 +39,6 @@ public class History implements Serializable {
 
 	public void setId(long id) {
 		this.id = id;
-	}
-
-	public long getResultId() {
-		return resultId;
-	}
-
-	public void setResultId(long resultId) {
-		this.resultId = resultId;
 	}
 
 	public long getProfileId() {

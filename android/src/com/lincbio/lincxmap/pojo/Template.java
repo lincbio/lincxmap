@@ -16,11 +16,15 @@ public class Template implements Serializable {
 	public Template() {
 	}
 
-	public Template(long id, String name, int rows, int cols) {
-		this.id = id;
+	public Template(String name, int rows, int cols) {
 		this.name = name;
 		this.rows = rows;
 		this.cols = cols;
+	}
+
+	public Template(long id, String name, int rows, int cols) {
+		this(name, rows, cols);
+		this.id = id;
 	}
 
 	public long getId() {
@@ -63,7 +67,7 @@ public class Template implements Serializable {
 	public int hashCode() {
 		return (int) this.id;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		if (!(o instanceof Template))

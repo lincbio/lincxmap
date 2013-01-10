@@ -80,7 +80,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 		List<Sample> samples = this.detector.detect(bmp, this.template,
 				this.xmapView.getSelectors());
-		History history = new History(0, 0, this.profile.getId(),
+		History history = new History(this.profile.getId(),
 				this.profile.getName(), this.template.getName(),
 				new Date().toLocaleString());
 		this.dbhelper.addHistory(history, samples);

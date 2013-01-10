@@ -54,7 +54,7 @@ public class ProductActivity extends ExpandableListActivity {
 
 		@Override
 		public Object getGroupId(Product e) {
-			return dbHelper.getCatalogue(e.getCatalogueId());
+			return dbHelper.getCatalogue(e.getCatalogId());
 		}
 
 	}

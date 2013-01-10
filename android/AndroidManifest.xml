@@ -37,7 +37,7 @@
         <activity
             android:name=".android.app.HistoryActivity"
             android:icon="@android:drawable/ic_menu_search"
-            android:label="@string/label_toolbar_query" >
+            android:label="@string/label_toolbar_history" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -61,15 +61,23 @@
         <activity android:name=".android.app.DetectionActivity" />
         <activity android:name=".android.app.DetectionResultActivity" />
         <activity
+            android:name=".android.app.LauncherActivity"
+            android:label="@string/title_launcher" >
+        </activity>
+        <activity
             android:name=".android.app.ProfileChooser"
             android:label="@string/title_choose_profile"
             android:noHistory="true"
             android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".android.app.ResultDetailActivity"
+            android:label="@string/title_result_detail" />
         <activity android:name=".android.app.SampleLayoutActivity" />
         <activity android:name=".android.app.SettingsActivity" />
         <activity
-            android:name=".android.app.LauncherActivity"
-            android:label="@string/title_launcher" >
+            android:name=".android.app.SplashActivity"
+            android:noHistory="true"
+            android:theme="@style/AppTheme.NoTitleBar.Fullscreen" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -24,9 +24,8 @@ public class Profile implements Serializable {
 	}
 
 	public Profile(long id, String name, String serialNumber) {
+		this(name, serialNumber);
 		this.id = id;
-		this.name = name;
-		this.serialNumber = serialNumber;
 	}
 
 	public long getId() {

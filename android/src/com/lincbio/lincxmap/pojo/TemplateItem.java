@@ -14,12 +14,16 @@ public class TemplateItem implements Serializable {
 	public TemplateItem() {
 	}
 
-	public TemplateItem(long id, long templateId, long productId, int x, int y) {
-		this.id = id;
+	public TemplateItem(long templateId, long productId, int x, int y) {
 		this.templateId = templateId;
 		this.productId = productId;
 		this.x = x;
 		this.y = y;
+	}
+
+	public TemplateItem(long id, long templateId, long productId, int x, int y) {
+		this(templateId, productId, x, y);
+		this.id = id;
 	}
 
 	public long getId() {
