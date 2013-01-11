@@ -23,7 +23,7 @@ public interface Constants {
 	public static final String PARAM_IMAGE_SOURCE = "image-source";
 
 	public static final String PARAM_HISTORY_ID = "history-id";
-	
+
 	public static final String PARAM_PRODUCT_ID = "product-id";
 
 	public static final String PARAM_PROFILE_OBJECT = "profile-object";
@@ -68,6 +68,12 @@ public interface Constants {
 
 	public static final String TABLE_COL_LABEL = "label";
 
+	public static final String TABLE_COL_MIN = "min";
+
+	public static final String TABLE_COL_MAX = "max";
+
+	public static final String TABLE_COL_FLAG = "flag";
+
 	public static final String TABLE_COL_OWNER = "owner";
 
 	public static final String TABLE_COL_PROFILE_ID = "profile_id";
@@ -99,7 +105,8 @@ public interface Constants {
 
 	public static final String[] TABLE_RESULT_COLS = { TABLE_COL_ID,
 			TABLE_COL_HISTORY_ID, TABLE_COL_NAME, TABLE_COL_BRIGHTNESS,
-			TABLE_COL_CONCENTRATION };
+			TABLE_COL_CONCENTRATION, TABLE_COL_MIN, TABLE_COL_MAX,
+			TABLE_COL_FLAG };
 
 	public static final String[] TABLE_TEMPLATE_COLS = { TABLE_COL_ID,
 			TABLE_COL_NAME, TABLE_COL_ROWS, TABLE_COL_COLS };

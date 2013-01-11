@@ -3,6 +3,7 @@ package com.lincbio.lincxmap.android.app;
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
+import com.lincbio.lincxmap.android.utils.ReportGenerator;
 import com.lincbio.lincxmap.android.widget.GenericListAdapter;
 import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Profile;
@@ -15,10 +16,14 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.ListView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 
 /**
@@ -29,11 +34,15 @@ import android.widget.AdapterView.OnItemClickListener;
  */
 public class HistoryActivity extends ListActivity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private final ReportGenerator reporter = new ReportGenerator(this);
 	private final MenuManager menuManager = new MenuManager(this) {
 
 		@Override
 		public void onMenuItemSelected(MenuItem item) {
 			super.onMenuItemSelected(item);
+
+			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
+					.getMenuInfo();
 
 			switch (item.getItemId()) {
 			case R.id.menu_clear:
@@ -41,7 +50,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dbHelper.deleteAllHistory();
-						historyAdapter.clearData();
+						historyAdapter.clear();
 					}
 				};
 				OnClickListener cancel = new OnClickListener() {
@@ -57,6 +66,12 @@ public class HistoryActivity extends ListActivity implements Constants {
 						.setPositiveButton(android.R.string.ok, ok)
 						.setNegativeButton(android.R.string.cancel, cancel)
 						.show();
+				break;
+			case R.id.menu_del_history:
+				History history = (History) getListView().getItemAtPosition(
+						menuInfo.position);
+				dbHelper.deleteHistory(history);
+				historyAdapter.remove(history);
 				break;
 			}
 		}
@@ -94,6 +109,22 @@ public class HistoryActivity extends ListActivity implements Constants {
 	}
 
 	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		int position = ((AdapterContextMenuInfo) menuInfo).position;
+		History history = (History) ((ListView) v).getItemAtPosition(position);
+		menu.setHeaderTitle(history.getOwner() + " " + history.getLabel());
+		this.menuManager.createMenu(menu, R.menu.ctx_history);
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		this.menuManager.onMenuItemSelected(item);
+		return super.onContextItemSelected(item);
+	}
+
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		this.menuManager.onMenuItemSelected(item);
 		return super.onOptionsItemSelected(item);
@@ -108,18 +139,20 @@ public class HistoryActivity extends ListActivity implements Constants {
 			Profile profile = (Profile) bundle
 					.getSerializable(PARAM_PROFILE_OBJECT);
 			this.setTitle(profile.getName());
-			this.historyAdapter.setData(this.dbHelper.getHistories(profile));
+			this.historyAdapter.reset(this.dbHelper.getHistories(profile));
 		} else {
-			this.historyAdapter.setData(this.dbHelper.getHistories());
+			this.historyAdapter.reset(this.dbHelper.getHistories());
 		}
 	}
 
 	public void onButtonSendClick(View view) {
+		int historyId = (Integer) view.getTag();
 		String subject = getString(R.string.title_send_result);
+		String content = this.reporter.generateReport(historyId);
 		Intent intent = new Intent(Intent.ACTION_SEND);
 		intent.setType("text/plain");
 		intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-		intent.putExtra(Intent.EXTRA_TEXT, "");
+		intent.putExtra(Intent.EXTRA_TEXT, content);
 		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		startActivity(Intent.createChooser(intent, subject));
 	}

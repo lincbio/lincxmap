@@ -133,13 +133,13 @@ public class GenericGroupedListAdapter<E> extends GenericListAdapter<E>
 	}
 
 	@Override
-	public void clearData() {
+	public void clear() {
 		this.groups.clear();
 		super.notifyDataSetChanged();
 	}
 
 	@Override
-	public void setData(List<E> data) {
+	public void reset(List<E> data) {
 		this.groups.clear();
 
 		for (E e : data) {

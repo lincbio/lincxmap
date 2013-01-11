@@ -10,7 +10,6 @@ import com.lincbio.lincxmap.pojo.Sample;
 
 import android.app.ListActivity;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,33 +18,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 public class DetectionResultActivity extends ListActivity implements Constants {
 	private static final DecimalFormat CV_FORMAT = new DecimalFormat("0.00");
 
-	private MenuManager menuManager = new MenuManager(this) {
-
-		@Override
-		public void onMenuItemSelected(MenuItem item) {
-			super.onMenuItemSelected(item);
-
-			switch (item.getItemId()) {
-			case R.id.menu_send_result:
-				String subject = getString(R.string.title_send_result);
-				String content = dumpResult();
-				Intent intent = new Intent(Intent.ACTION_SEND);
-				intent.setType("text/plain");
-				intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-				intent.putExtra(Intent.EXTRA_TEXT, content);
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(Intent.createChooser(intent, subject));
-				break;
-			}
-		}
-
-	};
+	private MenuManager menuManager = new MenuManager(this);
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,31 +55,6 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 		return super.onOptionsItemSelected(item);
 	}
 
-	private String dumpResult() {
-		StringBuilder buf = new StringBuilder();
-		String colon = getString(R.string.colon);
-		String nm = getString(R.string.label_sample_name);
-		String bv = getString(R.string.label_sample_bv);
-		String cv = getString(R.string.label_sample_cv);
-
-		ListAdapter adapter = getListAdapter();
-		int n = adapter.getCount();
-
-		buf.append("------------------------------\n");
-
-		for (int i = 0; i < n; i++) {
-			Sample sample = (Sample) adapter.getItem(i);
-			buf.append(nm).append(colon).append(sample.getName()).append("\n");
-			buf.append(bv).append(colon).append(sample.getBrightness())
-					.append("\n");
-			buf.append(cv).append(colon).append(sample.getConcentration())
-					.append("\n");
-			buf.append("------------------------------\n");
-		}
-
-		return buf.toString();
-	}
-
 	private static class SampleAdapter extends ArrayAdapter<Sample> {
 		private TextView txtSampleName;
 		private TextView txtSampleSum;
@@ -120,7 +73,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			View view;
 
 			if (null == convertView) {
-				view = this.inflater.inflate(R.layout.sample_item, parent);
+				view = this.inflater.inflate(R.layout.sample_item, null);
 			} else {
 				view = convertView;
 			}
@@ -133,8 +86,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			this.txtSampleSum.setText(String.valueOf(sample.getSum()));
 			this.txtSampleName.setText(sample.getName());
 			this.txtSampleBv.setText(String.valueOf(sample.getBrightness()));
-			this.txtSampleCv
-					.setText(CV_FORMAT.format(sample.getConcentration()));
+			this.txtSampleCv.setText(CV_FORMAT.format(sample.getConcentration()));
 
 			return view;
 		}

@@ -51,7 +51,7 @@ public class ProfileChooser extends ListActivity implements
 		if (null == bundle)
 			return;
 
-		this.profileAdapter.setData(this.dbHelper.getProfiles());
+		this.profileAdapter.reset(this.dbHelper.getProfiles());
 		this.image = bundle.getString(PARAM_IMAGE_SOURCE);
 		this.template = (Template) bundle.getSerializable(PARAM_TEMPLATE_OBJECT);
 	}

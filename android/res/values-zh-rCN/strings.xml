@@ -18,6 +18,8 @@
     <string name="menu_mod_template">编辑模板</string>
     <string name="menu_del_template">删除模板</string>
     <string name="menu_send_result">发送</string>
+    <string name="menu_del_history">删除历史记录</string>
+    <string name="menu_del_profile">删除档案</string>
     
     <string name="label_loading">正在加载中…</string>
     <string name="label_new">新建</string>
@@ -31,6 +33,8 @@
     <string name="label_sample_sum">采样</string>
     <string name="label_sample_bv">亮度</string>
     <string name="label_sample_cv">浓度</string>
+    <string name="label_sample_ref">参考值</string>
+    <string name="label_sample_remark">备注</string>
     <string name="label_profile_name">姓名：</string>
     <string name="label_profile_sn">编号：</string>
     

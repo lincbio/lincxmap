@@ -16,8 +16,12 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -30,10 +34,30 @@ import android.widget.ListView;
  */
 public class ProfileActivity extends Activity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private final MenuManager menuManager = new MenuManager(this) {
+
+		@Override
+		public void onMenuItemSelected(MenuItem item) {
+			super.onMenuItemSelected(item);
+
+			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
+					.getMenuInfo();
+
+			switch (item.getItemId()) {
+			case R.id.menu_del_profile:
+				Profile profile = (Profile) profileView
+						.getItemAtPosition(menuInfo.position);
+				dbHelper.deleteProfile(profile);
+				profileAdapter.remove(profile);
+				break;
+			}
+		}
+
+	};
 
 	private ListView profileView;
 	private EditText txtSearch;
-	private GenericListAdapter<Profile> profilesAdapter;
+	private GenericListAdapter<Profile> profileAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -54,15 +78,32 @@ public class ProfileActivity extends Activity implements Constants {
 			}
 
 		});
-		this.profilesAdapter = new GenericListAdapter<Profile>(this,
+		this.profileAdapter = new GenericListAdapter<Profile>(this,
 				R.layout.profile_item);
-		this.profileView.setAdapter(this.profilesAdapter);
+		this.profileView.setAdapter(this.profileAdapter);
+		this.registerForContextMenu(this.profileView);
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		int position = ((AdapterContextMenuInfo) menuInfo).position;
+		Profile profile = (Profile) ((ListView) v).getItemAtPosition(position);
+		menu.setHeaderTitle(profile.getName());
+		this.menuManager.createMenu(menu, R.menu.ctx_profile);
+		super.onCreateContextMenu(menu, v, menuInfo);
+	}
+
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		this.menuManager.onMenuItemSelected(item);
+		return super.onContextItemSelected(item);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		this.profilesAdapter.setData(this.dbHelper.getProfiles());
+		this.profileAdapter.reset(this.dbHelper.getProfiles());
 	}
 
 	public void onButtonAddClick(View view) {
@@ -120,6 +161,6 @@ public class ProfileActivity extends Activity implements Constants {
 		List<Profile> profiles = 0 == txt.length() ? this.dbHelper
 				.getProfiles() : this.dbHelper.getProfiles(txt);
 
-		this.profilesAdapter.setData(profiles);
+		this.profileAdapter.reset(profiles);
 	}
 }

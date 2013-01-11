@@ -13,6 +13,12 @@
     <string name="sample_identifier_index">0</string>
     <string name="sample_identifier_name">1</string>
     <string name="colon">:</string>
+    <string name="normal">~</string>
+    <string name="negative">-</string>
+    <string name="positive">+</string>
+    
+    <string name="fmt_result_title">%1$s %2$9s %3$19s %4$s</string>
+    <string name="fmt_result_entry">%1$s %2$6.2f %3$6.2f-%4$6.2f %5$s</string>
     
     <string name="button_prev">Previous</string>
     <string name="button_next">Next</string>
@@ -29,6 +35,8 @@
     <string name="menu_mod_template">Edit template</string>
     <string name="menu_del_template">Delete template</string>
     <string name="menu_send_result">Send</string>
+    <string name="menu_del_history">Delete History</string>
+    <string name="menu_del_profile">Delete profile</string>
     
     <string name="label_loading">Loading…</string>
     <string name="label_new">New</string>
@@ -42,6 +50,8 @@
     <string name="label_sample_sum">Sum</string>
     <string name="label_sample_bv">Brightness</string>
     <string name="label_sample_cv">Concentration</string>
+    <string name="label_sample_ref">Reference</string>
+    <string name="label_sample_remark">Remark</string>
     <string name="label_profile_name">Name:</string>
     <string name="label_profile_sn">SN:</string>
     

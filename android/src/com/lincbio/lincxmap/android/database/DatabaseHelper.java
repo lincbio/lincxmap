@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.lincbio.lincxmap.LincXmapException;
+import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.Version;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.pojo.Catalog;
@@ -22,9 +23,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
+	private final Context context;
 
 	public DatabaseHelper(Context context) {
 		super(context, "lincxmap-" + Version.major + ".db", null, Version.major);
+		this.context = context;
 	}
 
 	@Override
@@ -312,7 +315,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 
 			while (c.moveToNext()) {
 				list.add(new Result(c.getLong(0), c.getLong(1), c.getString(2),
-						c.getDouble(3), c.getDouble(4)));
+						c.getDouble(3), c.getDouble(4), c.getDouble(5), c
+								.getDouble(6), c.getString(7)));
 			}
 		} finally {
 			close(c);
@@ -346,6 +350,19 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 	}
 
 	public void addHistory(final History history, final List<Sample> samples) {
+		final int n = samples.size();
+		final List<Result> results = new ArrayList<Result>(n);
+
+		for (int i = 0; i < n; i++) {
+			Sample sample = samples.get(i);
+			Result result = new Result(0, sample.getName(),
+					sample.getBrightness(), sample.getConcentration());
+			result.setMinValue(0);
+			result.setMaxValue(1);
+			result.setFlag(this.context.getString(R.string.normal));
+			results.add(result);
+		}
+
 		this.execute(new Transaction() {
 
 			@Override
@@ -361,14 +378,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				values.put(TABLE_COL_TIME, history.getTime());
 				historyId = db.insert(TABLE_HISTORY, null, values);
 
-				for (Sample sample : samples) {
+				for (Result result : results) {
 					values = new ContentValues();
 					values.putNull(TABLE_COL_ID);
 					values.put(TABLE_COL_HISTORY_ID, historyId);
-					values.put(TABLE_COL_NAME, sample.getName());
-					values.put(TABLE_COL_BRIGHTNESS, sample.getBrightness());
+					values.put(TABLE_COL_NAME, result.getSampleName());
+					values.put(TABLE_COL_BRIGHTNESS, result.getBrightness());
 					values.put(TABLE_COL_CONCENTRATION,
-							sample.getConcentration());
+							result.getConcentration());
+					values.put(TABLE_COL_MIN, result.getMinValue());
+					values.put(TABLE_COL_MAX, result.getMaxValue());
+					values.put(TABLE_COL_FLAG, result.getFlag());
 					db.insert(TABLE_RESULT, null, values);
 				}
 			}
@@ -470,6 +490,43 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		}
 	}
 
+	public void deleteHistory(final History history) {
+		try {
+			this.execute(new Transaction() {
+
+				@Override
+				public void run(SQLiteDatabase db) throws Exception {
+					String[] args = { String.valueOf(history.getId()) };
+
+					db.delete(TABLE_HISTORY, TABLE_COL_ID + "=?", args);
+					db.delete(TABLE_RESULT, TABLE_COL_HISTORY_ID + "=?", args);
+				}
+
+			});
+		} catch (Throwable t) {
+			throw new LincXmapException(t);
+		}
+	}
+
+	public void deleteProfile(final Profile profile) {
+		try {
+			this.execute(new Transaction() {
+
+				@Override
+				public void run(SQLiteDatabase db) throws Exception {
+					String[] args = { String.valueOf(profile.getId()) };
+
+					db.delete(TABLE_PROFILE, TABLE_COL_ID + "=?", args);
+					db.delete(TABLE_HISTORY, TABLE_COL_PRODUCT_ID + "=?", args);
+					// TODO delete results
+				}
+
+			});
+		} catch (Throwable t) {
+			throw new LincXmapException(t);
+		}
+	}
+
 	public void deleteTemplate(final long id) throws LincXmapException {
 		try {
 			this.execute(new Transaction() {
@@ -526,7 +583,9 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				+ TABLE_COL_HISTORY_ID + " integer not null, " + TABLE_COL_NAME
 				+ " text not null, " + TABLE_COL_BRIGHTNESS
 				+ " numeric not null, " + TABLE_COL_CONCENTRATION
-				+ " numeric not null)");
+				+ " numeric not null, " + TABLE_COL_MIN + " numeric not null, "
+				+ TABLE_COL_MAX + " numeric not null, " + TABLE_COL_FLAG
+				+ " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_TEMPLATE + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "

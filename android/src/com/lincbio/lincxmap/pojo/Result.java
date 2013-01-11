@@ -10,6 +10,9 @@ public class Result implements Serializable {
 	private String sampleName;
 	private double brightness;
 	private double concentration;
+	private double minValue;
+	private double maxValue;
+	private String flag;
 
 	public Result() {
 	}
@@ -23,9 +26,13 @@ public class Result implements Serializable {
 	}
 
 	public Result(long id, long historyId, String sampleName,
-			double brightness, double concentration) {
+			double brightness, double concentration, double minValue,
+			double maxValue, String flag) {
 		this(historyId, sampleName, brightness, concentration);
 		this.id = id;
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		this.flag = flag;
 	}
 
 	public long getId() {
@@ -66,6 +73,30 @@ public class Result implements Serializable {
 
 	public void setConcentration(double concentration) {
 		this.concentration = concentration;
+	}
+
+	public double getMinValue() {
+		return minValue;
+	}
+
+	public void setMinValue(double minValue) {
+		this.minValue = minValue;
+	}
+
+	public double getMaxValue() {
+		return maxValue;
+	}
+
+	public void setMaxValue(double maxValue) {
+		this.maxValue = maxValue;
+	}
+
+	public String getFlag() {
+		return flag;
+	}
+
+	public void setFlag(String flag) {
+		this.flag = flag;
 	}
 
 }

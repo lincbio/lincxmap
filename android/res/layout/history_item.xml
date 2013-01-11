@@ -65,6 +65,7 @@
         android:layout_height="match_parent"
         android:layout_weight="0"
         android:onClick="onButtonSendClick"
-        android:src="@android:drawable/ic_menu_send" />
+        android:src="@android:drawable/ic_menu_send"
+        android:tag="id" />
 
 </LinearLayout>

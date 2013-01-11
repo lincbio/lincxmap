@@ -42,7 +42,7 @@ public class ResultDetailActivity extends ListActivity implements Constants {
 		}
 
 		long historyId = bundle.getLong(PARAM_HISTORY_ID);
-		this.resultAdapter.setData(this.dbHelper.getResults(historyId));
+		this.resultAdapter.reset(this.dbHelper.getResults(historyId));
 	}
 
 }
