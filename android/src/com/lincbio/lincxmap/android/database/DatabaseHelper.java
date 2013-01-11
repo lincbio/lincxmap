@@ -517,7 +517,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					String[] args = { String.valueOf(profile.getId()) };
 
 					db.delete(TABLE_PROFILE, TABLE_COL_ID + "=?", args);
-					db.delete(TABLE_HISTORY, TABLE_COL_PRODUCT_ID + "=?", args);
+					db.delete(TABLE_HISTORY, TABLE_COL_PROFILE_ID + "=?", args);
 					// TODO delete results
 				}
 

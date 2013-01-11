@@ -53,18 +53,12 @@ public class HistoryActivity extends ListActivity implements Constants {
 						historyAdapter.clear();
 					}
 				};
-				OnClickListener cancel = new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				};
 				new AlertDialog.Builder(HistoryActivity.this)
 						.setTitle(android.R.string.dialog_alert_title)
 						.setMessage(R.string.msg_confirm_clear)
 						.setIcon(android.R.drawable.ic_dialog_alert)
 						.setPositiveButton(android.R.string.ok, ok)
-						.setNegativeButton(android.R.string.cancel, cancel)
+						.setNegativeButton(android.R.string.cancel, CANCEL)
 						.show();
 				break;
 			case R.id.menu_del_history:
@@ -100,6 +94,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 			}
 
 		});
+		this.registerForContextMenu(this.getListView());
 	}
 
 	@Override

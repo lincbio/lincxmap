@@ -40,16 +40,28 @@ public class ProfileActivity extends Activity implements Constants {
 		public void onMenuItemSelected(MenuItem item) {
 			super.onMenuItemSelected(item);
 
-			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
+			final AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
 					.getMenuInfo();
 
 			switch (item.getItemId()) {
 			case R.id.menu_del_profile:
-				Profile profile = (Profile) profileView
-						.getItemAtPosition(menuInfo.position);
-				dbHelper.deleteProfile(profile);
-				profileAdapter.remove(profile);
+				OnClickListener ok = new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						Profile profile = (Profile) profileView
+								.getItemAtPosition(menuInfo.position);
+						dbHelper.deleteProfile(profile);
+						profileAdapter.remove(profile);
+					}
+				};
+				new AlertDialog.Builder(ProfileActivity.this)
+						.setTitle(android.R.string.dialog_alert_title)
+						.setMessage(R.string.msg_confirm_clear)
+						.setPositiveButton(android.R.string.ok, ok)
+						.setNegativeButton(android.R.string.cancel, CANCEL)
+						.show();
 				break;
+
 			}
 		}
 
