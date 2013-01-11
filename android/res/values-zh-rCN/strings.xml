@@ -75,7 +75,8 @@
     <string name="msg_empty_template_name">模板名称不能为空</string>
     <string name="msg_detecting">正在检测中&#8230;</string>
     <string name="msg_invalid_image">无效的图像</string>
-    <string name="msg_confirm_clear">确定全部清空？</string>
+    <string name="msg_confirm_clear">确定全部清空吗？</string>
+    <string name="msg_confirm_delete">确定删除吗？</string>
     <string name="msg_profile_name_required">姓名不能为空</string>
     <string name="msg_profile_sn_required">编号不能为空</string>
     <string name="msg_add_profile_succeed">添加档案成功</string>

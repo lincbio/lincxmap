@@ -56,7 +56,7 @@ public class ProfileActivity extends Activity implements Constants {
 				};
 				new AlertDialog.Builder(ProfileActivity.this)
 						.setTitle(android.R.string.dialog_alert_title)
-						.setMessage(R.string.msg_confirm_clear)
+						.setMessage(R.string.msg_confirm_delete)
 						.setPositiveButton(android.R.string.ok, ok)
 						.setNegativeButton(android.R.string.cancel, CANCEL)
 						.show();

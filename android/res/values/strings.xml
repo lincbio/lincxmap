@@ -91,7 +91,8 @@
     <string name="msg_empty_template_name">Template name is not allowed to be empty</string>
     <string name="msg_detecting">Detecting&#8230;</string>
     <string name="msg_invalid_image">Invalid image</string>
-    <string name="msg_confirm_clear">Are you sure clear all?</string>
+    <string name="msg_confirm_clear">Are you sure to clear all?</string>
+    <string name="msg_confirm_delete">Are you sure to delete it?</string>
     <string name="msg_profile_name_required">Name is required</string>
     <string name="msg_profile_sn_required">Serial number is required</string>
     <string name="msg_add_profile_succeed">Add profile succeed</string>
