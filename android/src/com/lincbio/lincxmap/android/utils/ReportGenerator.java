@@ -31,11 +31,11 @@ public class ReportGenerator {
 		this.context = context;
 	}
 
-	public DatabaseHelper getDbHelper() {
+	public DatabaseHelper getDatabaseHelper() {
 		return dbHelper;
 	}
 
-	public void setDbHelper(DatabaseHelper dbHelper) {
+	public void setDatabaseHelper(DatabaseHelper dbHelper) {
 		this.dbHelper = dbHelper;
 	}
 
@@ -53,16 +53,16 @@ public class ReportGenerator {
 		String entry = this.context.getString(R.string.fmt_result_entry);
 		List<Result> results = this.dbHelper.getResults(historyId);
 
-		buf.append("------------------------------\n");
-		buf.append(String.format(title, name, cv, ref, remark));
+		buf.append("--------------------------------------------------\n");
+		buf.append(String.format(title, name, cv, ref, remark)).append("\n");
 
 		for (Result result : results) {
 			buf.append(String.format(entry, result.getSampleName(),
 					result.getConcentration(), result.getMinValue(),
-					result.getMaxValue(), result.getFlag()));
+					result.getMaxValue(), result.getFlag())).append("\n");
 		}
 
-		buf.append("------------------------------\n");
+		buf.append("--------------------------------------------------\n");
 
 		return buf.toString();
 	}

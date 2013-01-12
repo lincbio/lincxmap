@@ -61,12 +61,26 @@ public class HistoryActivity extends ListActivity implements Constants {
 						.setNegativeButton(android.R.string.cancel, CANCEL)
 						.show();
 				break;
-			case R.id.menu_del_history:
+			case R.id.menu_send_result: {
+				History history = (History) getListView().getItemAtPosition(
+						menuInfo.position);
+				String subject = getString(R.string.title_send_result);
+				String content = reporter.generateReport(history.getId());
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+				intent.putExtra(Intent.EXTRA_TEXT, content);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(Intent.createChooser(intent, subject));
+				break;
+			}
+			case R.id.menu_del_history: {
 				History history = (History) getListView().getItemAtPosition(
 						menuInfo.position);
 				dbHelper.deleteHistory(history);
 				historyAdapter.remove(history);
 				break;
+			}
 			}
 		}
 
@@ -95,6 +109,10 @@ public class HistoryActivity extends ListActivity implements Constants {
 
 		});
 		this.registerForContextMenu(this.getListView());
+	}
+
+	public HistoryActivity() {
+		this.reporter.setDatabaseHelper(this.dbHelper);
 	}
 
 	@Override
@@ -138,18 +156,6 @@ public class HistoryActivity extends ListActivity implements Constants {
 		} else {
 			this.historyAdapter.reset(this.dbHelper.getHistories());
 		}
-	}
-
-	public void onButtonSendClick(View view) {
-		int historyId = (Integer) view.getTag();
-		String subject = getString(R.string.title_send_result);
-		String content = this.reporter.generateReport(historyId);
-		Intent intent = new Intent(Intent.ACTION_SEND);
-		intent.setType("text/plain");
-		intent.putExtra(Intent.EXTRA_SUBJECT, subject);
-		intent.putExtra(Intent.EXTRA_TEXT, content);
-		intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		startActivity(Intent.createChooser(intent, subject));
 	}
 
 }

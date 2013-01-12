@@ -4,5 +4,10 @@
         android:id="@+id/menu_del_history"
         android:icon="@android:drawable/ic_menu_delete"
         android:title="@string/menu_del_history"/>
+    
+    <item
+        android:id="@+id/menu_send_result"
+        android:icon="@android:drawable/ic_menu_send"
+        android:title="@string/menu_send_result"/>
 
 </menu>
