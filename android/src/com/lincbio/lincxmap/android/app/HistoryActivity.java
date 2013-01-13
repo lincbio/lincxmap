@@ -41,12 +41,12 @@ public class HistoryActivity extends ListActivity implements Constants {
 		public void onMenuItemSelected(MenuItem item) {
 			super.onMenuItemSelected(item);
 
-			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
+			final AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
 					.getMenuInfo();
 
 			switch (item.getItemId()) {
 			case R.id.menu_clear:
-				OnClickListener ok = new OnClickListener() {
+				OnClickListener clearAllOK = new OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						dbHelper.deleteAllHistory();
@@ -57,7 +57,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 						.setTitle(android.R.string.dialog_alert_title)
 						.setMessage(R.string.msg_confirm_clear)
 						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setPositiveButton(android.R.string.ok, ok)
+						.setPositiveButton(android.R.string.ok, clearAllOK)
 						.setNegativeButton(android.R.string.cancel, CANCEL)
 						.show();
 				break;
@@ -75,10 +75,23 @@ public class HistoryActivity extends ListActivity implements Constants {
 				break;
 			}
 			case R.id.menu_del_history: {
-				History history = (History) getListView().getItemAtPosition(
-						menuInfo.position);
-				dbHelper.deleteHistory(history);
-				historyAdapter.remove(history);
+				OnClickListener deleteOK = new OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						History history = (History) getListView()
+								.getItemAtPosition(menuInfo.position);
+						dbHelper.deleteHistory(history);
+						historyAdapter.remove(history);
+					}
+				};
+				new AlertDialog.Builder(HistoryActivity.this)
+						.setTitle(android.R.string.dialog_alert_title)
+						.setMessage(R.string.msg_confirm_delete)
+						.setIcon(android.R.drawable.ic_dialog_alert)
+						.setPositiveButton(android.R.string.ok, deleteOK)
+						.setNegativeButton(android.R.string.cancel, CANCEL)
+						.show();
+
 				break;
 			}
 			}

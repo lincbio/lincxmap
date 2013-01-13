@@ -6,10 +6,14 @@ import java.util.List;
 
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
+import com.lincbio.lincxmap.android.database.DatabaseHelper;
+import com.lincbio.lincxmap.android.utils.ReportGenerator;
+import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Sample;
 
 import android.app.ListActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -23,7 +27,34 @@ import android.widget.TextView;
 public class DetectionResultActivity extends ListActivity implements Constants {
 	private static final DecimalFormat CV_FORMAT = new DecimalFormat("0.00");
 
-	private MenuManager menuManager = new MenuManager(this);
+	private final ReportGenerator reporter = new ReportGenerator(this);
+	private final MenuManager menuManager = new MenuManager(this) {
+
+		@Override
+		public void onMenuItemSelected(MenuItem item) {
+			super.onMenuItemSelected(item);
+
+			switch (item.getItemId()) {
+			case R.id.menu_send_result:
+				String subject = getString(R.string.title_send_result);
+				String content = reporter.generateReport(history.getId());
+				Intent intent = new Intent(Intent.ACTION_SEND);
+				intent.setType("text/plain");
+				intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+				intent.putExtra(Intent.EXTRA_TEXT, content);
+				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+				startActivity(Intent.createChooser(intent, subject));
+				break;
+			}
+		}
+
+	};
+
+	private History history;
+
+	public DetectionResultActivity() {
+		this.reporter.setDatabaseHelper(new DatabaseHelper(this));
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +84,18 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		this.menuManager.onMenuItemSelected(item);
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		Bundle bundle = getIntent().getExtras();
+
+		if (null != bundle && !bundle.containsKey(PARAM_HISTORY_OBJECT))
+			return;
+
+		this.history = (History) bundle.getSerializable(PARAM_HISTORY_OBJECT);
 	}
 
 	private static class SampleAdapter extends ArrayAdapter<Sample> {
@@ -86,7 +129,8 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			this.txtSampleSum.setText(String.valueOf(sample.getSum()));
 			this.txtSampleName.setText(sample.getName());
 			this.txtSampleBv.setText(String.valueOf(sample.getBrightness()));
-			this.txtSampleCv.setText(CV_FORMAT.format(sample.getConcentration()));
+			this.txtSampleCv
+					.setText(CV_FORMAT.format(sample.getConcentration()));
 
 			return view;
 		}

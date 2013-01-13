@@ -34,7 +34,7 @@
     <string name="menu_new_template">New template</string>
     <string name="menu_mod_template">Edit template</string>
     <string name="menu_del_template">Delete template</string>
-    <string name="menu_send_result">Send</string>
+    <string name="menu_send_result">Send Result</string>
     <string name="menu_del_history">Delete History</string>
     <string name="menu_del_profile">Delete profile</string>
     

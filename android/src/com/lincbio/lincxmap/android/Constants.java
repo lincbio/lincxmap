@@ -24,6 +24,8 @@ public interface Constants {
 
 	public static final String PARAM_HISTORY_ID = "history-id";
 
+	public static final String PARAM_HISTORY_OBJECT = "history-object";
+
 	public static final String PARAM_PRODUCT_ID = "product-id";
 
 	public static final String PARAM_PROFILE_OBJECT = "profile-object";

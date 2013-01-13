@@ -47,6 +47,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	private String image;
 	private Profile profile;
 	private Template template;
+	private History history;
 
 	@Override
 	public boolean handleMessage(Message msg) {
@@ -60,6 +61,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 			this.dlgProgress.dismiss();
 			Intent intent = new Intent(this, DetectionResultActivity.class);
 			intent.putExtra(PARAM_SAMPLE_LIST, (Serializable) msg.obj);
+			intent.putExtra(PARAM_HISTORY_OBJECT, this.history);
 			startActivity(intent);
 			break;
 		default:
@@ -80,10 +82,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 		List<Sample> samples = this.detector.detect(bmp, this.template,
 				this.xmapView.getSelectors());
-		History history = new History(this.profile.getId(),
-				this.profile.getName(), this.template.getName(),
-				new Date().toLocaleString());
-		this.dbhelper.addHistory(history, samples);
+		this.dbhelper.addHistory(this.history, samples);
 		this.handler.sendMessage(this.handler.obtainMessage(1, samples));
 		bmp.recycle();
 		System.gc();
@@ -97,7 +96,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.detection);
+		this.setContentView(R.layout.detection);
 
 		this.dlgProgress = new ProgressDialog(this);
 		this.dlgProgress.setCancelable(false);
@@ -134,7 +133,11 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 		this.image = bundle.getString(PARAM_IMAGE_SOURCE);
 		this.profile = (Profile) bundle.getSerializable(PARAM_PROFILE_OBJECT);
-		this.template = (Template) bundle.getSerializable(PARAM_TEMPLATE_OBJECT);
+		this.template = (Template) bundle
+				.getSerializable(PARAM_TEMPLATE_OBJECT);
+		this.history = new History(this.profile.getId(),
+				this.profile.getName(), this.template.getName(),
+				new Date().toLocaleString());
 		this.xmapView = (XmapView) findViewById(R.id.xmap_view);
 		this.xmapView.setTemplate(this.template);
 		this.xmapView.setBackground(this.image);

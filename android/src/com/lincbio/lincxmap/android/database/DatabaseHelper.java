@@ -165,6 +165,28 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return list;
 	}
 
+	public History getHistory(long historyId) {
+		Cursor c = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String sql = TABLE_COL_ID + "=?";
+		String[] args = { String.valueOf(historyId) };
+
+		try {
+			c = db.query(TABLE_HISTORY, TABLE_HISTORY_COLS, sql, args, null,
+					null, null);
+
+			if (c.moveToNext()) {
+				return new History(c.getLong(0), c.getLong(1), c.getString(2),
+						c.getString(3), c.getString(4));
+			}
+		} finally {
+			close(c);
+			close(db);
+		}
+
+		return null;
+	}
+
 	public List<History> getHistories() {
 		Cursor c = null;
 		SQLiteDatabase db = getReadableDatabase();
@@ -207,6 +229,27 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		}
 
 		return list;
+	}
+
+	public Profile getProfile(long profileId) {
+		Cursor c = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String sql = TABLE_COL_ID + "=?";
+		String[] args = { String.valueOf(profileId) };
+
+		try {
+			c = db.query(TABLE_PROFILE, TABLE_PROFILE_COLS, sql, args, null,
+					null, null);
+
+			if (c.moveToNext()) {
+				return new Profile(c.getLong(0), c.getString(1), c.getString(2));
+			}
+		} finally {
+			close(c);
+			close(db);
+		}
+
+		return null;
 	}
 
 	public List<Profile> getProfiles() {
@@ -377,6 +420,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				values.put(TABLE_COL_LABEL, history.getLabel());
 				values.put(TABLE_COL_TIME, history.getTime());
 				historyId = db.insert(TABLE_HISTORY, null, values);
+				history.setId(historyId);
 
 				for (Result result : results) {
 					values = new ContentValues();
