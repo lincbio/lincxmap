@@ -12,9 +12,13 @@ public class Product implements Serializable {
 	public Product() {
 	}
 
-	public Product(long catalogId, String name) {
-		this.catalogId = catalogId;
+	public Product(String name) {
 		this.name = name;
+	}
+
+	public Product(long catalogId, String name) {
+		this(name);
+		this.catalogId = catalogId;
 	}
 
 	public Product(long id, long catalogId, String name) {

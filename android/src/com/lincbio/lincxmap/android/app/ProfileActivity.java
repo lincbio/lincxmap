@@ -45,21 +45,9 @@ public class ProfileActivity extends Activity implements Constants {
 
 			switch (item.getItemId()) {
 			case R.id.menu_del_profile:
-				OnClickListener ok = new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						Profile profile = (Profile) profileView
-								.getItemAtPosition(menuInfo.position);
-						dbHelper.deleteProfile(profile);
-						profileAdapter.remove(profile);
-					}
-				};
-				new AlertDialog.Builder(ProfileActivity.this)
-						.setTitle(android.R.string.dialog_alert_title)
-						.setMessage(R.string.msg_confirm_delete)
-						.setPositiveButton(android.R.string.ok, ok)
-						.setNegativeButton(android.R.string.cancel, CANCEL)
-						.show();
+				Profile profile = (Profile) profileView
+						.getItemAtPosition(menuInfo.position);
+				createDeleteProfileDialog(profile).show();
 				break;
 
 			}
@@ -119,6 +107,22 @@ public class ProfileActivity extends Activity implements Constants {
 	}
 
 	public void onButtonAddClick(View view) {
+		this.createAddProfileDialog().show();
+	}
+
+	public void onButtonBarcodeClick(View view) {
+		// TODO
+	}
+
+	public void onButtonSearchClick(View view) {
+		String txt = this.txtSearch.getText().toString().trim();
+		List<Profile> profiles = 0 == txt.length() ? this.dbHelper
+				.getProfiles() : this.dbHelper.getProfiles(txt);
+
+		this.profileAdapter.reset(profiles);
+	}
+
+	private AlertDialog.Builder createAddProfileDialog() {
 		final View v = getLayoutInflater()
 				.inflate(R.layout.profile_input, null);
 		final EditText txtName = (EditText) v.findViewById(R.id.profile_name);
@@ -151,28 +155,30 @@ public class ProfileActivity extends Activity implements Constants {
 			}
 
 		};
-		OnClickListener cancel = new OnClickListener() {
+
+		return new AlertDialog.Builder(this)
+				.setTitle(R.string.title_add_profile).setView(v)
+				.setPositiveButton(android.R.string.ok, ok)
+				.setNegativeButton(android.R.string.cancel, MenuManager.CANCEL);
+
+	}
+
+	private AlertDialog.Builder createDeleteProfileDialog(final Profile profile) {
+		OnClickListener ok = new OnClickListener() {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				dialog.dismiss();
+				dbHelper.deleteProfile(profile);
+				profileAdapter.reset(dbHelper.getProfiles());
 			}
 
 		};
-		new AlertDialog.Builder(this).setTitle(R.string.title_add_profile)
-				.setView(v).setPositiveButton(android.R.string.ok, ok)
-				.setNegativeButton(android.R.string.cancel, cancel).show();
-	}
 
-	public void onButtonBarcodeClick(View view) {
-		// TODO
-	}
-
-	public void onButtonSearchClick(View view) {
-		String txt = this.txtSearch.getText().toString().trim();
-		List<Profile> profiles = 0 == txt.length() ? this.dbHelper
-				.getProfiles() : this.dbHelper.getProfiles(txt);
-
-		this.profileAdapter.reset(profiles);
+		return new AlertDialog.Builder(ProfileActivity.this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(android.R.string.dialog_alert_title)
+				.setMessage(R.string.msg_confirm_delete)
+				.setPositiveButton(android.R.string.ok, ok)
+				.setNegativeButton(android.R.string.cancel, MenuManager.CANCEL);
 	}
 }

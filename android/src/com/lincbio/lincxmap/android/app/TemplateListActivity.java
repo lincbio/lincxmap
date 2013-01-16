@@ -62,7 +62,8 @@ public class TemplateListActivity extends ListActivity implements
 
 			Template template = null;
 			ArrayAdapter<Template> adapter = (ArrayAdapter<Template>) getListAdapter();
-			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item.getMenuInfo();
+			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
+					.getMenuInfo();
 
 			if (null != menuInfo) {
 				Object obj = getListView().getItemAtPosition(menuInfo.position);
@@ -91,7 +92,7 @@ public class TemplateListActivity extends ListActivity implements
 		}
 
 	};
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		switch (resultCode) {
@@ -194,34 +195,7 @@ public class TemplateListActivity extends ListActivity implements
 			this.template = (Template) obj;
 			CharSequence[] choices = getResources().getTextArray(
 					R.array.array_image_sources);
-			new AlertDialog.Builder(this).setTitle(R.string.title_choose_image)
-					.setIcon(android.R.drawable.ic_dialog_alert)
-					.setItems(choices, new OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							Intent intent = null;
-
-							switch (which) {
-							case ImageSource.IMAGE_SOURCE_CAPTURE:
-								File f = FileUtils.newTempFile(".jpg");
-								intent = new Intent(
-										MediaStore.ACTION_IMAGE_CAPTURE);
-								intent.putExtra(MediaStore.EXTRA_OUTPUT,
-										Uri.fromFile(f));
-								TemplateListActivity.this.image = f.toString();
-								break;
-							case ImageSource.IMAGE_SOURCE_GALLERY:
-								intent = new Intent(Intent.ACTION_GET_CONTENT);
-								intent.setType("image/*");
-								break;
-							}
-
-							if (null == intent)
-								return;
-
-							startActivityForResult(intent, which);
-						}
-					}).show();
+			createImageSourceListDialog(choices).show();
 		} else {
 			startActivity(new Intent(this, TemplateSpecActivity.class));
 		}
@@ -247,4 +221,36 @@ public class TemplateListActivity extends ListActivity implements
 		super.onDestroy();
 	}
 
+	private AlertDialog.Builder createImageSourceListDialog(
+			CharSequence[] choices) {
+		OnClickListener click = new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				Intent intent = null;
+
+				switch (which) {
+				case ImageSource.IMAGE_SOURCE_CAPTURE:
+					File f = FileUtils.newTempFile(".jpg");
+					intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
+					TemplateListActivity.this.image = f.toString();
+					break;
+				case ImageSource.IMAGE_SOURCE_GALLERY:
+					intent = new Intent(Intent.ACTION_GET_CONTENT);
+					intent.setType("image/*");
+					break;
+				}
+
+				if (null == intent)
+					return;
+
+				startActivityForResult(intent, which);
+			}
+		};
+
+		return new AlertDialog.Builder(this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(R.string.title_choose_image).setItems(choices, click);
+	}
 }

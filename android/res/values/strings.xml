@@ -36,7 +36,10 @@
     <string name="menu_del_template">Delete template</string>
     <string name="menu_send_result">Send Result</string>
     <string name="menu_del_history">Delete History</string>
-    <string name="menu_del_profile">Delete profile</string>
+    <string name="menu_del_profile">Delete Profile</string>
+    <string name="menu_add_product">Add Product</string>
+    <string name="menu_del_catalog">Delete Catalog</string>
+    <string name="menu_del_product">Delete Product</string>
     
     <string name="label_loading">Loading…</string>
     <string name="label_new">New</string>
@@ -54,12 +57,15 @@
     <string name="label_sample_remark">Remark</string>
     <string name="label_profile_name">Name:</string>
     <string name="label_profile_sn">SN:</string>
+    <string name="label_product_catalog">Catalog:</string>
+    <string name="label_product_name">Name:</string>
     
     <string name="label_toolbar_template">Template</string>
     <string name="label_toolbar_product">Product</string>
     <string name="label_toolbar_history">History</string>
     <string name="label_toolbar_profile">Profile</string>
     
+    <string name="title_add_product">Add product</string>
     <string name="title_add_profile">Add profile</string>
     <string name="title_choose_image">Choose image source</string>
     <string name="title_choose_product">Choose a product</string>
@@ -87,15 +93,18 @@
     <string name="image_source_capture">Capture</string>
     <string name="image_source_gallery">Gallery</string>
     
-    <string name="msg_unsupported_value">Unsuppored value</string>
-    <string name="msg_empty_template_name">Template name is not allowed to be empty</string>
+    <string name="msg_add_product_succeed">Add product succeed</string>
+    <string name="msg_add_profile_succeed">Add profile succeed</string>
+    <string name="msg_template_name_required">Template name is required</string>
     <string name="msg_detecting">Detecting&#8230;</string>
-    <string name="msg_invalid_image">Invalid image</string>
     <string name="msg_confirm_clear">Are you sure to clear all?</string>
     <string name="msg_confirm_delete">Are you sure to delete it?</string>
-    <string name="msg_profile_name_required">Name is required</string>
+    <string name="msg_profile_name_required">Profile name is required</string>
     <string name="msg_profile_sn_required">Serial number is required</string>
-    <string name="msg_add_profile_succeed">Add profile succeed</string>
+    <string name="msg_product_catalog_required">Catalog is required</string>
+    <string name="msg_product_name_required">Product name is required</string>
+    <string name="msg_invalid_image">Invalid image</string>
+    <string name="msg_unsupported_value">Unsuppored value</string>
     
     <string name="about_version">LincXmap (Android) 1.0beta</string>
     <string name="about_copyright">Copyright &#169; 2009&#8211;2012 Shanghai Lincbio Co,Ltd. All rights Reserved.</string>

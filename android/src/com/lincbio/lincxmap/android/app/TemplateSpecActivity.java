@@ -94,7 +94,7 @@ public class TemplateSpecActivity extends Activity implements Constants {
 
 		if (null == extras || !extras.containsKey(PARAM_TEMPLATE_OBJECT)) {
 			if (null == name || name.length() <= 0)
-				Toasts.show(this, R.string.msg_empty_template_name);
+				Toasts.show(this, R.string.msg_template_name_required);
 			tpl = new Template(0, name, rows, cols);
 		} else {
 			tpl = (Template) extras.getSerializable(PARAM_TEMPLATE_OBJECT);

@@ -32,7 +32,7 @@ import android.widget.TextView;
  * Template list UI
  * 
  * @author Johnson Lee
- *
+ * 
  */
 public class TemplateActivity extends Activity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
@@ -190,8 +190,8 @@ public class TemplateActivity extends Activity implements Constants {
 					R.array.array_image_sources);
 			selectedTemplate = this.template;
 			new AlertDialog.Builder(TemplateActivity.this)
-					.setTitle(R.string.title_choose_image)
 					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(R.string.title_choose_image)
 					.setItems(choices, imgSrcListener).show();
 		}
 

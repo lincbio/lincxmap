@@ -46,20 +46,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 
 			switch (item.getItemId()) {
 			case R.id.menu_clear:
-				OnClickListener clearAllOK = new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dbHelper.deleteAllHistory();
-						historyAdapter.clear();
-					}
-				};
-				new AlertDialog.Builder(HistoryActivity.this)
-						.setTitle(android.R.string.dialog_alert_title)
-						.setMessage(R.string.msg_confirm_clear)
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setPositiveButton(android.R.string.ok, clearAllOK)
-						.setNegativeButton(android.R.string.cancel, CANCEL)
-						.show();
+				createDeleteAllDialog().show();
 				break;
 			case R.id.menu_send_result: {
 				History history = (History) getListView().getItemAtPosition(
@@ -75,23 +62,9 @@ public class HistoryActivity extends ListActivity implements Constants {
 				break;
 			}
 			case R.id.menu_del_history: {
-				OnClickListener deleteOK = new OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						History history = (History) getListView()
-								.getItemAtPosition(menuInfo.position);
-						dbHelper.deleteHistory(history);
-						historyAdapter.remove(history);
-					}
-				};
-				new AlertDialog.Builder(HistoryActivity.this)
-						.setTitle(android.R.string.dialog_alert_title)
-						.setMessage(R.string.msg_confirm_delete)
-						.setIcon(android.R.drawable.ic_dialog_alert)
-						.setPositiveButton(android.R.string.ok, deleteOK)
-						.setNegativeButton(android.R.string.cancel, CANCEL)
-						.show();
-
+				History history = (History) getListView().getItemAtPosition(
+						menuInfo.position);
+				createDeleteHistoryDialog(history).show();
 				break;
 			}
 			}
@@ -171,4 +144,40 @@ public class HistoryActivity extends ListActivity implements Constants {
 		}
 	}
 
+	private AlertDialog.Builder createDeleteAllDialog() {
+		OnClickListener clearAllOK = new OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dbHelper.deleteAllHistory();
+				historyAdapter.clear();
+			}
+		};
+
+		return new AlertDialog.Builder(HistoryActivity.this)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setTitle(android.R.string.dialog_alert_title)
+				.setMessage(R.string.msg_confirm_clear)
+				.setPositiveButton(android.R.string.ok, clearAllOK)
+				.setNegativeButton(android.R.string.cancel, MenuManager.CANCEL);
+	}
+
+	private AlertDialog.Builder createDeleteHistoryDialog(final History history) {
+		OnClickListener deleteOK = new OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dbHelper.deleteHistory(history);
+				historyAdapter.reset(dbHelper.getHistories());
+			}
+
+		};
+
+		return new AlertDialog.Builder(HistoryActivity.this)
+				.setTitle(android.R.string.dialog_alert_title)
+				.setMessage(R.string.msg_confirm_delete)
+				.setIcon(android.R.drawable.ic_dialog_alert)
+				.setPositiveButton(android.R.string.ok, deleteOK)
+				.setNegativeButton(android.R.string.cancel, MenuManager.CANCEL);
+
+	}
 }
