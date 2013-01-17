@@ -61,7 +61,6 @@
     <string name="title_sample_settings">样本设置</string>
     <string name="title_sample_selector_gap">样本选择器间隙</string>
     <string name="title_sample_selector_size">样本选择器尺寸</string>
-    <string name="title_scan_for_devices">扫描设备</string>
     <string name="title_send_result">发送结果</string>
     <string name="title_settings">首选项</string>
 
@@ -73,6 +72,8 @@
     <string name="hint_template_name">模板名称</string>
     <string name="hint_template_rows">模板行数</string>
     <string name="hint_template_cols">模板列数</string>
+    <string name="hint_product_name">请输入产品名称</string>
+    <string name="hint_profile_name_or_sn">请输入档案名称或编号</string>
 
     <string name="image_source_capture">拍照</string>
     <string name="image_source_gallery">相册</string>

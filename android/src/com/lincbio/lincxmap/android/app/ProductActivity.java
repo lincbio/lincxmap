@@ -45,17 +45,21 @@ public class ProductActivity extends Activity {
 					.getPackedPositionChild(info.packedPosition);
 
 			switch (item.getItemId()) {
-			case R.id.menu_add_product:
-				createAddProductDialog().show();
+			case R.id.menu_add_product: {
+				Catalog catalog = (Catalog) productAdapter.getGroup(i);
+				createAddProductDialog(catalog).show();
 				break;
-			case R.id.menu_del_catalog:
+			}
+			case R.id.menu_del_catalog: {
 				Catalog catalog = (Catalog) productAdapter.getGroup(i);
 				createDeleteCatalogDialog(catalog).show();
 				break;
-			case R.id.menu_del_product:
+			}
+			case R.id.menu_del_product: {
 				Product product = (Product) productAdapter.getChild(i, j);
 				createDeleteProductDialog(product).show();
 				break;
+			}
 			}
 		}
 
@@ -115,7 +119,7 @@ public class ProductActivity extends Activity {
 	}
 
 	public void onButtonAddClick(View view) {
-		this.createAddProductDialog().show();
+		this.createAddProductDialog(null).show();
 	}
 
 	public void onButtonSearchClick(View view) {
@@ -128,13 +132,19 @@ public class ProductActivity extends Activity {
 		}
 	}
 
-	private AlertDialog.Builder createAddProductDialog() {
+	private AlertDialog.Builder createAddProductDialog(final Catalog catalog) {
 		final View v = getLayoutInflater()
 				.inflate(R.layout.product_input, null);
 		final EditText txtName = (EditText) v.findViewById(R.id.product_name);
 		final EditText txtCatalog = (EditText) v
 				.findViewById(R.id.product_catalog);
 
+		if (null != catalog) {
+			txtCatalog.setText(catalog.getName());
+			txtCatalog.setEnabled(false);
+			txtName.requestFocus();
+		}
+		
 		OnClickListener ok = new OnClickListener() {
 			Context ctx = ProductActivity.this;
 
@@ -155,6 +165,7 @@ public class ProductActivity extends Activity {
 
 				try {
 					dbHelper.addProduct(catalog, new Product(name));
+					onButtonSearchClick(null);
 					Toasts.show(ctx, R.string.msg_add_product_succeed);
 				} catch (Throwable t) {
 					Toasts.show(ctx, t);
@@ -174,7 +185,7 @@ public class ProductActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dbHelper.deleteProduct(product);
-				productAdapter.reset(dbHelper.getProducts());
+				onButtonSearchClick(null);
 			}
 
 		};
@@ -192,7 +203,7 @@ public class ProductActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dbHelper.deleteCatalog(catalog);
-				productAdapter.reset(dbHelper.getProducts());
+				onButtonSearchClick(null);
 			}
 
 		};

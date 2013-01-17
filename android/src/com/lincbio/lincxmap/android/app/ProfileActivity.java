@@ -148,6 +148,7 @@ public class ProfileActivity extends Activity implements Constants {
 
 				try {
 					dbHelper.addProfile(new Profile(name, sn));
+					onButtonSearchClick(null);
 					Toasts.show(ctx, R.string.msg_add_profile_succeed);
 				} catch (Throwable t) {
 					Toasts.show(ctx, t);
@@ -169,7 +170,7 @@ public class ProfileActivity extends Activity implements Constants {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				dbHelper.deleteProfile(profile);
-				profileAdapter.reset(dbHelper.getProfiles());
+				onButtonSearchClick(null);
 			}
 
 		};

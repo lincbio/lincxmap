@@ -13,7 +13,6 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.graphics.BitmapFactory.Options;
 import android.graphics.Matrix;
 import android.os.Bundle;
@@ -26,7 +25,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -91,7 +89,6 @@ public class LauncherActivity extends ActivityGroup implements Constants,
 		BitmapFactory.decodeResource(getResources(), R.drawable.cursor, opts);
 		this.cursorWidth = opts.outWidth;
 
-		ImageView sep;
 		ImageView icon;
 		TextView label;
 
@@ -120,16 +117,7 @@ public class LauncherActivity extends ActivityGroup implements Constants,
 			label = (TextView) item.findViewById(R.id.toolbar_item_label);
 			icon.setImageResource(ri.activityInfo.icon);
 			label.setText(ri.activityInfo.labelRes);
-			label.setTextColor(Color.DKGRAY);
 			this.toolbar.addView(item);
-
-			if (i < items.size() - 1) {
-				sep = new ImageView(this);
-				sep.setImageResource(R.drawable.bg_toolbar_sep);
-				sep.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
-						LayoutParams.MATCH_PARENT));
-				this.toolbar.addView(sep);
-			}
 
 			intent = new Intent();
 			intent.setClassName(ai.packageName, ai.name);

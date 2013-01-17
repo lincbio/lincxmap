@@ -89,6 +89,8 @@
     <string name="hint_template_name">Template Name</string>
     <string name="hint_template_rows">Template Rows</string>
     <string name="hint_template_cols">Template Columns</string>
+    <string name="hint_product_name">Please input product name</string>
+    <string name="hint_profile_name_or_sn">Please input profile name or serial number</string>
     
     <string name="image_source_capture">Capture</string>
     <string name="image_source_gallery">Gallery</string>

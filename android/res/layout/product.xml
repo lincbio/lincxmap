@@ -8,29 +8,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0"
-        android:background="@android:color/darker_gray"
+        android:background="@drawable/bg_searchbar"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/padding_small"
-        android:paddingRight="@dimen/padding_small"
-        android:paddingTop="@dimen/padding_small" >
+        android:paddingBottom="@dimen/padding_medium"
+        android:paddingLeft="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_medium" >
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="54px"
+            android:layout_height="44px"
             android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_textbox_head"
             android:onClick="onButtonAddClick"
             android:src="@android:drawable/ic_menu_add" />
 
         <EditText
             android:id="@+id/product_search"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="44px"
             android:layout_gravity="center_vertical"
-            android:layout_weight="1" />
+            android:layout_weight="1"
+            android:background="@drawable/bg_textbox_center"
+            android:drawableLeft="@drawable/bg_textbox_left"
+            android:drawableRight="@drawable/bg_textbox_right"
+            android:hint="@string/hint_product_name"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="54px"
+            android:layout_height="44px"
             android:layout_gravity="center_vertical"
             android:layout_weight="0"
             android:onClick="onButtonSearchClick"
