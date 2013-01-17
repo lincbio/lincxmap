@@ -17,7 +17,7 @@
         <activity
             android:name=".android.app.TemplateActivity"
             android:icon="@android:drawable/ic_menu_slideshow"
-            android:label="@string/label_toolbar_template" >
+            android:label="@string/title_template_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -27,7 +27,7 @@
         <activity
             android:name=".android.app.ProductActivity"
             android:icon="@android:drawable/ic_menu_agenda"
-            android:label="@string/label_toolbar_product" >
+            android:label="@string/title_product_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +37,7 @@
         <activity
             android:name=".android.app.ProfileActivity"
             android:icon="@android:drawable/ic_menu_save"
-            android:label="@string/label_toolbar_profile" >
+            android:label="@string/title_profile_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -47,19 +47,26 @@
         <activity
             android:name=".android.app.HistoryActivity"
             android:icon="@android:drawable/ic_menu_recent_history"
-            android:label="@string/label_toolbar_history" >
+            android:label="@string/title_history_list" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="lincxmap.intent.category.toolbar" />
             </intent-filter>
         </activity>
-        <activity android:name=".android.app.AboutActivity" />
+        <activity
+            android:name=".android.app.AboutActivity"
+            android:label="@string/title_about" />
         <activity
             android:name=".android.app.TemplateSpecActivity"
+            android:label="@string/title_template_new"
             android:noHistory="true" />
-        <activity android:name=".android.app.DetectionActivity" />
-        <activity android:name=".android.app.DetectionResultActivity" />
+        <activity
+            android:name=".android.app.DetectionActivity"
+            android:label="@string/title_detection" />
+        <activity
+            android:name=".android.app.DetectionResultActivity"
+            android:label="@string/title_detection_result" />
         <activity
             android:name=".android.app.LauncherActivity"
             android:label="@string/title_launcher" >
@@ -72,10 +79,16 @@
         <activity
             android:name=".android.app.ResultDetailActivity"
             android:label="@string/title_result_detail" />
-        <activity android:name=".android.app.SampleLayoutActivity" />
-        <activity android:name=".android.app.SettingsActivity" />
+        <activity
+            android:name=".android.app.SampleLayoutActivity"
+            android:label="@string/title_sample_layout" />
+        <activity
+            android:name=".android.app.SettingsActivity"
+            android:label="@string/title_settings" />
         <activity
             android:name=".android.app.SplashActivity"
+            android:clearTaskOnLaunch="true"
+            android:launchMode="singleTop"
             android:noHistory="true"
             android:theme="@style/AppTheme.NoTitleBar.Fullscreen" >
             <intent-filter>
