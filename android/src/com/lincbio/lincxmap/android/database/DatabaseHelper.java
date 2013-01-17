@@ -1,6 +1,7 @@
 package com.lincbio.lincxmap.android.database;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.lincbio.lincxmap.LincXmapException;
@@ -195,6 +196,42 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		try {
 			c = db.query(TABLE_HISTORY, TABLE_HISTORY_COLS, null, null, null,
 					null, TABLE_COL_ID + " desc");
+
+			while (c.moveToNext()) {
+				list.add(new History(c.getLong(0), c.getLong(1),
+						c.getString(2), c.getString(3), c.getString(4)));
+			}
+		} finally {
+			close(c);
+			close(db);
+		}
+
+		return list;
+	}
+
+	public List<History> getHistories(String key) {
+		List<Profile> profiles = getProfiles(key);
+
+		Cursor c = null;
+		SQLiteDatabase db = getReadableDatabase();
+		List<History> list = new ArrayList<History>();
+		StringBuilder sql = new StringBuilder(TABLE_COL_PROFILE_ID);
+
+		sql.append(" in (");
+
+		for (Iterator<Profile> it = profiles.iterator(); it.hasNext();) {
+			sql.append(String.valueOf(it.next().getId()));
+
+			if (it.hasNext()) {
+				sql.append(",");
+			}
+		}
+
+		sql.append(")");
+
+		try {
+			c = db.query(TABLE_HISTORY, TABLE_HISTORY_COLS, sql.toString(),
+					null, null, null, TABLE_COL_ID + " desc");
 
 			while (c.moveToNext()) {
 				list.add(new History(c.getLong(0), c.getLong(1),

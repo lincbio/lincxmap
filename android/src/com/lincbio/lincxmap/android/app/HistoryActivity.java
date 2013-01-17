@@ -8,13 +8,12 @@ import com.lincbio.lincxmap.android.widget.GenericListAdapter;
 import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Profile;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -22,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
@@ -32,7 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author Johnson Lee
  * 
  */
-public class HistoryActivity extends ListActivity implements Constants {
+public class HistoryActivity extends Activity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final ReportGenerator reporter = new ReportGenerator(this);
 	private final MenuManager menuManager = new MenuManager(this) {
@@ -49,8 +49,8 @@ public class HistoryActivity extends ListActivity implements Constants {
 				createDeleteAllDialog().show();
 				break;
 			case R.id.menu_send_result: {
-				History history = (History) getListView().getItemAtPosition(
-						menuInfo.position);
+				History history = (History) historyView
+						.getItemAtPosition(menuInfo.position);
 				String subject = getString(R.string.title_send_result);
 				String content = reporter.generateReport(history.getId());
 				Intent intent = new Intent(Intent.ACTION_SEND);
@@ -62,8 +62,8 @@ public class HistoryActivity extends ListActivity implements Constants {
 				break;
 			}
 			case R.id.menu_del_history: {
-				History history = (History) getListView().getItemAtPosition(
-						menuInfo.position);
+				History history = (History) historyView
+						.getItemAtPosition(menuInfo.position);
 				createDeleteHistoryDialog(history).show();
 				break;
 			}
@@ -72,16 +72,20 @@ public class HistoryActivity extends ListActivity implements Constants {
 
 	};
 
+	private EditText txtSearch;
+	private ListView historyView;
 	private GenericListAdapter<History> historyAdapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.getListView().setCacheColorHint(Color.TRANSPARENT);
+		this.setContentView(R.layout.history);
 		this.historyAdapter = new GenericListAdapter<History>(this,
 				R.layout.history_item);
-		this.setListAdapter(this.historyAdapter);
-		this.getListView().setOnItemClickListener(new OnItemClickListener() {
+		this.txtSearch = (EditText) findViewById(R.id.history_search);
+		this.historyView = (ListView) findViewById(R.id.history_list);
+		this.historyView.setAdapter(this.historyAdapter);
+		this.historyView.setOnItemClickListener(new OnItemClickListener() {
 			Context ctx = HistoryActivity.this;
 
 			@Override
@@ -94,7 +98,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 			}
 
 		});
-		this.registerForContextMenu(this.getListView());
+		this.registerForContextMenu(this.historyView);
 	}
 
 	public HistoryActivity() {
@@ -112,7 +116,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 			ContextMenuInfo menuInfo) {
 		int position = ((AdapterContextMenuInfo) menuInfo).position;
 		History history = (History) ((ListView) v).getItemAtPosition(position);
-		menu.setHeaderTitle(history.getOwner() + " " + history.getLabel());
+		menu.setHeaderTitle(history.getOwner() + "-" + history.getLabel());
 		this.menuManager.createMenu(menu, R.menu.ctx_history);
 		super.onCreateContextMenu(menu, v, menuInfo);
 	}
@@ -144,6 +148,20 @@ public class HistoryActivity extends ListActivity implements Constants {
 		}
 	}
 
+	public void onButtonDeleteClick(View view) {
+		this.createDeleteAllDialog().show();
+	}
+	
+	public void onButtonSearchClick(View view) {
+		String text = this.txtSearch.getText().toString();
+		
+		if (text.trim().length() <= 0) {
+			this.historyAdapter.reset(this.dbHelper.getHistories());
+		} else {
+			this.historyAdapter.reset(this.dbHelper.getHistories(text));
+		}
+	}
+	
 	private AlertDialog.Builder createDeleteAllDialog() {
 		OnClickListener clearAllOK = new OnClickListener() {
 			@Override
@@ -156,7 +174,7 @@ public class HistoryActivity extends ListActivity implements Constants {
 		return new AlertDialog.Builder(HistoryActivity.this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle(android.R.string.dialog_alert_title)
-				.setMessage(R.string.msg_confirm_clear)
+				.setMessage(R.string.msg_confirm_delete_all)
 				.setPositiveButton(android.R.string.ok, clearAllOK)
 				.setNegativeButton(android.R.string.cancel, MenuManager.CANCEL);
 	}

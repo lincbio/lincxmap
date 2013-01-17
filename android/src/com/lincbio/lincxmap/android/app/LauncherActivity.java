@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -89,6 +90,7 @@ public class LauncherActivity extends ActivityGroup implements Constants,
 		BitmapFactory.decodeResource(getResources(), R.drawable.cursor, opts);
 		this.cursorWidth = opts.outWidth;
 
+		ImageView sep;
 		ImageView icon;
 		TextView label;
 
@@ -119,6 +121,14 @@ public class LauncherActivity extends ActivityGroup implements Constants,
 			label.setText(ri.activityInfo.labelRes);
 			this.toolbar.addView(item);
 
+			if (i < items.size() - 1) {
+				sep = new ImageView(this);
+				sep.setImageResource(R.drawable.bg_toolbar_sep);
+				sep.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
+						LayoutParams.MATCH_PARENT));
+				this.toolbar.addView(sep);
+			}
+			
 			intent = new Intent();
 			intent.setClassName(ai.packageName, ai.name);
 			Window win = lam.startActivity(ai.name, intent);

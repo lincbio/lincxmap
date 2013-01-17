@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:background="@drawable/bg_searchbar"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/padding_medium"
+        android:paddingLeft="@dimen/padding_medium"
+        android:paddingTop="@dimen/padding_medium" >
+
+        <ImageView
+            android:layout_width="54px"
+            android:layout_height="44px"
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/bg_textbox_head"
+            android:onClick="onButtonDeleteClick"
+            android:src="@android:drawable/ic_menu_delete" />
+
+        <EditText
+            android:id="@+id/history_search"
+            android:layout_width="match_parent"
+            android:layout_height="44px"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:background="@drawable/bg_textbox_center"
+            android:drawableLeft="@drawable/bg_textbox_left"
+            android:drawableRight="@drawable/bg_textbox_right"
+            android:hint="@string/hint_profile_name_or_sn"
+            android:singleLine="true"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <ImageView
+            android:layout_width="54px"
+            android:layout_height="44px"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0"
+            android:onClick="onButtonSearchClick"
+            android:src="@android:drawable/ic_menu_search" />
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/history_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:cacheColorHint="@android:color/transparent" >
+    </ListView>
+
+</LinearLayout>

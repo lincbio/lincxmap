@@ -45,7 +45,7 @@
     
     <string name="label_toolbar_template">模板</string>
     <string name="label_toolbar_product">产品</string>
-    <string name="label_toolbar_history">查询</string>
+    <string name="label_toolbar_history">历史</string>
     <string name="label_toolbar_profile">档案</string>
 
     <string name="title_add_product">添加产品</string>
@@ -82,8 +82,8 @@
     <string name="msg_add_profile_succeed">添加档案成功</string>
     <string name="msg_template_name_required">模板名称不能为空</string>
     <string name="msg_detecting">正在检测中&#8230;</string>
-    <string name="msg_confirm_clear">确定全部清空吗？</string>
     <string name="msg_confirm_delete">确定删除吗？</string>
+    <string name="msg_confirm_delete_all">确定全部删除吗？</string>
     <string name="msg_profile_name_required">档案姓名不能为空</string>
     <string name="msg_profile_sn_required">档案编号不能为空</string>
     <string name="msg_product_catalog_required">产品目录不能为空</string>

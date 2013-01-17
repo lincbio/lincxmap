@@ -35,9 +35,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.HistoryActivity"
-            android:icon="@android:drawable/ic_menu_search"
-            android:label="@string/label_toolbar_history" >
+            android:name=".android.app.ProfileActivity"
+            android:icon="@android:drawable/ic_menu_save"
+            android:label="@string/label_toolbar_profile" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -45,9 +45,9 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.ProfileActivity"
-            android:icon="@android:drawable/ic_menu_save"
-            android:label="@string/label_toolbar_profile" >
+            android:name=".android.app.HistoryActivity"
+            android:icon="@android:drawable/ic_menu_recent_history"
+            android:label="@string/label_toolbar_history" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
