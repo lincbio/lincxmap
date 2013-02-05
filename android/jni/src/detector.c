@@ -38,6 +38,8 @@ typedef struct
 #ifndef NDEBUG
 static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
 {
+	TRACE();
+
 	uint32_t w = (*image)->getwidth(image);
 	uint32_t h = (*image)->getheight(image);
 	uint32_t n = (*image)->getnchannels(image);
@@ -59,6 +61,8 @@ static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
  */
 static int lincxmap_detector_choose_channel(histogram_t *hist)
 {
+	TRACE();
+
 	int i, nth;
 
 	for (i = nth = 0; i < (*hist)->nchannels; i++) {
@@ -73,12 +77,16 @@ static int lincxmap_detector_choose_channel(histogram_t *hist)
 
 static struct sample* lincxmap_detector_auto(detector_t *self, image_t *image)
 {
+	TRACE();
+
 	// TODO detect automatically
 	return NULL;
 }
 
 static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image, struct selectors *sa)
 {
+	TRACE();
+
 	int nos; 							// number of sample
 	int dx, dy;							// delta between outer square and inner square
 	int w, h, x, y;						// bounds of inner square
@@ -113,8 +121,7 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 
 	DEBUG("Image size: %d x %d : %d [%d]\n", dim[0], dim[1], dim[2], nchannels);
 
-#ifndef NDEBUG
-	
+#if 0
 	int fd = open(TEST_PGM_FILE, O_CREAT | O_RDWR);
 	if (fd <= 0)
 		goto skip_debug;
@@ -176,6 +183,8 @@ skip_debug:
 
 static struct sample* lincxmap_detector_detect(detector_t *self, image_t *image, struct selectors *sa)
 {
+	TRACE();
+
 	assert(self && *self);
 	assert(image);
 
@@ -188,6 +197,8 @@ static struct sample* lincxmap_detector_detect(detector_t *self, image_t *image,
 
 static void lincxmap_detector_free(detector_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	free(*self);
@@ -196,6 +207,8 @@ static void lincxmap_detector_free(detector_t *self)
 
 extern detector_t detector_new()
 {
+	TRACE();
+
 	const static struct __detector ks_detector = {
 		detect : lincxmap_detector_detect,
 		free   : lincxmap_detector_free,

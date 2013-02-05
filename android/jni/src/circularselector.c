@@ -28,6 +28,8 @@ typedef struct
 
 static int lincxmap_circular_selector_contains(selector_t *self, uint32_t x, uint32_t y)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	float x0, y0;
@@ -42,6 +44,8 @@ static int lincxmap_circular_selector_contains(selector_t *self, uint32_t x, uin
 
 static void lincxmap_circular_selector_free(selector_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	circular_selector_t *cs = (circular_selector_t*) *self;
@@ -55,6 +59,8 @@ static void lincxmap_circular_selector_free(selector_t *self)
 
 static struct rectangle* lincxmap_circular_selector_get_bounds(selector_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return &((circular_selector_t*) *self)->bounds;
@@ -62,6 +68,8 @@ static struct rectangle* lincxmap_circular_selector_get_bounds(selector_t *self)
 
 static const char* lincxmap_circular_selector_get_name(selector_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((circular_selector_t*) *self)->name;
@@ -69,6 +77,8 @@ static const char* lincxmap_circular_selector_get_name(selector_t *self)
 
 static void lincxmap_circular_selector_set_bounds(selector_t *self, struct rectangle *bounds)
 {
+	TRACE();
+
 	assert(self && *self);
 	assert(bounds);
 
@@ -77,6 +87,8 @@ static void lincxmap_circular_selector_set_bounds(selector_t *self, struct recta
 
 static void lincxmap_circular_selector_set_name(selector_t *self, const char *name, size_t len)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	char *buf, *tmp;
@@ -98,6 +110,8 @@ static void lincxmap_circular_selector_set_name(selector_t *self, const char *na
 
 selector_t circular_selector_new(float radius)
 {
+	TRACE();
+
 
 	const static struct selector ks_cselector = {
 		contains  : lincxmap_circular_selector_contains,

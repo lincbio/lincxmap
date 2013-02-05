@@ -13,17 +13,23 @@
 #ifndef __LINCXMAP_LOG_H__
 #define __LINCXMAP_LOG_H__
 
+#ifdef NDEBUG
+#  define DEBUG(fmt, ...)
+#  define TRACE()
+#endif /* NDEBUG */
+
 #ifdef __ANDROID__
 
 #include <android/log.h>
 
 #define __LOG_TAG__ __FILE__
 
-#ifdef NDEBUG
-#define DEBUG(fmt, ...)
-#else /* NDEBUG */
+#ifndef NDEBUG
 #define DEBUG(fmt, ...) \
 	__android_log_print(ANDROID_LOG_DEBUG, __LOG_TAG__, fmt, ##__VA_ARGS__)
+
+#define TRACE() \
+	__android_log_print(ANDROID_LOG_DEBUG, __LOG_TAG__, "%s(%d)", __FUNCTION__, __LINE__)
 #endif /* !NDEBUG */
 
 #define INFO(fmt, ...) \
@@ -34,12 +40,13 @@
 
 #else /* __ANDROID__ */
 
-#ifdef NDEBUG
-#define DEBUG(fmt, ...)
-#else /* NDEBUG */
+#ifndef NDEBUG
 #define DEBUG(fmt, ...) \
-	printf("%s:%d#%s: ", __FILE__, __LINE__, __FUNCTION__); \
+	printf("%s#%s(%d): ", __FILE__, __FUNCTION__, __LINE__); \
 	printf(fmt, ##__VA_ARGS__)
+
+#define TRACE() \
+	printf("%s#%s(%d): ", __FILE__, __FUNCTION__, __LINE__);
 #endif /* !NDEBUG */
 
 #define INFO(fmt, ...) \
@@ -53,3 +60,4 @@
 #endif /* !__ANDROID__ */
 
 #endif /* __LINCXMAP_LOG_H__ */
+

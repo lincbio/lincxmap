@@ -28,6 +28,8 @@
 JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		jobject jbmp, jobject jtpl, jobjectArray jsela)
 {
+	TRACE();
+
 	int i;
 	char *name, buf[256];
 	float dx, dy, scaling;
@@ -128,6 +130,8 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
 static void lincxmap_native_init(JNIEnv *env)
 {
+	TRACE();
+
 	cls_string = (*env)->FindClass(env, CLASS_STRING);
 	cls_array_list = (*env)->FindClass(env, CLASS_ARRAY_LIST);
 	cls_bitmap = (*env)->FindClass(env, CLASS_BITMAP);
@@ -176,6 +180,8 @@ static void lincxmap_native_init(JNIEnv *env)
 
 static void lincxmap_native_register(JNIEnv *env)
 {
+	TRACE();
+
 	const static JNINativeMethod ks_methods[] = {
 		{ "detect", SIG_DETECT, (void*) native_detect },
 	};
@@ -186,6 +192,8 @@ static void lincxmap_native_register(JNIEnv *env)
 
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
+	TRACE();
+
 	const static jint ver = JNI_VERSION_1_4;
 
 	JNIEnv *env = NULL;

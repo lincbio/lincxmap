@@ -35,6 +35,8 @@ typedef struct
 
 static image_t lincxmap_pixbuf_equalize(image_t *self, histogram_t *hist)
 {
+	TRACE();
+
 	assert(self && *self);
 	assert(hist && *hist);
 
@@ -43,6 +45,8 @@ static image_t lincxmap_pixbuf_equalize(image_t *self, histogram_t *hist)
 
 static void lincxmap_pixbuf_free(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	pixbuf_t *pbf = (pixbuf_t*) *self;
@@ -57,6 +61,8 @@ static void lincxmap_pixbuf_free(image_t *self)
 
 static histogram_t lincxmap_pixbuf_get_histogram(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	int i, j, k, x, y;
@@ -106,8 +112,10 @@ static histogram_t lincxmap_pixbuf_get_histogram(image_t *self)
 
 		hist->stddev[i] = sqrt(hist->stddev[i] / 256);
 
-		INFO("The Entropy [%d] : %lf\n", i, hist->entropy[i]);
-		INFO("The Standard Deviation [%d] : %lf\n", i, hist->stddev[i]);
+		DEBUG("The Minimum [%d] : %d\n", i, hist->min[i]);
+		DEBUG("The Maximum [%d] : %d\n", i, hist->max[i]);
+		DEBUG("The Entropy [%d] : %lf\n", i, hist->entropy[i]);
+		DEBUG("The Standard Deviation [%d] : %lf\n", i, hist->stddev[i]);
 	}
 
 	return hist;
@@ -115,6 +123,8 @@ static histogram_t lincxmap_pixbuf_get_histogram(image_t *self)
 
 static uint32_t lincxmap_pixbuf_get_n_channels(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->nchannels;
@@ -122,6 +132,8 @@ static uint32_t lincxmap_pixbuf_get_n_channels(image_t *self)
 
 static image_t lincxmap_pixbuf_get_channel(image_t *self, uint32_t nth)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	int x, y;
@@ -146,6 +158,8 @@ static image_t lincxmap_pixbuf_get_channel(image_t *self, uint32_t nth)
 
 static uint32_t lincxmap_pixbuf_get_height(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->size[1];
@@ -153,6 +167,8 @@ static uint32_t lincxmap_pixbuf_get_height(image_t *self)
 
 static uint32_t lincxmap_pixbuf_get_pixel(image_t *self, uint32_t x, uint32_t y)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	pixbuf_t *pbf = (pixbuf_t*) *self;
@@ -166,6 +182,8 @@ static uint32_t lincxmap_pixbuf_get_pixel(image_t *self, uint32_t x, uint32_t y)
 
 static uint8_t* lincxmap_pixbuf_get_pixels(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->data;
@@ -173,6 +191,8 @@ static uint8_t* lincxmap_pixbuf_get_pixels(image_t *self)
 
 static uint32_t lincxmap_pixbuf_get_stride(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->stride;
@@ -180,6 +200,8 @@ static uint32_t lincxmap_pixbuf_get_stride(image_t *self)
 
 static uint32_t lincxmap_pixbuf_get_width(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->size[0];
@@ -187,6 +209,8 @@ static uint32_t lincxmap_pixbuf_get_width(image_t *self)
 
 static image_type_t lincxamp_pixbuf_get_type(image_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	return ((pixbuf_t*) *self)->type;
@@ -194,6 +218,8 @@ static image_type_t lincxamp_pixbuf_get_type(image_t *self)
 
 static void lincxmap_pixbuf_set_pixel(image_t *self, uint32_t x, uint32_t y, uint32_t color)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	pixbuf_t *pbf = (pixbuf_t*) *self;
@@ -204,6 +230,8 @@ static void lincxmap_pixbuf_set_pixel(image_t *self, uint32_t x, uint32_t y, uin
 
 static void lincxmap_pixbuf_set_pixels(image_t *self, const uint8_t *pixels, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
+	TRACE();
+
 	assert(self && *self);
 	assert(pixels);
 	assert(stride >= w);
@@ -213,21 +241,29 @@ static void lincxmap_pixbuf_set_pixels(image_t *self, const uint8_t *pixels, uin
 
 static image_t lincxmap_pixbuf_mean_smooth(image_t *self, va_list ap)
 {
+	TRACE();
+
 	return *self;
 }
 
 static image_t lincxmap_pixbuf_median_smooth(image_t *self, va_list ap)
 {
+	TRACE();
+
 	return *self;
 }
 
 static image_t lincxmap_pixbuf_gauss_smooth(image_t *self, va_list ap)
 {
+	TRACE();
+
 	return *self;
 }
 
 static image_t lincxmap_pixbuf_smooth(image_t *self, image_smooth_type_t type, ...)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	image_t out;
@@ -257,6 +293,8 @@ static image_t lincxmap_pixbuf_smooth(image_t *self, image_smooth_type_t type, .
 
 static int lincxmap_pixbuf_write(image_t *self, int fd, image_writer_t *writer)
 {
+	TRACE();
+
 	assert(self && *self);
 	assert(fd >= 0);
 	assert(writer);
@@ -266,6 +304,8 @@ static int lincxmap_pixbuf_write(image_t *self, int fd, image_writer_t *writer)
 
 image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
 {
+	TRACE();
+
 	const static struct image ks_image = {
 		equalize     : lincxmap_pixbuf_equalize,
 		free         : lincxmap_pixbuf_free,

@@ -14,12 +14,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <log.h>
 #include <selectors.h>
 
 void selectors_free(struct selectors **sela)
 {
-	if (NULL == sela || NULL == *sela)
-		return;
+	TRACE();
+
+	assert(sela && *sela);
 
 	struct selectors *i, *sel;
 
@@ -29,5 +31,7 @@ void selectors_free(struct selectors **sela)
 		sel->selector->free(&sel->selector);
 		free(sel);
 	}
+
 	*sela = NULL;
 }
+

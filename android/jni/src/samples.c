@@ -19,6 +19,8 @@
 
 void samples_add(struct sample **smpa, struct sample *smp)
 {
+	TRACE();
+
 	assert(smpa && *smpa);
 	assert(smp);
 
@@ -28,6 +30,8 @@ void samples_add(struct sample **smpa, struct sample *smp)
 
 void samples_free(struct sample **smpa)
 {
+	TRACE();
+
 	assert(smpa && *smpa);
 
 	struct sample *i, *smp;

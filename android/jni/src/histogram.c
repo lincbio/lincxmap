@@ -19,6 +19,8 @@
 
 static void lincxmap_histogram_free(histogram_t *self)
 {
+	TRACE();
+
 	assert(self && *self);
 
 	if ((*self)->avg)
@@ -51,6 +53,8 @@ static void lincxmap_histogram_free(histogram_t *self)
 
 static histogram_t lincxmap_histogram_new(uint32_t channel)
 {
+	TRACE();
+
 	uint32_t *nchannels;
 	histogram_t hist = calloc(1, sizeof(struct histogram));
 
