@@ -1,41 +1,133 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="@dimen/padding_medium" >
+    android:orientation="vertical" >
 
-    <TableRow
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="match_parent"
+        android:layout_weight="1" >
 
-        <TextView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/label_product_catalog" />
+            android:orientation="vertical"
+            android:padding="@dimen/padding_medium" >
 
-        <EditText
-            android:id="@+id/product_catalog"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </TableRow>
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
 
-    <TableRow
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:text="@string/label_product_catalog" />
+
+                    <EditText
+                        android:id="@+id/product_catalog"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:text="@string/label_product_name" />
+
+                    <EditText
+                        android:id="@+id/product_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </TableRow>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="0"
+                        android:text="@string/label_product_model" />
+
+                    <Spinner
+                        android:id="@+id/product_model"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:entries="@array/product_models" />
+                </TableRow>
+            </TableLayout>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/divider_horizontal_bright" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/label_product_args" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0"
+                    android:onClick="onButtonAddArgClick"
+                    android:src="@android:drawable/ic_menu_add" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/product_args"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical" />
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_medium" >
 
-        <TextView
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="0"
-            android:text="@string/label_product_name" />
+            android:layout_weight="1"
+            android:onClick="onButtonOkClick"
+            android:text="@string/button_ok" />
 
-        <EditText
-            android:id="@+id/product_name"
+        <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1" />
-    </TableRow>
+            android:layout_weight="1"
+            android:onClick="onButtonCancelClick"
+            android:text="@string/button_cancel" />
+    </LinearLayout>
 
-</TableLayout>
+</LinearLayout>

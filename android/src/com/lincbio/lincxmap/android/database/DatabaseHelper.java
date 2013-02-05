@@ -11,6 +11,7 @@ import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.pojo.Catalog;
 import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Product;
+import com.lincbio.lincxmap.pojo.ProductArgument;
 import com.lincbio.lincxmap.pojo.Profile;
 import com.lincbio.lincxmap.pojo.Result;
 import com.lincbio.lincxmap.pojo.Sample;
@@ -409,6 +410,29 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return list;
 	}
 
+	public List<ProductArgument> getProductArguments(long productId) {
+		Cursor c = null;
+		SQLiteDatabase db = getReadableDatabase();
+		String sql = TABLE_COL_PRODUCT_ID + "=?";
+		String[] args = { String.valueOf(productId) };
+		List<ProductArgument> list = new ArrayList<ProductArgument>();
+
+		try {
+			c = db.query(TABLE_PRODUCT_ARG, TABLE_PRODUCT_ARG_COLS, sql, args,
+					null, null, null);
+
+			while (c.moveToNext()) {
+				list.add(new ProductArgument(c.getLong(0), c.getLong(1), c
+						.getInt(2), c.getString(3)));
+			}
+		} finally {
+			close(c);
+			close(db);
+		}
+
+		return list;
+	}
+
 	public List<Result> getResults(long historyId) {
 		Cursor c = null;
 		SQLiteDatabase db = getReadableDatabase();
@@ -471,23 +495,34 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		return catalog.getId();
 	}
 
-	public long addProduct(Product product) {
-		SQLiteDatabase db = getWritableDatabase();
+	public long addProduct(final Product product,
+			final List<ProductArgument> productArgs) {
+		this.execute(new Transaction() {
 
-		try {
-			ContentValues values = new ContentValues();
-			values.putNull(TABLE_COL_ID);
-			values.put(TABLE_COL_CATALOGUE_ID, product.getCatalogId());
-			values.put(TABLE_COL_NAME, product.getName());
-			product.setId(db.insert(TABLE_CATALOG, null, values));
-		} finally {
-			close(db);
-		}
+			@Override
+			public void run(SQLiteDatabase db) throws Exception {
+				ContentValues values = new ContentValues();
+				values.putNull(TABLE_COL_ID);
+				values.put(TABLE_COL_CATALOGUE_ID, product.getCatalogId());
+				values.put(TABLE_COL_NAME, product.getName());
+				product.setId(db.insert(TABLE_PRODUCT, null, values));
+
+				for (ProductArgument arg : productArgs) {
+					ContentValues cv = new ContentValues();
+					cv.putNull(TABLE_COL_ID);
+					cv.put(TABLE_COL_PRODUCT_ID, product.getId());
+					cv.put(TABLE_COL_INDEX, arg.getIndex());
+					cv.put(TABLE_COL_VALUE, arg.getValue());
+					arg.setId(db.insert(TABLE_PRODUCT_ARG, null, cv));
+				}
+			}
+		});
 
 		return product.getId();
 	}
 
-	public void addProduct(final String catalog, final Product product) {
+	public void addProduct(final String catalog, final Product product,
+			final List<ProductArgument> productArgs) {
 		this.execute(new Transaction() {
 
 			@Override
@@ -520,6 +555,15 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				values.put(TABLE_COL_CATALOGUE_ID, product.getCatalogId());
 				values.put(TABLE_COL_NAME, product.getName());
 				product.setId(db.insert(TABLE_PRODUCT, null, values));
+
+				for (ProductArgument arg : productArgs) {
+					ContentValues cv = new ContentValues();
+					cv.putNull(TABLE_COL_ID);
+					cv.put(TABLE_COL_PRODUCT_ID, product.getId());
+					cv.put(TABLE_COL_INDEX, arg.getIndex());
+					cv.put(TABLE_COL_VALUE, arg.getValue());
+					arg.setId(db.insert(TABLE_PRODUCT_ARG, null, cv));
+				}
 			}
 		});
 	}
@@ -681,14 +725,17 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 	}
 
 	public void deleteProduct(final Product product) {
-		SQLiteDatabase db = getWritableDatabase();
-		String[] args = { String.valueOf(product.getId()) };
+		this.execute(new Transaction() {
 
-		try {
-			db.delete(TABLE_PRODUCT, TABLE_COL_ID + "=?", args);
-		} finally {
-			close(db);
-		}
+			@Override
+			public void run(SQLiteDatabase db) throws Exception {
+				String[] args = { String.valueOf(product.getId()) };
+
+				db.delete(TABLE_PRODUCT_ARG, TABLE_COL_PRODUCT_ID + "=?", args);
+				db.delete(TABLE_PRODUCT, TABLE_COL_ID + "=?", args);
+			}
+
+		});
 	}
 
 	public void deleteHistory(final History history) {
@@ -698,8 +745,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 			public void run(SQLiteDatabase db) throws Exception {
 				String[] args = { String.valueOf(history.getId()) };
 
-				db.delete(TABLE_HISTORY, TABLE_COL_ID + "=?", args);
 				db.delete(TABLE_RESULT, TABLE_COL_HISTORY_ID + "=?", args);
+				db.delete(TABLE_HISTORY, TABLE_COL_ID + "=?", args);
 			}
 
 		});
@@ -761,6 +808,12 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				+ " integer primary key autoincrement not null, "
 				+ TABLE_COL_CATALOGUE_ID + " integer not null, "
 				+ TABLE_COL_NAME + " text not null)");
+		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCT_ARG + "("
+				+ TABLE_COL_ID
+				+ " integer primary key autoincrement not null, "
+				+ TABLE_COL_PRODUCT_ID + " integer not null, "
+				+ TABLE_COL_INDEX + " integer not null, " + TABLE_COL_VALUE
+				+ " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PROFILE + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "

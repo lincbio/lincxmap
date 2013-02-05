@@ -5,15 +5,16 @@
         <item>拍照</item>
         <item>相册</item>
     </string-array>
-
     <string-array name="array_detection_policy_names">
         <item>自动</item>
         <item>手动</item>
     </string-array>
-
     <string-array name="array_sample_identifier_names">
         <item>索引</item>
         <item>名称</item>
+    </string-array>
+    <string-array name="product_models">
+        <item>线性</item>
     </string-array>
 
 </resources>

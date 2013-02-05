@@ -32,7 +32,7 @@ import android.widget.ListView;
  * @author Johnson Lee
  * 
  */
-public class ProfileActivity extends Activity implements Constants {
+public class ProfileListActivity extends Activity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final MenuManager menuManager = new MenuManager(this) {
 
@@ -66,13 +66,13 @@ public class ProfileActivity extends Activity implements Constants {
 		this.txtSearch = (EditText) findViewById(R.id.profile_search);
 		this.profileView = (ListView) findViewById(R.id.profile_list);
 		this.profileView.setOnItemClickListener(new OnItemClickListener() {
-			Context ctx = ProfileActivity.this;
+			Context ctx = ProfileListActivity.this;
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
 					int position, long id) {
 				Profile profile = (Profile) parent.getItemAtPosition(position);
-				Intent intent = new Intent(ctx, HistoryActivity.class);
+				Intent intent = new Intent(ctx, HistoryListActivity.class);
 				intent.putExtra(PARAM_PROFILE_OBJECT, profile);
 				startActivity(intent);
 			}
@@ -129,7 +129,7 @@ public class ProfileActivity extends Activity implements Constants {
 		final EditText txtSn = (EditText) v.findViewById(R.id.profile_sn);
 
 		OnClickListener ok = new OnClickListener() {
-			Context ctx = ProfileActivity.this;
+			Context ctx = ProfileListActivity.this;
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
@@ -175,7 +175,7 @@ public class ProfileActivity extends Activity implements Constants {
 
 		};
 
-		return new AlertDialog.Builder(ProfileActivity.this)
+		return new AlertDialog.Builder(ProfileListActivity.this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle(android.R.string.dialog_alert_title)
 				.setMessage(R.string.msg_confirm_delete)

@@ -32,7 +32,7 @@ import android.widget.AdapterView.OnItemClickListener;
  * @author Johnson Lee
  * 
  */
-public class HistoryActivity extends Activity implements Constants {
+public class HistoryListActivity extends Activity implements Constants {
 	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
 	private final ReportGenerator reporter = new ReportGenerator(this);
 	private final MenuManager menuManager = new MenuManager(this) {
@@ -86,7 +86,7 @@ public class HistoryActivity extends Activity implements Constants {
 		this.historyView = (ListView) findViewById(R.id.history_list);
 		this.historyView.setAdapter(this.historyAdapter);
 		this.historyView.setOnItemClickListener(new OnItemClickListener() {
-			Context ctx = HistoryActivity.this;
+			Context ctx = HistoryListActivity.this;
 
 			@Override
 			public void onItemClick(AdapterView<?> parent, View view,
@@ -101,7 +101,7 @@ public class HistoryActivity extends Activity implements Constants {
 		this.registerForContextMenu(this.historyView);
 	}
 
-	public HistoryActivity() {
+	public HistoryListActivity() {
 		this.reporter.setDatabaseHelper(this.dbHelper);
 	}
 
@@ -171,7 +171,7 @@ public class HistoryActivity extends Activity implements Constants {
 			}
 		};
 
-		return new AlertDialog.Builder(HistoryActivity.this)
+		return new AlertDialog.Builder(HistoryListActivity.this)
 				.setIcon(android.R.drawable.ic_dialog_alert)
 				.setTitle(android.R.string.dialog_alert_title)
 				.setMessage(R.string.msg_confirm_delete_all)
@@ -190,7 +190,7 @@ public class HistoryActivity extends Activity implements Constants {
 
 		};
 
-		return new AlertDialog.Builder(HistoryActivity.this)
+		return new AlertDialog.Builder(HistoryListActivity.this)
 				.setTitle(android.R.string.dialog_alert_title)
 				.setMessage(R.string.msg_confirm_delete)
 				.setIcon(android.R.drawable.ic_dialog_alert)

@@ -15,7 +15,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".android.app.TemplateActivity"
+            android:name=".android.app.TemplateListActivity"
             android:icon="@android:drawable/ic_menu_slideshow"
             android:label="@string/title_template_list" >
             <intent-filter>
@@ -25,7 +25,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.ProductActivity"
+            android:name=".android.app.ProductListActivity"
             android:icon="@android:drawable/ic_menu_agenda"
             android:label="@string/title_product_list" >
             <intent-filter>
@@ -35,7 +35,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.ProfileActivity"
+            android:name=".android.app.ProfileListActivity"
             android:icon="@android:drawable/ic_menu_save"
             android:label="@string/title_profile_list" >
             <intent-filter>
@@ -45,7 +45,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".android.app.HistoryActivity"
+            android:name=".android.app.HistoryListActivity"
             android:icon="@android:drawable/ic_menu_recent_history"
             android:label="@string/title_history_list" >
             <intent-filter>
@@ -71,6 +71,9 @@
             android:name=".android.app.LauncherActivity"
             android:label="@string/title_launcher" >
         </activity>
+        <activity
+            android:name=".android.app.ProductActivity"
+            android:label="@string/title_product" />
         <activity
             android:name=".android.app.ProfileChooser"
             android:label="@string/title_choose_profile"

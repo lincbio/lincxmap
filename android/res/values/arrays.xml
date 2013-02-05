@@ -5,25 +5,24 @@
         <item>Capture</item>
         <item>Gallery</item>
     </string-array>
-
     <string-array name="array_detection_policy_names">
         <item>Auto</item>
         <item>Manual</item>
     </string-array>
-
     <string-array name="array_detection_policy_values">
         <item>0</item>
         <item>1</item>
     </string-array>
-
     <string-array name="array_sample_identifier_names">
         <item>Index</item>
         <item>Name</item>
     </string-array>
-
     <string-array name="array_sample_identifier_values">
         <item>0</item>
         <item>1</item>
+    </string-array>
+    <string-array name="product_models">
+        <item>Linear</item>
     </string-array>
 
 </resources>

@@ -1,97 +1,46 @@
 package com.lincbio.lincxmap.android.app;
 
 import java.io.File;
-import java.io.Serializable;
+import java.util.List;
 
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.utils.FileUtils;
+import com.lincbio.lincxmap.android.utils.Toasts;
+import com.lincbio.lincxmap.android.view.FlowLayout;
 import com.lincbio.lincxmap.pojo.ImageSource;
 import com.lincbio.lincxmap.pojo.Template;
+import com.lincbio.lincxmap.pojo.TemplateItem;
 
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.view.ContextMenu;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 /**
- * Detection Template List UI
+ * Template list UI
  * 
  * @author Johnson Lee
  * 
  */
-public class TemplateListActivity extends ListActivity implements
-		OnItemClickListener, Constants {
-	private String image;
-	private Serializable template;
-	private DatabaseHelper dbHelper = new DatabaseHelper(this);
-	private MenuManager menuManager = new MenuManager(this) {
-		private final Context context = TemplateListActivity.this;
+public class TemplateListActivity extends Activity implements Constants {
+	private final DatabaseHelper dbHelper = new DatabaseHelper(this);
+	private final ImageSourceListener imgSrcListener = new ImageSourceListener();
 
-		@Override
-		@SuppressWarnings("unchecked")
-		public void onMenuItemSelected(MenuItem item) {
-			super.onMenuItemSelected(item);
-
-			Intent intent = item.getIntent();
-			if (null != intent) {
-				startActivity(intent);
-				return;
-			}
-
-			Template template = null;
-			ArrayAdapter<Template> adapter = (ArrayAdapter<Template>) getListAdapter();
-			AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo) item
-					.getMenuInfo();
-
-			if (null != menuInfo) {
-				Object obj = getListView().getItemAtPosition(menuInfo.position);
-
-				if (obj instanceof Template) {
-					template = (Template) obj;
-				}
-			}
-
-			switch (item.getItemId()) {
-			case R.id.menu_new_template:
-				intent = new Intent(context, TemplateSpecActivity.class);
-				startActivity(intent);
-				break;
-			case R.id.menu_mod_template:
-				intent = new Intent(context, TemplateSpecActivity.class);
-				intent.putExtra(PARAM_TEMPLATE_OBJECT, template);
-				startActivity(intent);
-				break;
-			case R.id.menu_del_template:
-				dbHelper.deleteTemplate(template.getId());
-				adapter.remove(template);
-				adapter.notifyDataSetChanged();
-				break;
-			}
-		}
-
-	};
+	private FlowLayout desktop;
+	private Template selectedTemplate;
+	private String selectedImage;
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -105,7 +54,7 @@ public class TemplateListActivity extends ListActivity implements
 				String scheme = uri.getScheme();
 
 				if ("file".equalsIgnoreCase(scheme)) {
-					this.image = uri.getPath();
+					this.selectedImage = uri.getPath();
 				} else if ("content".equalsIgnoreCase(scheme)) {
 					ContentResolver cr = getContentResolver();
 					Cursor c = cr.query(uri, null, null, null, null);
@@ -115,7 +64,7 @@ public class TemplateListActivity extends ListActivity implements
 
 					try {
 						if (c.moveToNext()) {
-							this.image = c.getString(1);
+							this.selectedImage = c.getString(1);
 						}
 					} finally {
 						c.close();
@@ -126,12 +75,17 @@ public class TemplateListActivity extends ListActivity implements
 				return;
 			}
 
-			if (null == this.image)
+			if (null == this.selectedImage)
 				return;
 
-			Intent intent = new Intent(this, DetectionActivity.class);
-			intent.putExtra(PARAM_IMAGE_SOURCE, this.image);
-			intent.putExtra(PARAM_TEMPLATE_OBJECT, this.template);
+			long id = this.selectedTemplate.getId();
+			List<TemplateItem> items = this.dbHelper.getTemplateItems(id);
+			this.selectedTemplate.getItems().clear();
+			this.selectedTemplate.getItems().addAll(items);
+
+			Intent intent = new Intent(this, ProfileChooser.class);
+			intent.putExtra(PARAM_IMAGE_SOURCE, this.selectedImage);
+			intent.putExtra(PARAM_TEMPLATE_OBJECT, this.selectedTemplate);
 			startActivity(intent);
 			break;
 		default:
@@ -143,114 +97,142 @@ public class TemplateListActivity extends ListActivity implements
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		ListView lstView = getListView();
-		LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-		View header = inflater.inflate(android.R.layout.simple_list_item_2,
-				null);
-		TextView text1 = (TextView) header.findViewById(android.R.id.text1);
-		TextView text2 = (TextView) header.findViewById(android.R.id.text2);
-
-		text1.setText(R.string.label_new_template);
-		text2.setText(R.string.label_new_template_detail);
-
-		lstView.addHeaderView(header);
-		lstView.setOnItemClickListener(this);
-		lstView.setCacheColorHint(Color.TRANSPARENT);
-		registerForContextMenu(lstView);
-	}
-
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		int position = ((AdapterContextMenuInfo) menuInfo).position;
-		Object obj = ((ListView) v).getItemAtPosition(position);
-
-		if (!(obj instanceof Template))
-			return;
-
-		menu.setHeaderTitle(((Template) obj).getName());
-		this.menuManager.createMenu(menu, R.menu.ctx_template_list);
-		super.onCreateContextMenu(menu, v, menuInfo);
-	}
-
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		this.menuManager.onMenuItemSelected(item);
-		return super.onContextItemSelected(item);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		this.menuManager.createMenu(menu, R.menu.opt_template_list);
-		return super.onCreateOptionsMenu(menu);
-	}
-
-	@Override
-	public void onItemClick(AdapterView<?> parent, View view, int position,
-			long id) {
-		final Object obj = parent.getItemAtPosition(position);
-
-		if (obj instanceof Template) {
-			this.template = (Template) obj;
-			CharSequence[] choices = getResources().getTextArray(
-					R.array.array_image_sources);
-			createImageSourceListDialog(choices).show();
-		} else {
-			startActivity(new Intent(this, TemplateSpecActivity.class));
-		}
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		this.menuManager.onMenuItemSelected(item);
-		return super.onOptionsItemSelected(item);
+		this.setContentView(R.layout.template);
+		this.desktop = (FlowLayout) findViewById(R.id.desktop);
 	}
 
 	@Override
 	protected void onStart() {
 		super.onStart();
-		setListAdapter(new ArrayAdapter<Template>(this,
-				android.R.layout.simple_list_item_single_choice,
-				this.dbHelper.getTemplates()));
-	}
 
-	@Override
-	protected void onDestroy() {
-		this.dbHelper.close();
-		super.onDestroy();
-	}
+		View item;
+		ImageView del;
+		ImageView icon;
+		TextView label;
 
-	private AlertDialog.Builder createImageSourceListDialog(
-			CharSequence[] choices) {
-		OnClickListener click = new OnClickListener() {
+		this.desktop.removeAllViews();
 
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				Intent intent = null;
+		// query database to fetch detection templates
+		String text = getString(R.string.label_new);
+		List<Template> templates = this.dbHelper.getTemplates();
+		templates.add(new Template(-1, text, 0, 0));
 
-				switch (which) {
-				case ImageSource.IMAGE_SOURCE_CAPTURE:
-					File f = FileUtils.newTempFile(".jpg");
-					intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-					intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(f));
-					TemplateListActivity.this.image = f.toString();
-					break;
-				case ImageSource.IMAGE_SOURCE_GALLERY:
-					intent = new Intent(Intent.ACTION_GET_CONTENT);
-					intent.setType("image/*");
-					break;
-				}
+		for (final Template tpl : templates) {
+			item = this.getLayoutInflater().inflate(R.layout.desktop_item,
+					this.desktop, false);
+			del = (ImageView) item.findViewById(R.id.desktop_item_del);
+			icon = (ImageView) item.findViewById(R.id.desktop_item_icon);
+			label = (TextView) item.findViewById(R.id.desktop_item_label);
+			label.setText(tpl.getName());
 
-				if (null == intent)
-					return;
-
-				startActivityForResult(intent, which);
+			if (-1 == tpl.getId()) {
+				icon.setImageResource(R.drawable.ic_desktop_add);
+				item.setOnClickListener(new NewTemplateListener());
+			} else {
+				del.setOnClickListener(new DeleteTemplateListener(tpl, item));
+				icon.setImageResource(R.drawable.ic_desktop);
+				item.setOnLongClickListener(new DesktopListener());
+				item.setOnClickListener(new DetectionWizardListener(tpl));
 			}
-		};
 
-		return new AlertDialog.Builder(this)
-				.setIcon(android.R.drawable.ic_dialog_alert)
-				.setTitle(R.string.title_choose_image).setItems(choices, click);
+			this.desktop.addView(item);
+		}
 	}
+
+	private final class DeleteTemplateListener implements OnClickListener {
+		private final Template template;
+		private final View item;
+
+		public DeleteTemplateListener(Template template, View item) {
+			this.template = template;
+			this.item = item;
+		}
+
+		@Override
+		public void onClick(View v) {
+			try {
+				dbHelper.deleteTemplate(this.template.getId());
+				desktop.removeView(this.item);
+			} catch (Throwable t) {
+				Toasts.show(TemplateListActivity.this, t);
+			}
+		}
+	}
+
+	private final class DesktopListener implements OnLongClickListener {
+
+		@Override
+		public boolean onLongClick(View v) {
+			View del = v.findViewById(R.id.desktop_item_del);
+			del.setVisibility(View.VISIBLE);
+			return true;
+		}
+
+	}
+
+	private final class DetectionWizardListener implements OnClickListener {
+		private final Template template;
+
+		public DetectionWizardListener(Template template) {
+			this.template = template;
+		}
+
+		@Override
+		public void onClick(View v) {
+			View del = v.findViewById(R.id.desktop_item_del);
+
+			if (null != del && View.VISIBLE == del.getVisibility()) {
+				del.setVisibility(View.GONE);
+				return;
+			}
+
+			CharSequence[] choices = getResources().getTextArray(
+					R.array.array_image_sources);
+			selectedTemplate = this.template;
+			new AlertDialog.Builder(TemplateListActivity.this)
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.setTitle(R.string.title_choose_image)
+					.setItems(choices, imgSrcListener).show();
+		}
+
+	}
+
+	private final class NewTemplateListener implements OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			Class<?> cls = TemplateSpecActivity.class;
+			startActivity(new Intent(TemplateListActivity.this, cls));
+		}
+
+	}
+
+	private final class ImageSourceListener implements
+			android.content.DialogInterface.OnClickListener {
+
+		@Override
+		public void onClick(DialogInterface dialog, int which) {
+			Intent intent = null;
+
+			switch (which) {
+			case ImageSource.IMAGE_SOURCE_CAPTURE:
+				File image = FileUtils.newTempFile(".jpg");
+				intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
+				selectedImage = image.toString();
+				break;
+			case ImageSource.IMAGE_SOURCE_GALLERY:
+				intent = new Intent(Intent.ACTION_GET_CONTENT);
+				intent.setType("image/*");
+				break;
+			}
+
+			if (null == intent)
+				return;
+
+			startActivityForResult(intent, which);
+		}
+
+	}
+
 }

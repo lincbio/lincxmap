@@ -20,6 +20,8 @@ public interface Constants {
 
 	public static final String PARAM_CATALOG_ID = "catalog-id";
 
+	public static final String PARAM_CATALOG_OBJECT = "catalog-object";
+
 	public static final String PARAM_IMAGE_SOURCE = "image-source";
 
 	public static final String PARAM_HISTORY_ID = "history-id";
@@ -27,6 +29,8 @@ public interface Constants {
 	public static final String PARAM_HISTORY_OBJECT = "history-object";
 
 	public static final String PARAM_PRODUCT_ID = "product-id";
+
+	public static final String PARAM_PRODUCT_OBJECT = "product-object";
 
 	public static final String PARAM_PROFILE_OBJECT = "profile-object";
 
@@ -44,6 +48,8 @@ public interface Constants {
 
 	public static final String TABLE_PRODUCT = "product";
 
+	public static final String TABLE_PRODUCT_ARG = "product_arg";
+
 	public static final String TABLE_PROFILE = "profile";
 
 	public static final String TABLE_RESULT = "result";
@@ -57,6 +63,8 @@ public interface Constants {
 	public static final String TABLE_COL_CONCENTRATION = "concentration";
 
 	public static final String TABLE_COL_ID = "id";
+
+	public static final String TABLE_COL_INDEX = "idx";
 
 	public static final String TABLE_COL_NAME = "name";
 
@@ -88,6 +96,8 @@ public interface Constants {
 
 	public static final String TABLE_COL_TIME = "time";
 
+	public static final String TABLE_COL_VALUE = "value";
+
 	public static final String TABLE_COL_X = "x";
 
 	public static final String TABLE_COL_Y = "y";
@@ -101,6 +111,9 @@ public interface Constants {
 
 	public static final String[] TABLE_PRODUCT_COLS = { TABLE_COL_ID,
 			TABLE_COL_CATALOGUE_ID, TABLE_COL_NAME };
+
+	public static final String[] TABLE_PRODUCT_ARG_COLS = { TABLE_COL_ID,
+			TABLE_COL_PRODUCT_ID, TABLE_COL_INDEX, TABLE_COL_VALUE };
 
 	public static final String[] TABLE_PROFILE_COLS = { TABLE_COL_ID,
 			TABLE_COL_NAME, TABLE_COL_SERIAL_NUMBER };
@@ -118,8 +131,8 @@ public interface Constants {
 			TABLE_COL_Y };
 
 	public static final String[] ALL_TABLES = { TABLE_CATALOG, TABLE_HISTORY,
-			TABLE_PRODUCT, TABLE_PROFILE, TABLE_RESULT, TABLE_TEMPLATE,
-			TABLE_TEMPLATE_ITEM };
+			TABLE_PRODUCT, TABLE_PRODUCT_ARG, TABLE_PROFILE, TABLE_RESULT,
+			TABLE_TEMPLATE, TABLE_TEMPLATE_ITEM };
 
 	public static final String XML_TAG_CATALOG = "catalog";
 

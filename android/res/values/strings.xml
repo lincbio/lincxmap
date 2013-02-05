@@ -39,6 +39,7 @@
     <string name="menu_del_profile">Delete Profile</string>
     <string name="menu_add_product">Add Product</string>
     <string name="menu_del_catalog">Delete Catalog</string>
+    <string name="menu_mod_product">Modify Product</string>
     <string name="menu_del_product">Delete Product</string>
     
     <string name="label_loading">Loading…</string>
@@ -59,9 +60,11 @@
     <string name="label_profile_sn">SN:</string>
     <string name="label_product_catalog">Catalog:</string>
     <string name="label_product_name">Name:</string>
+    <string name="label_product_model">Model:</string>
+    <string name="label_product_args">Arguments:</string>
     
     <string name="title_about">About</string>
-    <string name="title_add_product">Add product</string>
+    <string name="title_product">Product</string>
     <string name="title_add_profile">Add profile</string>
     <string name="title_choose_image">Choose image source</string>
     <string name="title_choose_product">Choose a product</string>
@@ -70,10 +73,10 @@
     <string name="title_detection_policy">Detection policy</string>
     <string name="title_detection_result">Detection result</string>
     <string name="title_detection_settings">Detection settings</string>
-    <string name="title_history_list">History</string>
+    <string name="title_history_list">History list</string>
     <string name="title_launcher">Lincxmap</string>
-    <string name="title_product_list">Product</string>
-    <string name="title_profile_list">Profile</string>
+    <string name="title_product_list">Product list</string>
+    <string name="title_profile_list">Profile list</string>
     <string name="title_result_detail">Detection result details</string>
     <string name="title_sample_layout">Sample layout</string>
     <string name="title_sample_identifier">Sample identifier</string>
@@ -82,7 +85,7 @@
     <string name="title_sample_selector_size">Sample selector size</string>
     <string name="title_send_result">Send result</string>
     <string name="title_settings">Settings</string>
-    <string name="title_template_list">Template</string>
+    <string name="title_template_list">Template list</string>
     <string name="title_template_new">New template</string>
     
     <string name="summary_detection_policy">Choose a detection policy</string>
@@ -109,6 +112,7 @@
     <string name="msg_profile_sn_required">Serial number is required</string>
     <string name="msg_product_catalog_required">Catalog is required</string>
     <string name="msg_product_name_required">Product name is required</string>
+    <string name="msg_product_arg_value_required">Product arg value is required</string>
     <string name="msg_invalid_image">Invalid image</string>
     <string name="msg_unsupported_value">Unsuppored value</string>
     
