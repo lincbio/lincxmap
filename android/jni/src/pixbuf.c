@@ -180,13 +180,22 @@ static uint32_t lincxmap_pixbuf_get_pixel(image_t *self, uint32_t x, uint32_t y)
 	return color;
 }
 
-static uint8_t* lincxmap_pixbuf_get_pixels(image_t *self)
+static void lincxmap_pixbuf_get_pixels(image_t *self, uint8_t **pixels, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
 {
 	TRACE();
 
 	assert(self && *self);
 
-	return ((pixbuf_t*) *self)->data;
+	pixbuf_t *pbf = (pixbuf_t*) *self;
+	uint8_t *p = pbf->data + y * stride + x * pbf->nchannels;
+
+	assert(w > 0 && w <= pbf->size[0] && h > 0 && h <= pbf->size[1]);
+
+	if (!*pixels) {
+		*pixels = p;
+	} else {
+		memcpy(*pixels, p, w * h - y * stride - x * pbf->nchannels);
+	}
 }
 
 static uint32_t lincxmap_pixbuf_get_stride(image_t *self)
@@ -236,7 +245,9 @@ static void lincxmap_pixbuf_set_pixels(image_t *self, const uint8_t *pixels, uin
 	assert(pixels);
 	assert(stride >= w);
 
-	// TODO
+	pixbuf_t *pbf = (pixbuf_t*) *self;
+	int offset = y * stride + x * pbf->nchannels;
+	memcpy(pbf->data + offset, pixels, w * h - offset);
 }
 
 static image_t lincxmap_pixbuf_mean_smooth(image_t *self, va_list ap)
@@ -350,3 +361,4 @@ image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
 
 	return &pbf->super;
 }
+

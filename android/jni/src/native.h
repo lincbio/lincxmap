@@ -34,12 +34,6 @@ extern "C" {
 #define CLASS_SAMPLE_SELECTOR   CLASS(com/lincbio/lincxmap/dip/SampleSelector)
 #define CLASS_PROGRESS_LISTENER CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
 
-struct bmparg
-{
-	JNIEnv *env;
-	jobject *obj;
-};
-
 JavaVM *jvm;
 
 jclass cls_string;

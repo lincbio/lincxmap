@@ -1,9 +1,9 @@
 /*
  * Copyright (c) 2010-2012, linc-bio Inc. All Rights Reserved.
  *
- * pixbuf.h
+ * bitmap.h
  *
- * @date    Dec 13, 2012
+ * @date    Feb 6, 2013
  *
  * @author  Johnson Lee <g.johnsonlee@gmail.com>
  *
@@ -14,8 +14,8 @@
 #pragma once
 #endif
 
-#ifndef __LINCXMAP_PIXBUF_H__
-#define __LINCXMAP_PIXBUF_H__
+#ifndef __LINCXMAP_BITMAP_H__
+#define __LINCXMAP_BITMAP_H__
 
 #include "image.h"
 
@@ -23,11 +23,11 @@
 extern "C" {
 #endif /* __cplusplus */
 
-extern image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type);
+extern image_t bitmap_new(uint32_t w, uint32_t h, image_type_t type, void *arg);
 
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
 
-#endif /* __LINCXMAP_PIXBUF_H__ */
+#endif /* __LINCXMAP_BITMAP_H__ */
 

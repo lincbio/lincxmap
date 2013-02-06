@@ -93,7 +93,7 @@ struct image
 
 	uint32_t  (*getpixel)(image_t *self, uint32_t x, uint32_t y);
 
-	uint8_t* (*getpixels)(image_t *self);
+	void (*getpixels)(image_t *self, uint8_t **pixels, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
 	uint32_t (*getstride)(image_t *self);
 

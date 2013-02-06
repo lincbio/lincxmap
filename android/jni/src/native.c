@@ -10,6 +10,7 @@
  * @version 1.0
  */
 
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -17,13 +18,19 @@
 #include <detector.h>
 #include <log.h>
 #include <image.h>
-#include <pixbuf.h>
+#include <bitmap.h>
 #include <samples.h>
 #include <selectors.h>
 
 #include "native.h"
 
 #define SIG_DETECT "(L"CLASS_BITMAP";L"CLASS_TEMPLATE";[L"CLASS_SAMPLE_SELECTOR";)L"CLASS_LIST";"
+
+struct native_obj
+{
+	JNIEnv *env;
+	jobject obj;
+};
 
 JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		jobject jbmp, jobject jtpl, jobjectArray jsela)
@@ -37,12 +44,10 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	struct rectangle rect;
 	struct sample *smp, *smpa;
 	struct selectors *sela, **sel = &sela;
-	image_t pixbuf;
+	struct native_obj arg = { env, jbmp };
+	image_t img;
 	detector_t detector;
-	uint8_t *pixels;
-
-	jint jwidth, jheight, *jbuf;
-	jintArray *jpxarr;
+	jint jwidth, jheight;
 	jsize nselectors, slen;
 	jobject jbounds, jdata, jlist, jsel, jsmp, jstr, jname;
 
@@ -98,17 +103,9 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		sel = &(*sel)->next;
 	}
 
-	// initialize image
-	pixbuf = pixbuf_new(jwidth, jheight, IMAGE_TYPE_ARGB);
-	pixels = pixbuf->getpixels(&pixbuf);
-	jpxarr = (*env)->NewIntArray(env, jwidth * jheight);
-	(*env)->CallVoidMethod(env, jbmp, fun_bitmap_get_pixels, jpxarr, 0, jwidth, 0, 0, jwidth, jheight);
-	jbuf = (*env)->GetIntArrayElements(env, jpxarr, NULL);
-	memcpy(pixels, jbuf, jwidth * jheight * sizeof(uint32_t));
-	(*env)->ReleaseIntArrayElements(env, jpxarr, jbuf, 0);
-
 	detector = detector_new();
-	smpa = detector->detect(&detector, &pixbuf, sela);
+	img = bitmap_new(jwidth, jheight, IMAGE_TYPE_ARGB, &arg);
+	smpa = detector->detect(&detector, &img, sela);
 
 	for (smp = smpa; smp; smp = smp->next) {
 		jsmp = (*env)->NewObject(env, cls_sample, fun_sample_new);
@@ -118,9 +115,11 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 		(*env)->CallVoidMethod(env, jsmp, fun_sample_set_brightness, smp->bv);
 		(*env)->CallVoidMethod(env, jsmp, fun_sample_set_concentration, smp->cv);
 		(*env)->CallBooleanMethod(env, jlist, fun_array_list_add, jsmp);
+		(*env)->DeleteLocalRef(env, jsmp);
+		(*env)->DeleteLocalRef(env, jname);
 	}
 
-	pixbuf->free(&pixbuf);
+	img->free(&img);
 	detector->free(&detector);
 	samples_free(&smpa);
 	selectors_free(&sela);
@@ -190,17 +189,66 @@ static void lincxmap_native_register(JNIEnv *env)
 	(*env)->RegisterNatives(env, cls_sample_detector, ks_methods, n);
 }
 
+uint32_t lincxmap_native_bitmap_get_pixel(void *obj, uint32_t x, uint32_t y)
+{
+	TRACE();
+
+	struct native_obj *arg = (struct native_obj*) obj;
+	JNIEnv *env = arg->env;
+	jobject jbmp = arg->obj;
+
+	return (*env)->CallIntMethod(env, jbmp, fun_bitmap_get_pixel, x, y);
+}
+
+void lincxmap_native_bitmap_get_pixels(void *obj, uint8_t **pixels, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
+{
+	TRACE();
+
+	assert(pixels && *pixels);
+
+	jint *jbuf;
+	jintArray *jpixels;
+	size_t n = w * h - x;
+	struct native_obj *arg = (struct native_obj*) obj;
+	JNIEnv *env = arg->env;
+	jobject jbmp = arg->obj;
+	
+	jpixels = (*env)->NewIntArray(env, n);
+	(*env)->CallVoidMethod(env, jbmp, fun_bitmap_get_pixels, jpixels, 0, stride, x, y, w, h);
+	jbuf = (*env)->GetIntArrayElements(env, jpixels, NULL);
+	memcpy(*pixels, jbuf, n * sizeof(uint32_t));
+	(*env)->ReleaseIntArrayElements(env, jpixels, jbuf, 0);
+	(*env)->DeleteLocalRef(env, jpixels);
+}
+
+void lincxmap_native_bitmap_set_pixel(void *obj, uint32_t x, uint32_t y, uint32_t color)
+{
+	TRACE();
+
+	struct native_obj *arg = (struct native_obj*) obj;
+	JNIEnv *env = arg->env;
+	jobject jbmp = arg->obj;
+
+	(*env)->CallVoidMethod(env, jbmp, fun_bitmap_set_pixel, x, y, color);
+}
+
+void lincxmap_native_bitmap_set_pixels(void *obj, const uint8_t *pixels, uint32_t stride, uint32_t x, uint32_t y, uint32_t w, uint32_t h)
+{
+	TRACE();
+
+	// TODO
+}
+
 JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved)
 {
 	TRACE();
 
 	const static jint ver = JNI_VERSION_1_4;
 
-	JNIEnv *env = NULL;
+	JNIEnv *env;
 
 	if (JNI_OK != (*vm)->GetEnv(vm, (void**) &env, ver))
 		return -1;
-
 
 	lincxmap_native_init(env);
 	lincxmap_native_register(env);

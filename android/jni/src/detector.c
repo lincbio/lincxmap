@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <asm/byteorder.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -40,14 +41,25 @@ static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
 {
 	TRACE();
 
+	int i, nwrite;
 	uint32_t w = (*image)->getwidth(image);
 	uint32_t h = (*image)->getheight(image);
 	uint32_t n = (*image)->getnchannels(image);
-	uint8_t *data = (*image)->getpixels(image);
+	uint8_t *row = calloc(w, n * sizeof(uint32_t));
+
+	if (!row)
+		return EOF;
 
 	fdprintf(fd,"P5\n%u %u 255\n", w, h);
 
-	return write(fd, data, w * h * n * sizeof(uint8_t));
+	for (i = nwrite = 0; i < h; i++) {
+		(*image)->getpixels(image, &row, w, 0, i, w, 1);
+		nwrite += write(fd, row, w * n * sizeof(uint8_t));
+	}
+	
+	free(row);
+
+	return nwrite;
 }
 #endif /* !NDEBUG */
 
@@ -114,10 +126,15 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	dim[0] = (*image)->getwidth(image);
 	dim[1] = (*image)->getheight(image);
 	dim[2] = (*image)->getstride(image);
-	pixels = (*image)->getpixels(image);
 	hist = (*image)->gethistogram(image);
 	nchannels = (*image)->getnchannels(image);
 	nth = lincxmap_detector_choose_channel(&hist);
+	pixels = calloc(dim[0], sizeof(uint32_t));
+
+	if (!pixels) {
+		ERROR("Out of memory!");
+		return NULL;
+	}
 
 	DEBUG("Image size: %d x %d : %d [%d]\n", dim[0], dim[1], dim[2], nchannels);
 
@@ -160,9 +177,11 @@ skip_debug:
 
 		// calculate the brightness of each selector
 		for (y = y1; y < y2; y++) {
+			(*image)->getpixels(image, &pixels, dim[2], 0, y, dim[0], 1);
+
 			for (x = x1; x < x2; x++) {
 				nos++;
-				px = pixels + y * dim[2] + x * nchannels;
+				px = pixels + x * nchannels;
 				rgbx.r = rgbx.b = rgbx.g = rgbx.x = px[nth];
 				sum += rgb2hsl((struct rgb*) &rgbx, &hsl)->l;
 			}
@@ -176,6 +195,7 @@ skip_debug:
 		smp = &(*smp)->next;
 	}
 
+	free(pixels);
 	hist->free(&hist);
 
 	return smpa;

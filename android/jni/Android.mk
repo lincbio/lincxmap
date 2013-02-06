@@ -1,6 +1,7 @@
 LOCAL_PATH := $(call my-dir)
 
 lincxmap_sources := \
+	bitmap.c \
 	circularselector.c \
 	detector.c \
 	native.c \
