@@ -38,14 +38,16 @@ public class ProductListActivity extends Activity implements Constants {
 		public void onMenuItemSelected(MenuItem item) {
 			super.onMenuItemSelected(item);
 
-			ExpandableListContextMenuInfo info = (ExpandableListContextMenuInfo) item
-					.getMenuInfo();
-			int i = ExpandableListView
-					.getPackedPositionGroup(info.packedPosition);
-			int j = ExpandableListView
-					.getPackedPositionChild(info.packedPosition);
-			Catalog catalog = (Catalog) productAdapter.getGroup(i);
-			Product product = (Product) productAdapter.getChild(i, j);
+			int i, j;
+			Intent intent;
+			Catalog catalog;
+			Product product;
+			ExpandableListContextMenuInfo info;
+
+			info = (ExpandableListContextMenuInfo) item.getMenuInfo();
+			i = ExpandableListView.getPackedPositionGroup(info.packedPosition);
+			j = ExpandableListView.getPackedPositionChild(info.packedPosition);
+			catalog = (Catalog) productAdapter.getGroup(i);
 
 			switch (item.getItemId()) {
 			case R.id.menu_add_product:
@@ -55,13 +57,15 @@ public class ProductListActivity extends Activity implements Constants {
 				createDeleteCatalogDialog(catalog).show();
 				break;
 			case R.id.menu_mod_product:
-				Intent intent = new Intent(ProductListActivity.this,
+				product = (Product) productAdapter.getChild(i, j);
+				intent = new Intent(ProductListActivity.this,
 						ProductActivity.class);
 				intent.putExtra(PARAM_CATALOG_OBJECT, catalog);
 				intent.putExtra(PARAM_PRODUCT_OBJECT, product);
 				startActivity(intent);
 				break;
 			case R.id.menu_del_product:
+				product = (Product) productAdapter.getChild(i, j);
 				createDeleteProductDialog(product).show();
 				break;
 			}
