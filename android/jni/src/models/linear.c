@@ -29,6 +29,19 @@ typedef struct
 
 #define __MODEL_NAME__ "linear"
 
+static void lincxmap_model_linear_free(model_t *self)
+{
+	assert(self && *self);
+
+	model_linear_t *model = (model_linear_t*) *self;
+
+	if (model->argv)
+		free(model->argv);
+
+	free(*self);
+	*self = NULL;
+}
+
 static const char* lincxmap_model_linear_get_name(model_t *self)
 {
 	TRACE();
@@ -63,6 +76,7 @@ model_t model_new(int argc, char *argv[])
 
 	const static struct model ks_model = {
 		eval : lincxmap_model_linear_eval,
+		free : lincxmap_model_linear_free,
 		name : lincxmap_model_linear_get_name,
 	};
 

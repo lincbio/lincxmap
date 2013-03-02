@@ -23,15 +23,6 @@ extern "C" {
 typedef struct model* model_t;
 struct model
 {
-	/**
-	 * Returns the model's name.
-	 * 
-	 * @param self
-	 *           {@link model_t} object
-	 * @return the model name
-	 */
-	const char* (*name)(model_t *self);
-
     /**
 	 * Evaluate with the specified arguments
 	 * 
@@ -43,6 +34,19 @@ struct model
 	 */
     double (*eval)(model_t *self, double x);
 
+	/**
+	 * Free this object
+	 */
+	void (*free)(model_t *self);
+
+	/**
+	 * Returns the model's name.
+	 * 
+	 * @param self
+	 *           {@link model_t} object
+	 * @return the model name
+	 */
+	const char* (*name)(model_t *self);
 };
 
 extern model_t model_new(int argc, char *argv[]);
