@@ -71,7 +71,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:entries="@array/product_models" />
+                        android:entries="@array/product_model_names" />
                 </TableRow>
             </TableLayout>
 

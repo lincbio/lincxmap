@@ -13,7 +13,7 @@
         <item>索引</item>
         <item>名称</item>
     </string-array>
-    <string-array name="product_models">
+    <string-array name="product_model_labels">
         <item>线性</item>
     </string-array>
 

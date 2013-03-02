@@ -353,6 +353,7 @@ image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
 
 	if (!pbf->data) {
 		ERROR("Out of memory!\n");
+		free(pbf);
 		return NULL;
 	}
 
