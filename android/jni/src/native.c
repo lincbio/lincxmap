@@ -48,7 +48,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 	image_t img;
 	detector_t detector;
 	jint jwidth, jheight;
-	jsize nselectors, slen;
+	jsize nselectors;
 	jobject jbounds, jdata, jlist, jsel, jsmp, jstr, jname;
 
 	jwidth = (*env)->CallIntMethod(env, jbmp, fun_bitmap_get_width);
@@ -63,16 +63,13 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
 		if ((*env)->IsInstanceOf(env, jdata, cls_product)) {
 			jstr = jname = (*env)->CallObjectMethod(env, jdata, fun_product_get_name);
-			slen = (*env)->GetStringUTFLength(env, jstr);
 			name = (char*) (*env)->GetStringUTFChars(env, jstr, JNI_FALSE);
 		} else if ((*env)->IsInstanceOf(env, jdata, cls_string)) {
 			jstr = jdata;
 			name = (char*) (*env)->GetStringUTFChars(env, jstr, JNI_FALSE);
-			slen = (*env)->GetStringUTFLength(env, jdata);
 		} else {
 			jstr = NULL;
 			sprintf(buf, "%d", i);
-			slen = strlen(buf);
 			name = buf;
 		}
 
@@ -93,7 +90,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
 		*sel = calloc(1, sizeof(struct selectors));
 		(*sel)->selector = circular_selector_new(rect.width * 0.5f);
-		(*sel)->selector->setname(&(*sel)->selector, name, slen);
+		(*sel)->selector->setname(&(*sel)->selector, name);
 		(*sel)->selector->setbounds(&(*sel)->selector, &rect);
 
 		if (jstr) {

@@ -35,7 +35,7 @@ struct selector
 
 	void (*setbounds)(selector_t *self, struct rectangle *bounds);
 
-	void (*setname)(selector_t *self, const char *name, size_t len);
+	void (*setname)(selector_t *self, const char *name);
 };
 
 #ifdef __cplusplus

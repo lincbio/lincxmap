@@ -85,15 +85,17 @@ static void lincxmap_circular_selector_set_bounds(selector_t *self, struct recta
 	memcpy(&((circular_selector_t*) *self)->bounds, bounds, sizeof(struct rectangle));
 }
 
-static void lincxmap_circular_selector_set_name(selector_t *self, const char *name, size_t len)
+static void lincxmap_circular_selector_set_name(selector_t *self, const char *name)
 {
 	TRACE();
 
 	assert(self && *self);
 
 	char *buf, *tmp;
+	size_t len;
 	circular_selector_t *cs;
 
+	len = strlen(name);
 	buf = calloc(len + 1, sizeof(char));
 	cs = (circular_selector_t*) *self;
 
@@ -101,7 +103,7 @@ static void lincxmap_circular_selector_set_name(selector_t *self, const char *na
 		return;
 
 	tmp = cs->name;
-	cs->name = memcpy(buf, name, len);
+	cs->name = strcpy(buf, name);
 
 	if (tmp) {
 		free(tmp);
