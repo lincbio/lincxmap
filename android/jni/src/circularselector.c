@@ -22,8 +22,11 @@ typedef struct
 {
 	struct selector super;
 	struct rectangle bounds;
-	char *name;
+	char name[128];
+    char model[1024];
 	float radius;
+    int argc;
+    char **argv;
 } circular_selector_t;
 
 static int lincxmap_circular_selector_contains(selector_t *self, uint32_t x, uint32_t y)
@@ -53,6 +56,17 @@ static void lincxmap_circular_selector_free(selector_t *self)
 	if (cs->name) {
 		free(cs->name);
 	}
+
+    if (cs->argv) {
+        int i;
+
+        for (i = 0; i < cs->argc; i++) {
+            free(cs->argv[i]);
+        }
+
+        free(cs->argv);
+    }
+
 	free(*self);
 	*self = NULL;
 }
@@ -64,6 +78,19 @@ static struct rectangle* lincxmap_circular_selector_get_bounds(selector_t *self)
 	assert(self && *self);
 
 	return &((circular_selector_t*) *self)->bounds;
+}
+
+static const char* lincxmap_circular_selector_get_model(selector_t *self, int *argcp, char ***argvp)
+{
+    TRACE();
+
+    assert(self && *self);
+
+	circular_selector_t *cs = (circular_selector_t*) *self;
+
+    *argcp = cs->argc;
+    *argvp = cs->argv;
+	return cs->model;
 }
 
 static const char* lincxmap_circular_selector_get_name(selector_t *self)
@@ -85,29 +112,45 @@ static void lincxmap_circular_selector_set_bounds(selector_t *self, struct recta
 	memcpy(&((circular_selector_t*) *self)->bounds, bounds, sizeof(struct rectangle));
 }
 
+static void lincxmap_circular_selector_set_model(selector_t *self, const char *model, int argc, char *argv[])
+{
+	TRACE();
+
+	assert(self && *self);
+    assert(model);
+    assert(argv);
+
+	circular_selector_t *cs = (circular_selector_t*) *self;
+
+    if (cs->argv) {
+        free(cs->argv);
+        cs->argv = NULL;
+    }
+
+    cs->argc = argc;
+    cs->argv = calloc(argc, sizeof(char*));
+
+    if (cs->argv) {
+        int i;
+
+        for (i = 0; i < argc; i++) {
+            cs->argv[i] = strdup(argv[i]);
+        }
+    }
+
+    if (model) {
+        strcpy(cs->model, model);
+    }
+}
+
 static void lincxmap_circular_selector_set_name(selector_t *self, const char *name)
 {
 	TRACE();
 
 	assert(self && *self);
+    assert(name);
 
-	char *buf, *tmp;
-	size_t len;
-	circular_selector_t *cs;
-
-	len = strlen(name);
-	buf = calloc(len + 1, sizeof(char));
-	cs = (circular_selector_t*) *self;
-
-	if (!buf)
-		return;
-
-	tmp = cs->name;
-	cs->name = strcpy(buf, name);
-
-	if (tmp) {
-		free(tmp);
-	}
+    strcpy(((circular_selector_t*) *self)->name, name);
 }
 
 selector_t circular_selector_new(float radius)
@@ -119,8 +162,10 @@ selector_t circular_selector_new(float radius)
 		contains  : lincxmap_circular_selector_contains,
 		free      : lincxmap_circular_selector_free,
 		getbounds : lincxmap_circular_selector_get_bounds,
+		getmodel  : lincxmap_circular_selector_get_model,
 		getname   : lincxmap_circular_selector_get_name,
 		setbounds : lincxmap_circular_selector_set_bounds,
+		setmodel  : lincxmap_circular_selector_set_model,
 		setname   : lincxmap_circular_selector_set_name,
 	};
 

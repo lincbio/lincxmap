@@ -4,6 +4,7 @@ import java.util.List;
 
 import android.graphics.Bitmap;
 
+import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.pojo.Sample;
 import com.lincbio.lincxmap.pojo.Template;
 
@@ -17,6 +18,7 @@ public final class SampleDetector {
 	public static final int MIN_PROGRESS = 0;
 	public static final int MAX_PROGRESS = 100;
 
+	private DatabaseHelper dbhelper;
 	private ProgressListener prgListener;
 
 	public static interface ProgressListener {
@@ -26,8 +28,17 @@ public final class SampleDetector {
 	public SampleDetector() {
 	}
 
-	public SampleDetector(ProgressListener pl) {
+	public SampleDetector(ProgressListener pl, DatabaseHelper dbhelper) {
 		this.prgListener = pl;
+		this.dbhelper = dbhelper;
+	}
+
+	public DatabaseHelper getDbhelper() {
+		return dbhelper;
+	}
+
+	public void setDbhelper(DatabaseHelper dbhelper) {
+		this.dbhelper = dbhelper;
 	}
 
 	public ProgressListener getProgressListener() {

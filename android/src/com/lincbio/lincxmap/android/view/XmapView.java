@@ -36,7 +36,8 @@ import android.view.SurfaceView;
 
 public class XmapView extends SurfaceView implements Callback, Constants {
 	private final static int GAP = 5;
-	private final static PathEffect DASH = new DashPathEffect(new float[] { 5, 5, 5, 5 }, 1);
+	private final static PathEffect DASH = new DashPathEffect(new float[] { 5,
+			5, 5, 5 }, 1);
 
 	private final Paint paint = new Paint();
 
@@ -81,7 +82,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 	public XmapView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-		WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+		WindowManager wm = (WindowManager) context
+				.getSystemService(Context.WINDOW_SERVICE);
 		this.display = wm.getDefaultDisplay();
 		this.dbHelper = new DatabaseHelper(context);
 		this.pref = PreferenceManager.getDefaultSharedPreferences(context);
@@ -129,10 +131,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 
 		String dftGap = getContext().getString(R.string.default_selector_gap);
 		String dftSize = getContext().getString(R.string.default_selector_size);
-		String dftId = getContext().getString(R.string.sample_identifier_name);
 		String sgap = this.pref.getString(KEY_SAMPLE_SELECTOR_GAP, dftGap);
 		String sdim = this.pref.getString(KEY_SAMPLE_SELECTOR_SIZE, dftSize);
-		String ssid = this.pref.getString(KEY_SAMPLE_IDENTIFIER, dftId);
 		int gap = Integer.parseInt(sgap);
 		int diameter = Integer.parseInt(sdim);
 		int w = this.template.getColumnCount() * (diameter + gap) - gap;
@@ -143,33 +143,19 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		int rc = t.getRowCount();
 		int cc = t.getColumnCount();
 
+		List<TemplateItem> items = t.getItems();
 		CircleSampleSelector[][] circles = new CircleSampleSelector[rc][cc];
-		for (int row = 0; row < t.getRowCount(); ++row) {
+		for (int i = 0, row = 0; row < t.getRowCount(); ++row) {
 			y = dy + row * (diameter + gap);
 
 			for (int col = 0; col < t.getColumnCount(); ++col) {
 				x = dx + col * (diameter + gap);
+				TemplateItem ti = items.get(i++);
 				CircleSampleSelector c = new CircleSampleSelector(x, y, radius);
+				Product product = this.dbHelper.getProduct(ti.getProductId());
+				c.setProduct(product);
 				circles[row][col] = c;
 				this.selectors.add(c);
-			}
-		}
-
-		int i = 0;
-		String sin = getContext().getString(R.string.sample_identifier_name);
-		for (TemplateItem ti : t.getItems()) {
-			++i;
-
-			try {
-				CircleSampleSelector c = circles[ti.getX()][ti.getY()];
-
-				if (ssid.equals(sin)) {
-					c.setData(this.dbHelper.getProduct(ti.getProductId()));
-				} else {
-					c.setData(String.valueOf(i));
-				}
-			} catch (ArrayIndexOutOfBoundsException e) {
-				continue;
 			}
 		}
 	}
@@ -223,7 +209,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			this.selection = null;
 		}
 	}
-	
+
 	@Override
 	protected void onDraw(Canvas canvas) {
 		if (null == this.background)
@@ -258,7 +244,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		dy = (int) ((_h - dh) / 2.0f);
 
 		this.bgbounds0.set(0, 0, _w, _h);
-		this.bgbounds1.set(0 , 0, sw, sh);
+		this.bgbounds1.set(0, 0, sw, sh);
 		this.bgbounds2.set(dx, dy, dw + dx, dh + dy);
 		this.paint.setColor(bg);
 		this.paint.setStyle(Style.FILL);
@@ -283,15 +269,20 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			this.paint.setColor(stroke);
 			this.paint.setStyle(Style.STROKE);
 			this.paint.setPathEffect(XmapView.DASH);
-			canvas.drawCircle(c.getX(), c.getY(), c.getRadius() + GAP, this.paint);
+			canvas.drawCircle(c.getX(), c.getY(), c.getRadius() + GAP,
+					this.paint);
 			this.paint.setPathEffect(null);
 
 			// highlight current selection if it has been selected
 			if (c == this.selection) {
-				canvas.drawLine(c.getX() - c.getRadius() - GAP, c.getY(), c.getX() - c.getRadius(), c.getY(), this.paint);
-				canvas.drawLine(c.getX(), c.getY() - c.getRadius() - GAP, c.getX(), c.getY() - c.getRadius(), this.paint);
-				canvas.drawLine(c.getX() + c.getRadius(), c.getY(), c.getX() + c.getRadius() + GAP, c.getY(), this.paint);
-				canvas.drawLine(c.getX(), c.getY() + c.getRadius(), c.getX(), c.getY() + c.getRadius() + GAP, this.paint);
+				canvas.drawLine(c.getX() - c.getRadius() - GAP, c.getY(),
+						c.getX() - c.getRadius(), c.getY(), this.paint);
+				canvas.drawLine(c.getX(), c.getY() - c.getRadius() - GAP,
+						c.getX(), c.getY() - c.getRadius(), this.paint);
+				canvas.drawLine(c.getX() + c.getRadius(), c.getY(), c.getX()
+						+ c.getRadius() + GAP, c.getY(), this.paint);
+				canvas.drawLine(c.getX(), c.getY() + c.getRadius(), c.getX(),
+						c.getY() + c.getRadius() + GAP, this.paint);
 			}
 
 			// draw sample selector
@@ -300,10 +291,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
 
 			// draw sample name
-			Object data = c.getData();
-			String text = data instanceof Product
-						? ((Product) data).getName()
-						: String.valueOf(i + 1);
+			Product product = c.getProduct();
+			String text = product.getName();
 			this.paint.setColor(stroke);
 			this.paint.setStyle(Style.STROKE);
 			this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);

@@ -21,18 +21,20 @@ extern "C" {
 
 #define CLASS(clsname) #clsname
 
-#define CLASS_OBJECT			CLASS(java/lang/Object)
-#define CLASS_STRING			CLASS(java/lang/String)
-#define CLASS_LIST				CLASS(java/util/List)
-#define CLASS_ARRAY_LIST		CLASS(java/util/ArrayList)
-#define CLASS_BITMAP            CLASS(android/graphics/Bitmap)
-#define CLASS_PRODUCT			CLASS(com/lincbio/lincxmap/pojo/Product)
-#define CLASS_SAMPLE			CLASS(com/lincbio/lincxmap/pojo/Sample)
-#define CLASS_TEMPLATE          CLASS(com/lincbio/lincxmap/pojo/Template)
-#define CLASS_RECTANGLE         CLASS(com/lincbio/lincxmap/dip/Rectangle)
-#define CLASS_SAMPLE_DETECTOR   CLASS(com/lincbio/lincxmap/dip/SampleDetector)
-#define CLASS_SAMPLE_SELECTOR   CLASS(com/lincbio/lincxmap/dip/SampleSelector)
-#define CLASS_PROGRESS_LISTENER CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
+#define CLASS_OBJECT                CLASS(java/lang/Object)
+#define CLASS_STRING                CLASS(java/lang/String)
+#define CLASS_LIST                  CLASS(java/util/List)
+#define CLASS_ARRAY_LIST            CLASS(java/util/ArrayList)
+#define CLASS_BITMAP                CLASS(android/graphics/Bitmap)
+#define CLASS_DATABASE_HELPER       CLASS(com/lincbio/lincxmap/android/database/DatabaseHelper)
+#define CLASS_PRODUCT               CLASS(com/lincbio/lincxmap/pojo/Product)
+#define CLASS_PRODUCT_ARGUMENT      CLASS(com/lincbio/lincxmap/pojo/ProductArgument)
+#define CLASS_SAMPLE                CLASS(com/lincbio/lincxmap/pojo/Sample)
+#define CLASS_TEMPLATE              CLASS(com/lincbio/lincxmap/pojo/Template)
+#define CLASS_RECTANGLE             CLASS(com/lincbio/lincxmap/dip/Rectangle)
+#define CLASS_SAMPLE_DETECTOR       CLASS(com/lincbio/lincxmap/dip/SampleDetector)
+#define CLASS_SAMPLE_SELECTOR       CLASS(com/lincbio/lincxmap/dip/SampleSelector)
+#define CLASS_PROGRESS_LISTENER     CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
 
 JavaVM *jvm;
 
@@ -42,7 +44,11 @@ jclass cls_array_list;
 
 jclass cls_bitmap;
 
+jclass cls_database_helper;
+
 jclass cls_product;
+
+jclass cls_product_argument;
 
 jclass cls_sample;
 
@@ -57,6 +63,11 @@ jclass cls_sample_selector;
 jclass cls_progress_listener;
 
 /**
+ * SampleDetector#dbhelper
+ */
+jfieldID pro_sample_detector_dbhelper;
+
+/**
  * SampleDetector#prgListener
  */
 jfieldID pro_sample_detector_prg_listener;
@@ -67,9 +78,19 @@ jfieldID pro_sample_detector_prg_listener;
 jmethodID fun_array_list_new;
 
 /**
- * List#add(Object)
+ * ArrayList#add(Object)
  */
 jmethodID fun_array_list_add;
+
+/**
+ * ArrayList#get(int)
+ */
+jmethodID fun_array_list_get;
+
+/**
+ * ArrayList#size()
+ */
+jmethodID fun_array_list_size;
 
 /**
  * Bitmap#getWidth()
@@ -107,6 +128,11 @@ jmethodID fun_bitmap_set_pixels;
 jmethodID fun_bitmap_is_mutable;
 
 /**
+ * DatabaseHelper#getProductArguments(long)
+ */
+jmethodID fun_database_helper_get_product_arguments;
+
+/**
  * Rectangle#getX()
  */
 jmethodID fun_rectangle_get_x;
@@ -127,9 +153,24 @@ jmethodID fun_rectangle_get_width;
 jmethodID fun_rectangle_get_height;
 
 /**
+ * Product#getId()
+ */
+jmethodID fun_product_get_id;
+
+/**
  * Product#getName()
  */
 jmethodID fun_product_get_name;
+
+/**
+ * Product#getModel()
+ */
+jmethodID fun_product_get_model;
+
+/**
+ * ProductArgument#getValue()
+ */
+jmethodID fun_product_argument_get_value;
 
 /**
  * Sample#Sample()
@@ -162,9 +203,9 @@ jmethodID fun_sample_set_concentration;
 jmethodID fun_sample_selector_get_bounds;
 
 /**
- * SampleSelector#getData()
+ * SampleSelector#getProduct()
  */
-jmethodID fun_sample_selector_get_data;
+jmethodID fun_sample_selector_get_product;
 
 /**
  * SampleSelector#getScaling()

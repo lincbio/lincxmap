@@ -1,5 +1,7 @@
 package com.lincbio.lincxmap.dip;
 
+import com.lincbio.lincxmap.pojo.Product;
+
 /**
  * Sample selector
  * 
@@ -12,7 +14,7 @@ public abstract class SampleSelector {
 	protected float deltaX;
 	protected float deltaY;
 	protected float scaling;
-	private Object data;
+	private Product product;
 
 	public SampleSelector() {
 	}
@@ -57,12 +59,12 @@ public abstract class SampleSelector {
 		this.scaling = scaling;
 	}
 
-	public Object getData() {
-		return data;
+	public Product getProduct() {
+		return product;
 	}
 
-	public void setData(Object data) {
-		this.data = data;
+	public void setProduct(Product product) {
+		this.product = product;
 	}
 
 	public void move(float dx, float dy) {

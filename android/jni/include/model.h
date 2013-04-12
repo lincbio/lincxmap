@@ -13,8 +13,27 @@
 #ifndef __LINCXMAP_MODEL_H__
 #define __LINCXMAP_MODEL_H__
 
-#include <stdarg.h>
-#include <stdint.h>
+#define LINCXMAP_MODEL_FREE(M)                          \
+    void lincxmap_model_##M##_free(model_t *self)       \
+    {                                                   \
+        assert(self && *self);                          \
+        model_##M##_t *model = (model_##M##_t*) *self;  \
+                                                        \
+        if (model->argv)                                \
+            free(model->argv);                          \
+                                                        \
+        free(*self);                                    \
+        *self = NULL;                                   \
+    }
+
+#define LINCXMAP_MODEL_GET_NAME(M)                      \
+    void lincxmap_model_##M##_get_name(model_t *self)   \
+    {                                                   \
+        assert(self && *self);                          \
+        model_##M##_t *model = (model_##M##_t*) *self;  \
+                                                        \
+        return __MODEL_NAME__;                          \
+    }
 
 #ifdef __cplusplus
 extern "C" {

@@ -65,12 +65,13 @@ static double lincxmap_model_linear_eval(model_t *self, double x)
 
 	model_linear_t *model = (model_linear_t*) *self;
 
-	return model->argv[0] * x + model->argv[1];
+	return (model->argc <= 0 ? x : model->argv[0] * x + model->argv[1]) * 100000;
 }
 
 model_t model_new(int argc, char *argv[])
 {
 	TRACE();
+    DEBUG("argc=%d, argv=%p", argc, argv);
 
 	assert(argc == 2);
 

@@ -40,7 +40,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
 	private final Handler handler = new Handler(this);
 	private final MenuManager menuManager = new MenuManager(this);
-	private final SampleDetector detector = new SampleDetector(this);
+	private final SampleDetector detector = new SampleDetector(this, dbhelper);
 
 	private XmapView xmapView;
 	private ProgressDialog dlgProgress;

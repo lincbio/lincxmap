@@ -10,12 +10,15 @@ import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.database.Transaction;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.XmlResourceParser;
 import android.database.sqlite.SQLiteDatabase;
 
 public final class Xml2Sqlite implements Constants {
-	private static int ncatalog = 0;
+	private static int argidx = 0;
+	private static long ncatalog = 0;
+	private static long nproduct = 0;
 
 	private Context context;
 	private DatabaseHelper dbhelper;
@@ -58,17 +61,29 @@ public final class Xml2Sqlite implements Constants {
 						tag = new XmlTag(tagName, attrs);
 
 						if (XML_TAG_CATALOG.equals(tagName)) {
-							ncatalog++;
-							String[] args = { tag.getAttribute(TABLE_COL_NAME) };
-
-							db.execSQL("insert into " + TABLE_CATALOG
-									+ " values(null, ?)", args);
+							String name = tag.getAttribute(TABLE_COL_NAME);
+							ContentValues cv = new ContentValues();
+							cv.putNull(TABLE_COL_ID);
+							cv.put(TABLE_COL_NAME, name);
+							ncatalog = db.insert(TABLE_CATALOG, null, cv);
 						} else if (XML_TAG_PRODUCT.equals(tagName)) {
-							String[] args = { String.valueOf(ncatalog),
-									tag.getAttribute(TABLE_COL_NAME) };
-
-							db.execSQL("insert into " + TABLE_PRODUCT
-									+ " values(null, ?, ?)", args);
+							String name = tag.getAttribute(TABLE_COL_NAME);
+							String model = tag.getAttribute(TABLE_COL_MODEL);
+							ContentValues cv = new ContentValues();
+							cv.putNull(TABLE_COL_ID);
+							cv.put(TABLE_COL_CATALOGUE_ID, ncatalog);
+							cv.put(TABLE_COL_NAME, name);
+							cv.put(TABLE_COL_MODEL, model);
+							nproduct = db.insert(TABLE_PRODUCT, null, cv);
+							argidx = 0;
+						} else if (XML_TAG_ARG.equals(tagName)) {
+							String value = tag.getAttribute(TABLE_COL_VALUE);
+							ContentValues cv = new ContentValues();
+							cv.putNull(TABLE_COL_ID);
+							cv.put(TABLE_COL_PRODUCT_ID, nproduct);
+							cv.put(TABLE_COL_INDEX, ++argidx);
+							cv.put(TABLE_COL_VALUE, value);
+							db.insert(TABLE_PRODUCT_ARG, null, cv);
 						}
 
 						tagStack.add(tag);

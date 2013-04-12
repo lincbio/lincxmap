@@ -87,6 +87,8 @@
 
     <string name="msg_add_product_succeed">添加产品成功</string>
     <string name="msg_add_profile_succeed">添加档案成功</string>
+    <string name="msg_update_product_succeed">更新产品成功</string>
+    <string name="msg_update_profile_succeed">更新档案成功</string>
     <string name="msg_template_name_required">模板名称不能为空</string>
     <string name="msg_detecting">正在检测中&#8230;</string>
     <string name="msg_confirm_delete">确定删除吗？</string>

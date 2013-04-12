@@ -18,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class ProductActivity extends Activity implements Constants {
@@ -25,6 +26,7 @@ public class ProductActivity extends Activity implements Constants {
 
 	private EditText txtName;
 	private EditText txtCatalog;
+	private Spinner cmbModel;
 	private LinearLayout lstArg;
 	private Catalog catalog;
 	private Product product;
@@ -35,6 +37,7 @@ public class ProductActivity extends Activity implements Constants {
 		this.setContentView(R.layout.product_input);
 		this.txtName = (EditText) findViewById(R.id.product_name);
 		this.txtCatalog = (EditText) findViewById(R.id.product_catalog);
+		this.cmbModel = (Spinner) findViewById(R.id.product_model);
 		this.lstArg = (LinearLayout) findViewById(R.id.product_args);
 	}
 
@@ -63,7 +66,8 @@ public class ProductActivity extends Activity implements Constants {
 			if (null != obj && obj instanceof Product) {
 				this.product = (Product) obj;
 				this.txtName.setText(this.product.getName());
-				this.loadArgs(product);
+				// TODO select model
+				this.loadArgs(this.product);
 			}
 		}
 
@@ -85,7 +89,7 @@ public class ProductActivity extends Activity implements Constants {
 		Bundle bundle = getIntent().getExtras();
 
 		if (null != bundle && bundle.containsKey(PARAM_PRODUCT_OBJECT)) {
-			this.editProduct(this.product);
+			this.updateProduct(this.product);
 		} else {
 			this.newProduct();
 		}
@@ -96,8 +100,12 @@ public class ProductActivity extends Activity implements Constants {
 	}
 
 	private void newProduct() {
-		String name = txtName.getText().toString();
-		String catalog = txtCatalog.getText().toString();
+		int index = this.cmbModel.getSelectedItemPosition();
+		CharSequence[] models = getResources().getTextArray(
+				R.array.product_model_ids);
+		String model = models[index].toString();
+		String name = this.txtName.getText().toString();
+		String catalog = this.txtCatalog.getText().toString();
 
 		if (catalog.length() <= 0) {
 			Toasts.show(this, R.string.msg_product_catalog_required);
@@ -126,16 +134,52 @@ public class ProductActivity extends Activity implements Constants {
 		}
 
 		try {
-			this.dbHelper.addProduct(catalog, new Product(name), args);
+			this.dbHelper.addProduct(catalog, new Product(name, model), args);
 			Toasts.show(this, R.string.msg_add_product_succeed);
 			this.finish();
 		} catch (Throwable t) {
 			Toasts.show(this, t);
 		}
 	}
-	
-	private void editProduct(Product product) {
-		this.finish();
+
+	private void updateProduct(Product product) {
+		int index = this.cmbModel.getSelectedItemPosition();
+		CharSequence[] models = getResources().getTextArray(
+				R.array.product_model_ids);
+		String model = models[index].toString();
+		String name = this.txtName.getText().toString();
+
+		if (name.length() <= 0) {
+			Toasts.show(this, R.string.msg_product_name_required);
+			return;
+		}
+
+		List<ProductArgument> args = new ArrayList<ProductArgument>();
+
+		for (int i = 0; i < this.lstArg.getChildCount(); i++) {
+			View argView = this.lstArg.getChildAt(i);
+			EditText txtValue = (EditText) argView.findViewWithTag("value");
+			String value = String.valueOf(txtValue.getText());
+
+			if (value.trim().length() <= 0) {
+				txtValue.requestFocus();
+				Toasts.show(this, R.string.msg_product_arg_value_required);
+				return;
+			}
+
+			args.add(new ProductArgument(i, value));
+		}
+
+		product.setName(name);
+		product.setModel(model);
+		
+		try {
+			this.dbHelper.updateProduct(product, args);
+			Toasts.show(this, R.string.msg_update_product_succeed);
+			this.finish();
+		} catch (Throwable t) {
+			Toasts.show(this, t);
+		}
 	}
 
 	private void refreshArgsIndex() {

@@ -115,7 +115,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null);
 
 			if (c.moveToNext()) {
-				return new Product(c.getLong(0), c.getLong(1), c.getString(2));
+				return new Product(c.getLong(0), c.getLong(1), c.getString(2),
+						c.getString(3));
 			}
 		} finally {
 			close(c);
@@ -373,7 +374,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					null, null);
 
 			while (c.moveToNext()) {
-				list.add(new Product(c.getLong(0), c.getLong(1), c.getString(2)));
+				list.add(new Product(c.getLong(0), c.getLong(1),
+						c.getString(2), c.getString(3)));
 			}
 		} finally {
 			close(c);
@@ -400,7 +402,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 					new String[] { name }, null, null, null);
 
 			while (c.moveToNext()) {
-				list.add(new Product(c.getLong(0), c.getLong(1), c.getString(2)));
+				list.add(new Product(c.getLong(0), c.getLong(1),
+						c.getString(2), c.getString(3)));
 			}
 		} finally {
 			close(c);
@@ -419,7 +422,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 
 		try {
 			c = db.query(TABLE_PRODUCT_ARG, TABLE_PRODUCT_ARG_COLS, sql, args,
-					null, null, null);
+					null, null, TABLE_COL_INDEX);
 
 			while (c.moveToNext()) {
 				list.add(new ProductArgument(c.getLong(0), c.getLong(1), c
@@ -505,6 +508,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				values.putNull(TABLE_COL_ID);
 				values.put(TABLE_COL_CATALOGUE_ID, product.getCatalogId());
 				values.put(TABLE_COL_NAME, product.getName());
+				values.put(TABLE_COL_MODEL, product.getModel());
 				product.setId(db.insert(TABLE_PRODUCT, null, values));
 
 				for (ProductArgument arg : productArgs) {
@@ -554,6 +558,7 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				values.putNull(TABLE_COL_ID);
 				values.put(TABLE_COL_CATALOGUE_ID, product.getCatalogId());
 				values.put(TABLE_COL_NAME, product.getName());
+				values.put(TABLE_COL_MODEL, product.getModel());
 				product.setId(db.insert(TABLE_PRODUCT, null, values));
 
 				for (ProductArgument arg : productArgs) {
@@ -676,6 +681,32 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 		});
 
 		return template.getId();
+	}
+
+	public void updateProduct(final Product product,
+			final List<ProductArgument> pas) {
+		this.execute(new Transaction() {
+
+			@Override
+			public void run(SQLiteDatabase db) throws Exception {
+				String[] args = { String.valueOf(product.getId()) };
+				
+				ContentValues values = new ContentValues();
+				values.put(TABLE_COL_NAME, product.getName());
+				values.put(TABLE_COL_MODEL, product.getModel());
+				db.update(TABLE_PRODUCT, values, TABLE_COL_ID + "=?", args);
+				db.delete(TABLE_PRODUCT_ARG, TABLE_COL_PRODUCT_ID + "=?", args);
+				
+				for (ProductArgument pa : pas) {
+					ContentValues cv = new ContentValues();
+					cv.putNull(TABLE_COL_ID);
+					cv.put(TABLE_COL_PRODUCT_ID, product.getId());
+					cv.put(TABLE_COL_INDEX, pa.getIndex());
+					cv.put(TABLE_COL_VALUE, pa.getValue());
+					pa.setId(db.insert(TABLE_PRODUCT_ARG, null, cv));
+				}
+			}
+		});
 	}
 
 	public int updateTempldate(Template template) {
@@ -807,7 +838,8 @@ public class DatabaseHelper extends SQLiteOpenHelper implements Constants {
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "
 				+ TABLE_COL_CATALOGUE_ID + " integer not null, "
-				+ TABLE_COL_NAME + " text not null)");
+				+ TABLE_COL_NAME + " text not null, " + TABLE_COL_MODEL
+				+ " text not null)");
 		db.execSQL("CREATE TABLE IF NOT EXISTS " + TABLE_PRODUCT_ARG + "("
 				+ TABLE_COL_ID
 				+ " integer primary key autoincrement not null, "

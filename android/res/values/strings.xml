@@ -104,6 +104,8 @@
     
     <string name="msg_add_product_succeed">Add product succeed</string>
     <string name="msg_add_profile_succeed">Add profile succeed</string>
+    <string name="msg_update_product_succeed">Update product succeed</string>
+    <string name="msg_update_profile_succeed">Update profile succeed</string>
     <string name="msg_template_name_required">Template name is required</string>
     <string name="msg_detecting">Detecting&#8230;</string>
     <string name="msg_confirm_delete">Are you sure to delete it?</string>

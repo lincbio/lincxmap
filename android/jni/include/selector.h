@@ -31,9 +31,13 @@ struct selector
 
 	struct rectangle* (*getbounds)(selector_t *self);
 
+    const char* (*getmodel)(selector_t *self, int *argcp, char ***argvp);
+
 	const char* (*getname)(selector_t *self);
 
 	void (*setbounds)(selector_t *self, struct rectangle *bounds);
+
+    void (*setmodel)(selector_t *self, const char *model, int argc, char **argv);
 
 	void (*setname)(selector_t *self, const char *name);
 };

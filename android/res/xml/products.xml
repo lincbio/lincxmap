@@ -2,63 +2,186 @@
 <products>
 
     <catalog name="肿瘤类" >
-        <product name="Anti-Bata-HCG" />
-        <product name="Anti-alfa-HCG" />
-        <product name="Anti-CEA" />
-        <product name="Anti-AFP" />
+        <product name="Anti-Bata-HCG" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-alfa-HCG" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-CEA" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-AFP" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="肝炎类" >
-        <product name="HAV-Ag" />
-        <product name="HBS-Ag" />
-        <product name="HBc-Ag" />
-        <product name="HDV-Ag" />
-        <product name="HEV-Ag" />
-        <product name="HGV-Ag" />
+        <product name="HAV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HBS-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HBc-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HDV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HEV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HGV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="传染病类" >
-        <product name="TB ESAT-antigen" />
-        <product name="TB-16&amp;TB-18" />
-        <product name="HIV-1 gp41" />
-        <product name="HIV-1 gp24" />
-        <product name="HIV-1 gp36" />
-        <product name="HIV-1 gp120" />
-        <product name="TP17 Ag" />
-        <product name="TP47 Ag" />
+        <product name="TB ESAT-antigen" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="TB-16&amp;TB-18" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HIV-1 gp41" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HIV-1 gp24" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HIV-1 gp36" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HIV-1 gp120" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="TP17 Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="TP47 Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="脑血管疾病类" >
-        <product name="S100-Ag" />
-        <product name="S100A1B-Ag" />
-        <product name="S100BB-Ag" />
+        <product name="S100-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="S100A1B-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="S100BB-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="胰岛素类" >
-        <product name="Anti-INS" />
-        <product name="Anti-C-P" />
-        <product name="Anti-TT" />
+        <product name="Anti-INS" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-C-P" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-TT" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="心脏病类" >
-        <product name="Anti-CK-Mb" />
-        <product name="Anti-CTnT" />
-        <product name="Anti-CTnI" />
-        <product name="Anti-Pro-BNP" />
+        <product name="Anti-CK-Mb" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-CTnT" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-CTnI" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-Pro-BNP" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="激素类" >
-        <product name="Anti-PRL" />
-        <product name="Anti-TSH" />
-        <product name="Anti-FSH" />
+        <product name="Anti-PRL" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-TSH" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="Anti-FSH" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="优生优育类" >
-        <product name="RV-Ag" />
-        <product name="CMV-Ag" />
-        <product name="ToX-Ag" />
-        <product name="HSV-I-Ag" />
-        <product name="HSV-II-Ag" />
+        <product name="RV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="CMV-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="ToX-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HSV-I-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="HSV-II-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="不孕不育类" >
-        <product name="SMAg" />
-        <product name="E-Ag" />
-        <product name="O-Ag" />
-        <product name="TB-Ag" />
-        <product name="ZP-Ag" />
+        <product name="SMAg" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="E-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="O-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="TB-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
+        <product name="ZP-Ag" model="linear">
+            <arg value="1" />
+            <arg value="0" />
+        </product>
     </catalog>
     <catalog name="毒品药品类" >
     </catalog>

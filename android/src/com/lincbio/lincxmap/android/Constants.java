@@ -82,6 +82,8 @@ public interface Constants {
 
 	public static final String TABLE_COL_MAX = "max";
 
+	public static final String TABLE_COL_MODEL = "model";
+
 	public static final String TABLE_COL_FLAG = "flag";
 
 	public static final String TABLE_COL_OWNER = "owner";
@@ -110,7 +112,7 @@ public interface Constants {
 			TABLE_COL_TIME };
 
 	public static final String[] TABLE_PRODUCT_COLS = { TABLE_COL_ID,
-			TABLE_COL_CATALOGUE_ID, TABLE_COL_NAME };
+			TABLE_COL_CATALOGUE_ID, TABLE_COL_NAME, TABLE_COL_MODEL };
 
 	public static final String[] TABLE_PRODUCT_ARG_COLS = { TABLE_COL_ID,
 			TABLE_COL_PRODUCT_ID, TABLE_COL_INDEX, TABLE_COL_VALUE };
@@ -137,6 +139,8 @@ public interface Constants {
 	public static final String XML_TAG_CATALOG = "catalog";
 
 	public static final String XML_TAG_PRODUCT = "product";
+	
+	public static final String XML_TAG_ARG = "arg";
 
 	public static final String XML_ATTR_NAME = "name";
 

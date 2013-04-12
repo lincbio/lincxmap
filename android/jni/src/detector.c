@@ -7,10 +7,11 @@
  *
  * @author  Johnson Lee <g.johnsonlee@gmail.com>
  *
- * @version 1.0
- */
+ * @version 1.0 */
 
 #include <assert.h>
+#include <errno.h>
+#include <dlfcn.h>
 #include <fcntl.h>
 #include <math.h>
 #include <stdio.h>
@@ -24,12 +25,15 @@
 #include <log.h>
 #include <colorspace.h>
 #include <detector.h>
+#include <model.h>
 
-#ifndef __LINCXMAP_PRECISION__
-#define __LINCXMAP_PRECISION__ 100000
-#endif /* __LINCXMAP_PRECISION__ */
-
-#define TEST_PGM_FILE "/sdcard/DCIM/Camera/test.pgm"
+#if defined(ANDROID) || defined(__ANDROID__)
+  #define TEST_PGM_FILE "/sdcard/DCIM/Camera/test.pgm"
+  #define APP_SOLIB_DIR "/data/data/com.lincbio.lincxmap/lib"
+#else
+  #define TEST_PGM_FILE "/tmp/test.pgm"
+  #define APP_SOLIB_DIR "/usr/local/lib"
+#endif
 
 typedef struct
 {
@@ -105,6 +109,11 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	int x1, y1, x2, y2;					// valid bounds of inner square
 	int dim[3];							// image dimension & stride
 	int area[9];						// area for smooth
+    int argc;                           // product arg count
+    char **argv;                        // product args
+    char *modelnm;                      // model name
+    char libpath[1024];                 // model solib path
+    void *solib;                        // the handle of the solib
 	double sum;							// sum of brightness
 	double sqrt2;
 	double radius;						// radius of circular selector
@@ -118,7 +127,13 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 	uint32_t nchannels;					// the number of channels
 	histogram_t hist;
 	selector_t selector;
+    model_t model;
+    model_t (*model_new)(int, char**);
 
+    argc = 0;
+    argv = NULL;
+    model = NULL;
+    model_new = NULL;
 	memset(dim, 0, sizeof(dim));
 	memset(area, 0, sizeof(area));
 
@@ -156,6 +171,8 @@ skip_debug:
 	for (sa0 = sa; sa0; sa0 = sa0->next) {
 		selector = sa0->selector;
 		bounds = selector->getbounds(&selector);
+        modelnm = (char*) selector->getmodel(&selector, &argc, &argv);
+        snprintf(libpath, sizeof(libpath), APP_SOLIB_DIR"/lib%s.so", modelnm);
 
 		// calculate the bounds of the inner square of circular selector
 		radius = bounds->width / 2.0f;
@@ -187,10 +204,20 @@ skip_debug:
 			}
 		}
 
+        // load model shared library
+        DEBUG("Loading shared library `%s`...", libpath);
+        solib = dlopen(libpath, RTLD_LAZY);
+        *(void**)(&model_new) = dlsym(solib, "model_new");
+        model = model_new(argc, argv);
+
 		(*smp)->sum = nos;
 		(*smp)->bv = sum / nos;
-		(*smp)->cv = (*smp)->bv * __LINCXMAP_PRECISION__;
-		sprintf((*smp)->name, "%s", selector->getname(&selector));
+		(*smp)->cv = model->eval(&model, (*smp)->bv);
+		strcpy((*smp)->name, selector->getname(&selector));
+
+        // reelase model
+        model->free(&model);
+        dlclose(solib);
 
 		smp = &(*smp)->next;
 	}
@@ -225,7 +252,7 @@ static void lincxmap_detector_free(detector_t *self)
 	*self = NULL;
 }
 
-extern detector_t detector_new()
+detector_t detector_new()
 {
 	TRACE();
 

@@ -8,21 +8,23 @@ public class Product implements Serializable {
 	private long id;
 	private long catalogId;
 	private String name;
+	private String model;
 
 	public Product() {
 	}
 
-	public Product(String name) {
+	public Product(String name, String model) {
 		this.name = name;
+		this.model = model;
 	}
 
-	public Product(long catalogId, String name) {
-		this(name);
+	public Product(long catalogId, String name, String model) {
+		this(name, model);
 		this.catalogId = catalogId;
 	}
 
-	public Product(long id, long catalogId, String name) {
-		this(catalogId, name);
+	public Product(long id, long catalogId, String name, String model) {
+		this(catalogId, name, model);
 		this.id = id;
 	}
 
@@ -48,6 +50,14 @@ public class Product implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getModel() {
+		return model;
+	}
+
+	public void setModel(String model) {
+		this.model = model;
 	}
 
 	@Override
