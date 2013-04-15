@@ -37,7 +37,7 @@ public class DetectionResultActivity extends ListActivity implements Constants {
 			switch (item.getItemId()) {
 			case R.id.menu_send_result:
 				String subject = getString(R.string.title_send_result);
-				String content = reporter.generateReport(history.getId());
+				String content = reporter.generateTextReport(history.getId());
 				Intent intent = new Intent(Intent.ACTION_SEND);
 				intent.setType("text/plain");
 				intent.putExtra(Intent.EXTRA_SUBJECT, subject);

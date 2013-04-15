@@ -1,5 +1,8 @@
 package com.lincbio.lincxmap.android.utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 import android.content.Context;
@@ -9,6 +12,7 @@ import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.pojo.History;
 import com.lincbio.lincxmap.pojo.Profile;
 import com.lincbio.lincxmap.pojo.Result;
+import com.lincbio.lincxmap.pojo.Template;
 
 /**
  * Detection report generator
@@ -40,11 +44,11 @@ public class ReportGenerator {
 		this.dbHelper = dbHelper;
 	}
 
-	public String generateReport(History history) {
-		return this.generateReport(history.getId());
+	public String generateTextReport(History history) {
+		return this.generateTextReport(history.getId());
 	}
 
-	public String generateReport(long historyId) {
+	public String generateTextReport(long historyId) {
 		StringBuilder buf = new StringBuilder();
 		String name = this.context.getString(R.string.label_profile_name);
 		String sn = this.context.getString(R.string.label_profile_sn);
@@ -75,5 +79,66 @@ public class ReportGenerator {
 		buf.append("--------------------------------------------------\n");
 
 		return buf.toString();
+	}
+
+	/**
+	 * Generate a CSV report like this:
+	 * 
+	 * <pre>
+	 *  * | A | B | C | D |...
+	 * ---+---+---+---+---+...
+	 *  1 |   |   |   |   |...
+	 * ---+---+---+---+---+...
+	 *  2 |   |   |   |   |...
+	 * ---+---+---+---+---+...
+	 *  3 |   |   |   |   |...
+	 * ---+---+---+---+---+...
+	 *  4 |   |   |   |   |...
+	 * ---+---+---+---+---+...
+	 * ...|   |   |   |   |...
+	 * </pre>
+	 * 
+	 * @param history
+	 *            {@link History} object
+	 * @param template
+	 *            {@link Template} object
+	 * @return CSV file
+	 * @throws IOException
+	 */
+	public File generateCSVReport(History history, Template template)
+			throws IOException {
+		int y = template.getRowCount();
+		int x = template.getColumnCount();
+		File csv = FileUtils.newTempFile("csv");
+		List<Result> results = this.dbHelper.getResults(history.getId());
+
+		PrintWriter out = null;
+
+		try {
+			out = new PrintWriter(csv);
+			out.print('*');
+
+			for (int j = 0; j < x; j++) {
+				out.print(',');
+				out.print((char) ('A' + j));
+			}
+			out.println();
+
+			for (int i = 0; i < y; i++) {
+				out.print(i + 1);
+
+				for (int j = 0; j < x; j++) {
+					out.print(',');
+					out.print(results.get(i * y + j).getConcentration());
+				}
+
+				out.println();
+			}
+			out.println();
+		} finally {
+			out.close();
+		}
+
+		return csv;
 	}
 }

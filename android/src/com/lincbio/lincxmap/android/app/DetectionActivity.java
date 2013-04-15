@@ -7,6 +7,7 @@ import java.util.List;
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
+import com.lincbio.lincxmap.android.utils.ReportGenerator;
 import com.lincbio.lincxmap.android.utils.Toasts;
 import com.lincbio.lincxmap.android.view.XmapView;
 import com.lincbio.lincxmap.dip.SampleDetector;
@@ -40,6 +41,7 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 	private final DatabaseHelper dbhelper = new DatabaseHelper(this);
 	private final Handler handler = new Handler(this);
 	private final MenuManager menuManager = new MenuManager(this);
+	private final ReportGenerator reporter = new ReportGenerator(this);
 	private final SampleDetector detector = new SampleDetector(this, dbhelper);
 
 	private XmapView xmapView;
@@ -82,8 +84,16 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 		List<Sample> samples = this.detector.detect(bmp, this.template,
 				this.xmapView.getSelectors());
-		this.dbhelper.addHistory(this.history, samples);
-		this.handler.sendMessage(this.handler.obtainMessage(1, samples));
+
+		try {
+			this.dbhelper.addHistory(this.history, samples);
+			this.reporter.setDatabaseHelper(this.dbhelper);
+			this.reporter.generateCSVReport(this.history, this.template);
+			this.handler.sendMessage(this.handler.obtainMessage(1, samples));
+		} catch (Exception e) {
+			this.handler.sendMessage(this.handler.obtainMessage(-1, e));
+		}
+
 		bmp.recycle();
 		System.gc();
 	}
