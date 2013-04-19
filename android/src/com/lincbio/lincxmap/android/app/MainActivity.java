@@ -40,7 +40,7 @@ import android.widget.TextView;
  * 
  */
 @SuppressWarnings("deprecation")
-public class LauncherActivity extends ActivityGroup implements Constants,
+public class MainActivity extends ActivityGroup implements Constants,
 		OnPageChangeListener {
 	private final List<View> pageList = new ArrayList<View>();
 	private final MenuManager menuManager = new MenuManager(this);

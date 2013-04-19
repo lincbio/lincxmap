@@ -11,6 +11,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".android.app.ApplicationImpl"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
@@ -68,8 +69,15 @@
             android:name=".android.app.DetectionResultActivity"
             android:label="@string/title_detection_result" />
         <activity
-            android:name=".android.app.LauncherActivity"
+            android:name=".android.app.MainActivity"
             android:label="@string/title_launcher" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
         <activity
             android:name=".android.app.ProductActivity"
@@ -88,20 +96,6 @@
         <activity
             android:name=".android.app.SettingsActivity"
             android:label="@string/title_settings" />
-        <activity
-            android:name=".android.app.SplashActivity"
-            android:clearTaskOnLaunch="true"
-            android:launchMode="singleTop"
-            android:noHistory="true"
-            android:theme="@style/AppTheme.NoTitleBar.Fullscreen" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.HOME" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>
