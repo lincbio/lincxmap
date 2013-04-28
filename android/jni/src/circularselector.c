@@ -18,12 +18,15 @@
 #include <circularselector.h>
 #include <log.h>
 
+#define MAX_NAME_LEN  128
+#define MAX_MODEL_LEN 1024
+
 typedef struct
 {
 	struct selector super;
 	struct rectangle bounds;
-	char name[128];
-    char model[1024];
+	char name[MAX_NAME_LEN];
+    char model[MAX_MODEL_LEN];
 	float radius;
     int argc;
     char **argv;
@@ -52,10 +55,6 @@ static void lincxmap_circular_selector_free(selector_t *self)
 	assert(self && *self);
 
 	circular_selector_t *cs = (circular_selector_t*) *self;
-
-	if (cs->name) {
-		free(cs->name);
-	}
 
     if (cs->argv) {
         int i;
@@ -123,6 +122,12 @@ static void lincxmap_circular_selector_set_model(selector_t *self, const char *m
 	circular_selector_t *cs = (circular_selector_t*) *self;
 
     if (cs->argv) {
+        int i;
+
+        for (i = 0; i < cs->argc; i++) {
+			free(cs->argv[i]);
+		}
+
         free(cs->argv);
         cs->argv = NULL;
     }
@@ -139,7 +144,7 @@ static void lincxmap_circular_selector_set_model(selector_t *self, const char *m
     }
 
     if (model) {
-        strcpy(cs->model, model);
+        strncpy(cs->model, model, MAX_MODEL_LEN);
     }
 }
 
@@ -150,7 +155,8 @@ static void lincxmap_circular_selector_set_name(selector_t *self, const char *na
 	assert(self && *self);
     assert(name);
 
-    strcpy(((circular_selector_t*) *self)->name, name);
+	circular_selector_t *cs = (circular_selector_t*) *self;
+    strncpy(cs->name, name, MAX_NAME_LEN);
 }
 
 selector_t circular_selector_new(float radius)
@@ -176,6 +182,8 @@ selector_t circular_selector_new(float radius)
 		return NULL;
 	}
 
+	impl->argc = 0;
+	impl->argv = NULL;
 	impl->radius = radius;
 	memcpy(&impl->super, &ks_cselector, sizeof(struct selector));
 

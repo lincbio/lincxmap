@@ -22,7 +22,7 @@ public final class FileUtils {
 
 	public static File newTempFile(String ext) {
 		String name = sdf.format(new Date());
-		return new File(ROOT_DIR + "/" + name + ext);
+		return new File(ROOT_DIR + "/" + name + "." + ext);
 	}
 
 }

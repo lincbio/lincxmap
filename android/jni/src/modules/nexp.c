@@ -73,6 +73,10 @@ static double lincxmap_model_nexp_eval(model_t *self, double x)
 model_t model_new(int argc, char *argv[])
 {
 	TRACE();
+    DEBUG("argc=%d, argv=%p", argc, argv);
+
+	assert(argc == 2);
+	DEBUG("argv[0]=%s, argv[1]=%s", argv[0], argv[1]);
 
 	const static struct model ks_model = {
 		eval : lincxmap_model_nexp_eval,

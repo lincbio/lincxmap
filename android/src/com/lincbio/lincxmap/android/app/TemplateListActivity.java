@@ -216,7 +216,7 @@ public class TemplateListActivity extends Activity implements Constants {
 
 			switch (which) {
 			case ImageSource.IMAGE_SOURCE_CAPTURE:
-				File image = FileUtils.newTempFile(".jpg");
+				File image = FileUtils.newTempFile("jpg");
 				intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(image));
 				selectedImage = image.toString();
