@@ -110,6 +110,7 @@
     <string name="msg_detecting">Detecting&#8230;</string>
     <string name="msg_confirm_delete">Are you sure to delete it?</string>
     <string name="msg_confirm_delete_all">Are you sure to delete all?</string>
+    <string name="msg_out_of_memory">Out of memory</string>
     <string name="msg_profile_name_required">Profile name is required</string>
     <string name="msg_profile_sn_required">Serial number is required</string>
     <string name="msg_product_catalog_required">Catalog is required</string>

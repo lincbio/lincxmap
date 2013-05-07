@@ -6,6 +6,7 @@ import java.util.List;
 import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
+import com.lincbio.lincxmap.android.utils.Bitmaps;
 import com.lincbio.lincxmap.android.utils.Toasts;
 import com.lincbio.lincxmap.dip.CircleSampleSelector;
 import com.lincbio.lincxmap.dip.Point;
@@ -17,7 +18,6 @@ import com.lincbio.lincxmap.pojo.TemplateItem;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
@@ -76,6 +76,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 
 	private boolean dragging;
 	private CircleSampleSelector selection;
+	private Rect bgBounds;
+	private String bgpath;
 	private Bitmap background;
 	private Template template;
 
@@ -100,25 +102,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		this(context, null);
 	}
 
-	public void setBackground(Bitmap bg) {
-		Bitmap bmp = this.background;
-		this.background = bg;
-
-		if (null != bmp) {
-			bmp.recycle();
-		}
-		this.repaint();
-	}
-
 	public void setBackground(String path) {
-		Bitmap bmp = this.background;
-		this.background = BitmapFactory.decodeFile(path);
-
-		if (null != bmp) {
-			bmp.recycle();
-		}
-
-		this.repaint();
+		this.bgpath = path;
 	}
 
 	public Template getTemplate() {
@@ -188,7 +173,14 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO nothing
+		Bitmap bmp = this.background;
+		this.bgBounds = Bitmaps.getBounds(this.bgpath);
+		this.background = Bitmaps.load(this.bgpath, width, height);
+
+		if (null != bmp) {
+			bmp.recycle();
+		}
+		this.repaint();
 	}
 
 	@Override
@@ -218,15 +210,17 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		int dw, dh, dx, dy;
 		int _w = this.getWidth();
 		int _h = this.getHeight();
-		int sw = this.background.getWidth();
-		int sh = this.background.getHeight();
+		int sw = this.bgBounds.width();
+		int sh = this.bgBounds.height();
+		int rw = this.background.getWidth();
+		int rh = this.background.getHeight();
 		float sr = sw * 1.0f / sh;
 		float dr = _w * 1.0f / _h;
 		float scaling = 1.0f;
 		final int alpha = 0x5F000000;
 		final int bg = Color.BLACK;
-		final int fill = Color.BLACK;
-		final int stroke = Color.BLACK;
+		final int fill = Color.BLUE;
+		final int stroke = Color.BLUE;
 
 		if (sr > dr) { // vertical
 			dw = _w;
@@ -244,7 +238,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		dy = (int) ((_h - dh) / 2.0f);
 
 		this.bgbounds0.set(0, 0, _w, _h);
-		this.bgbounds1.set(0, 0, sw, sh);
+		this.bgbounds1.set(0, 0, rw, rh);
 		this.bgbounds2.set(dx, dy, dw + dx, dh + dy);
 		this.paint.setColor(bg);
 		this.paint.setStyle(Style.FILL);

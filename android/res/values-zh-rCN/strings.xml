@@ -93,6 +93,7 @@
     <string name="msg_detecting">正在检测中&#8230;</string>
     <string name="msg_confirm_delete">确定删除吗？</string>
     <string name="msg_confirm_delete_all">确定全部删除吗？</string>
+    <string name="msg_out_of_memory">内存空间不足</string>
     <string name="msg_profile_name_required">档案姓名不能为空</string>
     <string name="msg_profile_sn_required">档案编号不能为空</string>
     <string name="msg_product_catalog_required">产品目录不能为空</string>

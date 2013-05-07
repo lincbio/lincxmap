@@ -75,11 +75,21 @@ public class DetectionActivity extends Activity implements Constants, Callback,
 
 	@Override
 	public void run() {
-		Bitmap bmp = BitmapFactory.decodeFile(this.image);
-		if (null == bmp) {
+		Bitmap bmp = null;
+
+		try {
+			bmp = BitmapFactory.decodeFile(this.image);
+
+			if (null == bmp) {
+				this.handler.sendMessage(this.handler.obtainMessage(-1,
+						getString(R.string.msg_invalid_image)));
+				return;
+			}
+		} catch (OutOfMemoryError e) {
 			this.handler.sendMessage(this.handler.obtainMessage(-1,
-					getString(R.string.msg_invalid_image)));
-			return;
+					getString(R.string.msg_out_of_memory)));
+		} catch (Throwable t) {
+			this.handler.sendMessage(this.handler.obtainMessage(-1, t));
 		}
 
 		List<Sample> samples = this.detector.detect(bmp, this.template,

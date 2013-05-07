@@ -36,8 +36,7 @@ extern "C" {
 #define CLASS_SAMPLE_SELECTOR       CLASS(com/lincbio/lincxmap/dip/SampleSelector)
 #define CLASS_PROGRESS_LISTENER     CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
 
-JavaVM *jvm;
-
+#if 0
 jclass cls_string;
 
 jclass cls_array_list;
@@ -226,6 +225,8 @@ jmethodID fun_sample_selector_get_delta_y;
  * ProgressListener#onProgressChanged(int)
  */
 jmethodID fun_progress_listener_on_progress_changed;
+
+#endif
 
 #ifdef __cplusplus
 }
