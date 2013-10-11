@@ -29,49 +29,49 @@ extern "C" {
 typedef struct histogram* histogram_t;
 struct histogram
 {
-	const uint32_t nchannels;
+    const uint32_t nchannels;
 
-	/**
-	 * The FREQUENCY distribution
-	 */
-	int (*freq)[256];
+    /**
+     * The FREQUENCY distribution
+     */
+    int (*freq)[256];
 
-	/**
-	 * The PROBABILITY distribution
-	 */
-	double (*prob)[256];
+    /**
+     * The PROBABILITY distribution
+     */
+    double (*prob)[256];
 
-	/**
-	 * The CUMULATIVE distribution
-	 */
-	double (*cumu)[256];
+    /**
+     * The CUMULATIVE distribution
+     */
+    double (*cumu)[256];
 
-	/**
-	 * The AVERAGE DEVIATION distribution of each channel
-	 */
-	double *avg;
+    /**
+     * The AVERAGE DEVIATION distribution of each channel
+     */
+    double *avg;
 
-	/**
-	 * The STANDARD DEVIATION distribution of each channel
-	 */
-	double *stddev;
+    /**
+     * The STANDARD DEVIATION distribution of each channel
+     */
+    double *stddev;
 
-	/**
-	 * The ENTROPY of each channel
-	 */
-	double *entropy;
+    /**
+     * The ENTROPY of each channel
+     */
+    double *entropy;
 
-	/**
-	 * Max pixel value of each channel
-	 */
-	uint8_t *max;
+    /**
+     * Max pixel value of each channel
+     */
+    uint8_t *max;
 
-	/**
-	 * Min pixel value of each channel
-	 */
-	uint8_t *min;
+    /**
+     * Min pixel value of each channel
+     */
+    uint8_t *min;
 
-	void (*free)(histogram_t *self);
+    void (*free)(histogram_t *self);
 };
 
 #ifdef __cplusplus

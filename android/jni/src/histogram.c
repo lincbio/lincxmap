@@ -19,61 +19,61 @@
 
 static void lincxmap_histogram_free(histogram_t *self)
 {
-	TRACE();
+    TRACE();
 
-	assert(self && *self);
+    assert(self && *self);
 
-	if ((*self)->avg)
-		free((*self)->avg);
+    if ((*self)->avg)
+        free((*self)->avg);
 
-	if ((*self)->cumu)
-		free((*self)->cumu);
+    if ((*self)->cumu)
+        free((*self)->cumu);
 
-	if ((*self)->entropy)
-		free((*self)->entropy);
+    if ((*self)->entropy)
+        free((*self)->entropy);
 
-	if ((*self)->freq)
-		free((*self)->freq);
+    if ((*self)->freq)
+        free((*self)->freq);
 
-	if ((*self)->max)
-		free((*self)->max);
+    if ((*self)->max)
+        free((*self)->max);
 
-	if ((*self)->min)
-		free((*self)->min);
+    if ((*self)->min)
+        free((*self)->min);
 
-	if ((*self)->prob)
-		free((*self)->prob);
+    if ((*self)->prob)
+        free((*self)->prob);
 
-	if ((*self)->stddev)
-		free((*self)->stddev);
+    if ((*self)->stddev)
+        free((*self)->stddev);
 
-	free(*self);
-	*self = NULL;
+    free(*self);
+    *self = NULL;
 }
 
 static histogram_t lincxmap_histogram_new(uint32_t channel)
 {
-	TRACE();
+    TRACE();
 
-	uint32_t *nchannels;
-	histogram_t hist = calloc(1, sizeof(struct histogram));
+    uint32_t *nchannels;
+    histogram_t hist = calloc(1, sizeof(struct histogram));
 
-	if (!hist) {
-		ERROR("Out of memory!\n");
-		return NULL;
-	}
+    if (!hist) {
+        ERROR("Out of memory!\n");
+        return NULL;
+    }
 
-	nchannels = (uint32_t*) &hist->nchannels;
-	*nchannels = channel;
-	hist->free = lincxmap_histogram_free;
-	hist->freq = calloc(channel * IMAGE_GRAY_SCALE, sizeof(int));
-	hist->prob = calloc(channel * IMAGE_GRAY_SCALE, sizeof(double));
-	hist->cumu = calloc(channel * IMAGE_GRAY_SCALE, sizeof(double));
-	hist->avg = calloc(channel, sizeof(double));
-	hist->stddev = calloc(channel, sizeof(double));
-	hist->entropy = calloc(channel, sizeof(double));
-	hist->max = calloc(channel, sizeof(uint8_t));
-	hist->min = calloc(channel, sizeof(uint8_t));
+    nchannels = (uint32_t*) &hist->nchannels;
+    *nchannels = channel;
+    hist->free = lincxmap_histogram_free;
+    hist->freq = calloc(channel * IMAGE_GRAY_SCALE, sizeof(int));
+    hist->prob = calloc(channel * IMAGE_GRAY_SCALE, sizeof(double));
+    hist->cumu = calloc(channel * IMAGE_GRAY_SCALE, sizeof(double));
+    hist->avg = calloc(channel, sizeof(double));
+    hist->stddev = calloc(channel, sizeof(double));
+    hist->entropy = calloc(channel, sizeof(double));
+    hist->max = calloc(channel, sizeof(uint8_t));
+    hist->min = calloc(channel, sizeof(uint8_t));
 
-	return hist;
+    return hist;
 }

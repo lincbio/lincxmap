@@ -43,29 +43,29 @@ typedef struct model* model_t;
 struct model
 {
     /**
-	 * Evaluate with the specified arguments
-	 * 
-	 * @param self
-	 *           {@link model_t} object
-	 * @param x
-	 *           the value to be evaluated
-	 * @return the value that evaluated by this model
-	 */
+     * Evaluate with the specified arguments
+     * 
+     * @param self
+     *           {@link model_t} object
+     * @param x
+     *           the value to be evaluated
+     * @return the value that evaluated by this model
+     */
     double (*eval)(model_t *self, double x);
 
-	/**
-	 * Free this object
-	 */
-	void (*free)(model_t *self);
+    /**
+     * Free this object
+     */
+    void (*free)(model_t *self);
 
-	/**
-	 * Returns the model's name.
-	 * 
-	 * @param self
-	 *           {@link model_t} object
-	 * @return the model name
-	 */
-	const char* (*name)(model_t *self);
+    /**
+     * Returns the model's name.
+     * 
+     * @param self
+     *           {@link model_t} object
+     * @return the model name
+     */
+    const char* (*name)(model_t *self);
 };
 
 extern model_t model_new(int argc, char *argv[]);

@@ -21,8 +21,8 @@ extern "C" {
 
 struct selectors
 {
-	selector_t selector;
-	struct selectors *next;
+    selector_t selector;
+    struct selectors *next;
 };
 
 extern void selectors_free(struct selectors **sa);

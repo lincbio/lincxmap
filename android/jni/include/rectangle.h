@@ -19,10 +19,10 @@ extern "C" {
 
 struct rectangle
 {
-	double x;
-	double y;
-	double width;
-	double height;
+    double x;
+    double y;
+    double width;
+    double height;
 };
 
 #ifdef __cplusplus

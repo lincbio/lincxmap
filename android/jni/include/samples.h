@@ -19,12 +19,12 @@ extern "C" {
 
 struct sample
 {
-	char name[256];	/* sample name */
-	double bv;		/* brigtness value */
-	double cv;		/* concentration value */
-	int sum;		/* sum of pixels */
+    char name[256];    /* sample name */
+    double bv;        /* brigtness value */
+    double cv;        /* concentration value */
+    int sum;        /* sum of pixels */
 
-	struct sample *next;
+    struct sample *next;
 };
 
 extern void samples_add(struct sample **smpa, struct sample *smp);

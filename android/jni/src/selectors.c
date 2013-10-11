@@ -19,19 +19,19 @@
 
 void selectors_free(struct selectors **sela)
 {
-	TRACE();
+    TRACE();
 
-	assert(sela && *sela);
+    assert(sela && *sela);
 
-	struct selectors *i, *sel;
+    struct selectors *i, *sel;
 
-	for (i = *sela; i;) {
-		sel = i;
-		i = i->next;
-		sel->selector->free(&sel->selector);
-		free(sel);
-	}
+    for (i = *sela; i;) {
+        sel = i;
+        i = i->next;
+        sel->selector->free(&sel->selector);
+        free(sel);
+    }
 
-	*sela = NULL;
+    *sela = NULL;
 }
 

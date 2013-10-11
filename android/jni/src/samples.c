@@ -19,29 +19,29 @@
 
 void samples_add(struct sample **smpa, struct sample *smp)
 {
-	TRACE();
+    TRACE();
 
-	assert(smpa && *smpa);
-	assert(smp);
+    assert(smpa && *smpa);
+    assert(smp);
 
-	(*smpa)->next = smp;
-	*smpa = smp;
+    (*smpa)->next = smp;
+    *smpa = smp;
 }
 
 void samples_free(struct sample **smpa)
 {
-	TRACE();
+    TRACE();
 
-	assert(smpa && *smpa);
+    assert(smpa && *smpa);
 
-	struct sample *i, *smp;
+    struct sample *i, *smp;
 
-	for (i = *smpa; i; ) {
-		smp = i;
-		i = i->next;
-		free(smp);
-	}
+    for (i = *smpa; i; ) {
+        smp = i;
+        i = i->next;
+        free(smp);
+    }
 
-	*smpa = NULL;
+    *smpa = NULL;
 }
 

@@ -25,21 +25,21 @@ extern "C" {
 typedef struct selector* selector_t;
 struct selector
 {
-	int (*contains)(selector_t *self, uint32_t x, uint32_t y);
+    int (*contains)(selector_t *self, uint32_t x, uint32_t y);
 
-	void (*free)(selector_t *self);
+    void (*free)(selector_t *self);
 
-	struct rectangle* (*getbounds)(selector_t *self);
+    struct rectangle* (*getbounds)(selector_t *self);
 
     const char* (*getmodel)(selector_t *self, int *argcp, char ***argvp);
 
-	const char* (*getname)(selector_t *self);
+    const char* (*getname)(selector_t *self);
 
-	void (*setbounds)(selector_t *self, struct rectangle *bounds);
+    void (*setbounds)(selector_t *self, struct rectangle *bounds);
 
     void (*setmodel)(selector_t *self, const char *model, int argc, char **argv);
 
-	void (*setname)(selector_t *self, const char *name);
+    void (*setname)(selector_t *self, const char *name);
 };
 
 #ifdef __cplusplus

@@ -27,27 +27,27 @@ extern "C" {
 typedef struct __detector* detector_t;
 struct __detector
 {
-	/**
-	 * Detect samples without selector(s).
-	 *
-	 * @param self
-	 *           {@link detector_t} object
-	 * @param image
-	 *           {@link image_t} object
-	 * @param selectors
-	 *           {@link selector_t} object array
-	 * @param n
-	 *           number of selectors
-	 */
-	struct sample* (*detect)(detector_t *self, image_t *image, struct selectors *sa);
+    /**
+     * Detect samples without selector(s).
+     *
+     * @param self
+     *           {@link detector_t} object
+     * @param image
+     *           {@link image_t} object
+     * @param selectors
+     *           {@link selector_t} object array
+     * @param n
+     *           number of selectors
+     */
+    struct sample* (*detect)(detector_t *self, image_t *image, struct selectors *sa);
 
-	/**
-	 * Free this object
-	 *
-	 * @param self
-	 *           {@link detector_t} object
-	 */
-	void (*free)(detector_t *self);
+    /**
+     * Free this object
+     *
+     * @param self
+     *           {@link detector_t} object
+     */
+    void (*free)(detector_t *self);
 };
 
 extern detector_t detector_new();

@@ -37,33 +37,33 @@
 
 typedef struct
 {
-	struct __detector super;
+    struct __detector super;
 } detector_impl_t;
 
 #ifndef NDEBUG
 static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
 {
-	TRACE();
+    TRACE();
 
-	int i, nwrite;
-	uint32_t w = (*image)->getwidth(image);
-	uint32_t h = (*image)->getheight(image);
-	uint32_t n = (*image)->getnchannels(image);
-	uint8_t *row = calloc(w, n * sizeof(uint32_t));
+    int i, nwrite;
+    uint32_t w = (*image)->getwidth(image);
+    uint32_t h = (*image)->getheight(image);
+    uint32_t n = (*image)->getnchannels(image);
+    uint8_t *row = calloc(w, n * sizeof(uint32_t));
 
-	if (!row)
-		return EOF;
+    if (!row)
+        return EOF;
 
-	fdprintf(fd,"P5\n%u %u 255\n", w, h);
+    fdprintf(fd,"P5\n%u %u 255\n", w, h);
 
-	for (i = nwrite = 0; i < h; i++) {
-		(*image)->getpixels(image, &row, w, 0, i, w, 1);
-		nwrite += write(fd, row, w * n * sizeof(uint8_t));
-	}
-	
-	free(row);
+    for (i = nwrite = 0; i < h; i++) {
+        (*image)->getpixels(image, &row, w, 0, i, w, 1);
+        nwrite += write(fd, row, w * n * sizeof(uint8_t));
+    }
+    
+    free(row);
 
-	return nwrite;
+    return nwrite;
 }
 #endif /* !NDEBUG */
 
@@ -77,56 +77,56 @@ static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
  */
 static int lincxmap_detector_choose_channel(histogram_t *hist)
 {
-	TRACE();
+    TRACE();
 
-	int i, nth;
+    int i, nth;
 
-	for (i = nth = 0; i < (*hist)->nchannels; i++) {
-		if ((*hist)->stddev[i] < (*hist)->stddev[nth])
-			nth = i;
-	}
+    for (i = nth = 0; i < (*hist)->nchannels; i++) {
+        if ((*hist)->stddev[i] < (*hist)->stddev[nth])
+            nth = i;
+    }
 
-	DEBUG("Choose channel [%d]\n", nth);
+    DEBUG("Choose channel [%d]\n", nth);
 
-	return nth;
+    return nth;
 }
 
 static struct sample* lincxmap_detector_auto(detector_t *self, image_t *image)
 {
-	TRACE();
+    TRACE();
 
-	// TODO detect automatically
-	return NULL;
+    // TODO detect automatically
+    return NULL;
 }
 
 static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image, struct selectors *sa)
 {
-	TRACE();
+    TRACE();
 
-	int nos; 							// number of sample
-	int dx, dy;							// delta between outer square and inner square
-	int w, h, x, y;						// bounds of inner square
-	int x1, y1, x2, y2;					// valid bounds of inner square
-	int dim[3];							// image dimension & stride
-	int area[9];						// area for smooth
+    int nos;                             // number of sample
+    int dx, dy;                            // delta between outer square and inner square
+    int w, h, x, y;                        // bounds of inner square
+    int x1, y1, x2, y2;                    // valid bounds of inner square
+    int dim[3];                            // image dimension & stride
+    int area[9];                        // area for smooth
     int argc;                           // product arg count
     char **argv;                        // product args
     char *modelnm;                      // model name
     char libpath[1024];                 // model solib path
     void *solib;                        // the handle of the solib
-	double sum;							// sum of brightness
-	double sqrt2;
-	double radius;						// radius of circular selector
-	struct rectangle *bounds;
-	struct sample *smpa, **smp = &smpa;
-	struct selectors *sa0;
-	struct hsl hsl;
-	struct rgbx rgbx;
-	uint8_t *px, *pixels;				// pixels of image
-	uint32_t nth;						// selected channel number
-	uint32_t nchannels;					// the number of channels
-	histogram_t hist;
-	selector_t selector;
+    double sum;                            // sum of brightness
+    double sqrt2;
+    double radius;                        // radius of circular selector
+    struct rectangle *bounds;
+    struct sample *smpa, **smp = &smpa;
+    struct selectors *sa0;
+    struct hsl hsl;
+    struct rgbx rgbx;
+    uint8_t *px, *pixels;                // pixels of image
+    uint32_t nth;                        // selected channel number
+    uint32_t nchannels;                    // the number of channels
+    histogram_t hist;
+    selector_t selector;
     model_t model;
     model_t (*model_new)(int, char**);
 
@@ -134,75 +134,75 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
     argv = NULL;
     model = NULL;
     model_new = NULL;
-	memset(dim, 0, sizeof(dim));
-	memset(area, 0, sizeof(area));
+    memset(dim, 0, sizeof(dim));
+    memset(area, 0, sizeof(area));
 
-	sqrt2 = sqrt(2);
-	dim[0] = (*image)->getwidth(image);
-	dim[1] = (*image)->getheight(image);
-	dim[2] = (*image)->getstride(image);
-	hist = (*image)->gethistogram(image);
-	nchannels = (*image)->getnchannels(image);
-	nth = lincxmap_detector_choose_channel(&hist);
-	pixels = calloc(dim[0], sizeof(uint32_t));
+    sqrt2 = sqrt(2);
+    dim[0] = (*image)->getwidth(image);
+    dim[1] = (*image)->getheight(image);
+    dim[2] = (*image)->getstride(image);
+    hist = (*image)->gethistogram(image);
+    nchannels = (*image)->getnchannels(image);
+    nth = lincxmap_detector_choose_channel(&hist);
+    pixels = calloc(dim[0], sizeof(uint32_t));
 
-	if (!pixels) {
-		ERROR("Out of memory!");
-		return NULL;
-	}
+    if (!pixels) {
+        ERROR("Out of memory!");
+        return NULL;
+    }
 
-	DEBUG("Image size: %d x %d : %d [%d]\n", dim[0], dim[1], dim[2], nchannels);
+    DEBUG("Image size: %d x %d : %d [%d]\n", dim[0], dim[1], dim[2], nchannels);
 
 #if 0
-	int fd = open(TEST_PGM_FILE, O_CREAT | O_RDWR);
-	if (fd <= 0)
-		goto skip_debug;
+    int fd = open(TEST_PGM_FILE, O_CREAT | O_RDWR);
+    if (fd <= 0)
+        goto skip_debug;
 
-	image_t img = (*image)->getchannel(image, nth);
-	image_writer_t pgm_writer = lincxmap_detector_write_to_pgm;
-	img->write(&img, fd, &pgm_writer);
-	img->free(&img);
-	close(fd);
+    image_t img = (*image)->getchannel(image, nth);
+    image_writer_t pgm_writer = lincxmap_detector_write_to_pgm;
+    img->write(&img, fd, &pgm_writer);
+    img->free(&img);
+    close(fd);
 
 skip_debug:
 #endif /* !NDEBUG */
 
-	// calculate valid boundary
-	for (sa0 = sa; sa0; sa0 = sa0->next) {
-		selector = sa0->selector;
-		bounds = selector->getbounds(&selector);
+    // calculate valid boundary
+    for (sa0 = sa; sa0; sa0 = sa0->next) {
+        selector = sa0->selector;
+        bounds = selector->getbounds(&selector);
         modelnm = (char*) selector->getmodel(&selector, &argc, &argv);
         snprintf(libpath, sizeof(libpath), APP_SOLIB_DIR"/lib%s.so", modelnm);
 
-		// calculate the bounds of the inner square of circular selector
-		radius = bounds->width / 2.0f;
-		dx = dy = radius - (radius / sqrt2);
-		x = bounds->x + dx;
-		y = bounds->y + dy;
-		w = h = radius * sqrt2;
-		x1 = MAX(0, x);
-		y1 = MAX(0, y);
-		x2 = MIN(dim[0], x + w);
-		y2 = MIN(dim[1], y + h);
+        // calculate the bounds of the inner square of circular selector
+        radius = bounds->width / 2.0f;
+        dx = dy = radius - (radius / sqrt2);
+        x = bounds->x + dx;
+        y = bounds->y + dy;
+        w = h = radius * sqrt2;
+        x1 = MAX(0, x);
+        y1 = MAX(0, y);
+        x2 = MIN(dim[0], x + w);
+        y2 = MIN(dim[1], y + h);
 
-		*smp = calloc(1, sizeof(struct sample));
-		if (!*smp)
-			continue;
+        *smp = calloc(1, sizeof(struct sample));
+        if (!*smp)
+            continue;
 
-		nos = 0;
-		sum = 0;
+        nos = 0;
+        sum = 0;
 
-		// calculate the brightness of each selector
-		for (y = y1; y < y2; y++) {
-			(*image)->getpixels(image, &pixels, dim[2], 0, y, dim[0], 1);
+        // calculate the brightness of each selector
+        for (y = y1; y < y2; y++) {
+            (*image)->getpixels(image, &pixels, dim[2], 0, y, dim[0], 1);
 
-			for (x = x1; x < x2; x++) {
-				nos++;
-				px = pixels + x * nchannels;
-				rgbx.r = rgbx.b = rgbx.g = rgbx.x = px[nth];
-				sum += rgb2hsl((struct rgb*) &rgbx, &hsl)->l;
-			}
-		}
+            for (x = x1; x < x2; x++) {
+                nos++;
+                px = pixels + x * nchannels;
+                rgbx.r = rgbx.b = rgbx.g = rgbx.x = px[nth];
+                sum += rgb2hsl((struct rgb*) &rgbx, &hsl)->l;
+            }
+        }
 
         // load model shared library
         DEBUG("Loading shared library `%s`...", libpath);
@@ -210,66 +210,66 @@ skip_debug:
         *(void**)(&model_new) = dlsym(solib, "model_new");
         model = model_new(argc, argv);
 
-		(*smp)->sum = nos;
-		(*smp)->bv = sum / nos;
-		(*smp)->cv = model->eval(&model, (*smp)->bv);
-		strcpy((*smp)->name, selector->getname(&selector));
+        (*smp)->sum = nos;
+        (*smp)->bv = sum / nos;
+        (*smp)->cv = model->eval(&model, (*smp)->bv);
+        strcpy((*smp)->name, selector->getname(&selector));
 
         // reelase model
         model->free(&model);
         dlclose(solib);
 
-		smp = &(*smp)->next;
-	}
+        smp = &(*smp)->next;
+    }
 
-	free(pixels);
-	hist->free(&hist);
+    free(pixels);
+    hist->free(&hist);
 
-	return smpa;
+    return smpa;
 }
 
 static struct sample* lincxmap_detector_detect(detector_t *self, image_t *image, struct selectors *sa)
 {
-	TRACE();
+    TRACE();
 
-	assert(self && *self);
-	assert(image);
+    assert(self && *self);
+    assert(image);
 
-	if (sa) {
-		return lincxmap_detector_manual(self, image, sa);
-	} else {
-		return lincxmap_detector_auto(self, image);
-	}
+    if (sa) {
+        return lincxmap_detector_manual(self, image, sa);
+    } else {
+        return lincxmap_detector_auto(self, image);
+    }
 }
 
 static void lincxmap_detector_free(detector_t *self)
 {
-	TRACE();
+    TRACE();
 
-	assert(self && *self);
+    assert(self && *self);
 
-	free(*self);
-	*self = NULL;
+    free(*self);
+    *self = NULL;
 }
 
 detector_t detector_new()
 {
-	TRACE();
+    TRACE();
 
-	const static struct __detector ks_detector = {
-		detect : lincxmap_detector_detect,
-		free   : lincxmap_detector_free,
-	};
+    const static struct __detector ks_detector = {
+        detect : lincxmap_detector_detect,
+        free   : lincxmap_detector_free,
+    };
 
-	detector_impl_t *impl = calloc(1, sizeof(detector_impl_t));
+    detector_impl_t *impl = calloc(1, sizeof(detector_impl_t));
 
-	if (!impl) {
-		ERROR("Out of memory!\n");
-		return NULL;
-	}
+    if (!impl) {
+        ERROR("Out of memory!\n");
+        return NULL;
+    }
 
-	memcpy(&impl->super, &ks_detector, sizeof(struct __detector));
+    memcpy(&impl->super, &ks_detector, sizeof(struct __detector));
 
-	return &impl->super;
+    return &impl->super;
 }
 
