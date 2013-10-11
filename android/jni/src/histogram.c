@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010-2012, linc-bio Inc. All Rights Reserved.
+ * Copyright (c) 2010-2013, linc-bio Inc. All Rights Reserved.
  *
  * histogram.c
  *
