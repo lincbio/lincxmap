@@ -31,10 +31,9 @@ extern "C" {
 #define CLASS_PRODUCT_ARGUMENT      CLASS(com/lincbio/lincxmap/pojo/ProductArgument)
 #define CLASS_SAMPLE                CLASS(com/lincbio/lincxmap/pojo/Sample)
 #define CLASS_TEMPLATE              CLASS(com/lincbio/lincxmap/pojo/Template)
-#define CLASS_RECTANGLE             CLASS(com/lincbio/lincxmap/dip/Rectangle)
+#define CLASS_SHAPE                 CLASS(com/lincbio/lincxmap/dip/Shape)
 #define CLASS_SAMPLE_DETECTOR       CLASS(com/lincbio/lincxmap/dip/SampleDetector)
 #define CLASS_SAMPLE_SELECTOR       CLASS(com/lincbio/lincxmap/dip/SampleSelector)
-#define CLASS_PROGRESS_LISTENER     CLASS(com/lincbio/lincxmap/dip/SampleDetector$ProgressListener)
 
 #if 0
 jclass cls_string;
@@ -51,25 +50,17 @@ jclass cls_product_argument;
 
 jclass cls_sample;
 
-jclass cls_template;
-
-jclass cls_rectangle;
+jclass cls_shape;
 
 jclass cls_sample_detector;
 
 jclass cls_sample_selector;
 
-jclass cls_progress_listener;
-
+jclass cls_template;
 /**
  * SampleDetector#dbhelper
  */
 jfieldID pro_sample_detector_dbhelper;
-
-/**
- * SampleDetector#prgListener
- */
-jfieldID pro_sample_detector_prg_listener;
 
 /**
  * ArrayList#ArrayList()
@@ -132,24 +123,24 @@ jmethodID fun_bitmap_is_mutable;
 jmethodID fun_database_helper_get_product_arguments;
 
 /**
- * Rectangle#getX()
+ * Shape#getX()
  */
-jmethodID fun_rectangle_get_x;
+jmethodID fun_shape_get_x;
 
 /**
- * Rectangle#getY()
+ * Shape#getY()
  */
-jmethodID fun_rectangle_get_y;
+jmethodID fun_shape_get_y;
 
 /**
- * Rectangle#getWidth()
+ * Shape#getWidth()
  */
-jmethodID fun_rectangle_get_width;
+jmethodID fun_shape_get_width;
 
 /**
- * Rectangle#getHeight()
+ * Shape#getHeight()
  */
-jmethodID fun_rectangle_get_height;
+jmethodID fun_shape_get_height;
 
 /**
  * Product#getId()
@@ -197,9 +188,9 @@ jmethodID fun_sample_set_brightness;
 jmethodID fun_sample_set_concentration;
 
 /**
- * SampleSelector#getBounds()
+ * SampleSelector#getShape()
  */
-jmethodID fun_sample_selector_get_bounds;
+jmethodID fun_sample_selector_get_shape;
 
 /**
  * SampleSelector#getProduct()
@@ -220,11 +211,6 @@ jmethodID fun_sample_selector_get_delta_x;
  * SampleSelector#getDeltaY()
  */
 jmethodID fun_sample_selector_get_delta_y;
-
-/**
- * ProgressListener#onProgressChanged(int)
- */
-jmethodID fun_progress_listener_on_progress_changed;
 
 #endif
 

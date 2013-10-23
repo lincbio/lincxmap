@@ -1,5 +1,6 @@
 package com.lincbio.lincxmap.dip;
 
+import com.lincbio.lincxmap.geom.Shape;
 import com.lincbio.lincxmap.pojo.Product;
 
 /**
@@ -8,35 +9,24 @@ import com.lincbio.lincxmap.pojo.Product;
  * @author Johnson Lee
  * 
  */
-public abstract class SampleSelector {
-	protected float x;
-	protected float y;
+public class SampleSelector {
 	protected float deltaX;
 	protected float deltaY;
-	protected float scaling;
-	private Product product;
+	/**
+	 * Normal mode in default
+	 */
+	protected float scaling = 1;
 
-	public SampleSelector() {
-	}
+	public final Shape shape;
+	public final Product product;
 
-	public float getX() {
-		return x;
-	}
-
-	public void setX(float x) {
-		this.x = x;
-	}
-
-	public float getY() {
-		return y;
-	}
-
-	public void setY(float y) {
-		this.y = y;
+	public SampleSelector(Product product, Shape shape) {
+		this.product = product;
+		this.shape = shape;
 	}
 
 	public float getDeltaX() {
-		return deltaX;
+		return this.deltaX;
 	}
 
 	public void setDeltaX(float deltaX) {
@@ -44,7 +34,7 @@ public abstract class SampleSelector {
 	}
 
 	public float getDeltaY() {
-		return deltaY;
+		return this.deltaY;
 	}
 
 	public void setDeltaY(float deltaY) {
@@ -59,26 +49,12 @@ public abstract class SampleSelector {
 		this.scaling = scaling;
 	}
 
+	public Shape getShape() {
+		return shape;
+	}
+
 	public Product getProduct() {
 		return product;
 	}
-
-	public void setProduct(Product product) {
-		this.product = product;
-	}
-
-	public void move(float dx, float dy) {
-		this.x += dx;
-		this.y += dy;
-	}
-
-	public void move(float x1, float y1, float x2, float y2) {
-		this.x += x2 - x1;
-		this.y += y2 - y1;
-	}
-
-	public abstract boolean contains(float x, float y);
-
-	public abstract Rectangle getBounds();
-
+	
 }

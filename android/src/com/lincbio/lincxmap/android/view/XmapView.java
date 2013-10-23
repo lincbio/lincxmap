@@ -8,8 +8,6 @@ import com.lincbio.lincxmap.android.Constants;
 import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.utils.Bitmaps;
 import com.lincbio.lincxmap.android.utils.Toasts;
-import com.lincbio.lincxmap.dip.CircleSampleSelector;
-import com.lincbio.lincxmap.dip.Point;
 import com.lincbio.lincxmap.dip.SampleSelector;
 import com.lincbio.lincxmap.pojo.Product;
 import com.lincbio.lincxmap.pojo.Template;
@@ -19,11 +17,8 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.Paint.Style;
-import android.graphics.PathEffect;
+import android.graphics.Point;
 import android.graphics.Rect;
 import android.preference.PreferenceManager;
 import android.util.AttributeSet;
@@ -36,8 +31,6 @@ import android.view.SurfaceView;
 
 public class XmapView extends SurfaceView implements Callback, Constants {
 	private final static int GAP = 5;
-	private final static PathEffect DASH = new DashPathEffect(new float[] { 5,
-			5, 5, 5 }, 1);
 
 	private final Paint paint = new Paint();
 
@@ -69,13 +62,13 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 	/**
 	 * Selector list
 	 */
-	private final List<CircleSampleSelector> selectors = new ArrayList<CircleSampleSelector>();
+	private final List<SampleSelector> selectors = new ArrayList<SampleSelector>();
 	private final Display display;
 	private final DatabaseHelper dbHelper;
 	private final SharedPreferences pref;
 
 	private boolean dragging;
-	private CircleSampleSelector selection;
+	private SampleSelector selection;
 	private Rect bgBounds;
 	private String bgpath;
 	private Bitmap background;
@@ -129,16 +122,18 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		int cc = t.getColumnCount();
 
 		List<TemplateItem> items = t.getItems();
-		CircleSampleSelector[][] circles = new CircleSampleSelector[rc][cc];
+		SampleSelector[][] circles = new SampleSelector[rc][cc];
+
 		for (int i = 0, row = 0; row < t.getRowCount(); ++row) {
 			y = dy + row * (diameter + gap);
 
 			for (int col = 0; col < t.getColumnCount(); ++col) {
 				x = dx + col * (diameter + gap);
+
 				TemplateItem ti = items.get(i++);
-				CircleSampleSelector c = new CircleSampleSelector(x, y, radius);
+				DrawableShape shape = new DrawableCircle(x, y, radius);
 				Product product = this.dbHelper.getProduct(ti.getProductId());
-				c.setProduct(product);
+				SampleSelector c = new SampleSelector(product, shape);
 				circles[row][col] = c;
 				this.selectors.add(c);
 			}
@@ -159,7 +154,7 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 				return;
 
 			synchronized (holder) {
-				onDraw(canvas);
+				draw(canvas);
 			}
 		} catch (Throwable t) {
 			Toasts.show(getContext(), t);
@@ -217,10 +212,6 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		float sr = sw * 1.0f / sh;
 		float dr = _w * 1.0f / _h;
 		float scaling = 1.0f;
-		final int alpha = 0x5F000000;
-		final int bg = Color.BLACK;
-		final int fill = Color.BLUE;
-		final int stroke = Color.BLUE;
 
 		if (sr > dr) { // vertical
 			dw = _w;
@@ -240,12 +231,9 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		this.bgbounds0.set(0, 0, _w, _h);
 		this.bgbounds1.set(0, 0, rw, rh);
 		this.bgbounds2.set(dx, dy, dw + dx, dh + dy);
-		this.paint.setColor(bg);
-		this.paint.setStyle(Style.FILL);
 
 		// clear background with black
 		canvas.clipRect(this.bgbounds2);
-
 		// draw background image
 		canvas.drawBitmap(this.background, this.bgbounds1, this.bgbounds2, null);
 
@@ -254,44 +242,20 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 
 		// draw all selectors
 		for (int i = 0; i < this.selectors.size(); ++i) {
-			CircleSampleSelector c = this.selectors.get(i);
+			SampleSelector c = this.selectors.get(i);
+			DrawableShape shape = (DrawableShape) c.shape;
 			c.setDeltaX(dx);
-			c.setDeltaY(dy);
+			c.setDeltaX(dy);
 			c.setScaling(scaling);
 
-			// draw the outer circle of sample selector
-			this.paint.setColor(stroke);
-			this.paint.setStyle(Style.STROKE);
-			this.paint.setPathEffect(XmapView.DASH);
-			canvas.drawCircle(c.getX(), c.getY(), c.getRadius() + GAP,
-					this.paint);
-			this.paint.setPathEffect(null);
-
-			// highlight current selection if it has been selected
-			if (c == this.selection) {
-				canvas.drawLine(c.getX() - c.getRadius() - GAP, c.getY(),
-						c.getX() - c.getRadius(), c.getY(), this.paint);
-				canvas.drawLine(c.getX(), c.getY() - c.getRadius() - GAP,
-						c.getX(), c.getY() - c.getRadius(), this.paint);
-				canvas.drawLine(c.getX() + c.getRadius(), c.getY(), c.getX()
-						+ c.getRadius() + GAP, c.getY(), this.paint);
-				canvas.drawLine(c.getX(), c.getY() + c.getRadius(), c.getX(),
-						c.getY() + c.getRadius() + GAP, this.paint);
-			}
-
-			// draw sample selector
-			this.paint.setColor((fill & 0xFFFFFF) | alpha);
-			this.paint.setStyle(Style.FILL);
-			canvas.drawCircle(c.getX(), c.getY(), c.getRadius(), this.paint);
+			shape.drawBoundary(canvas, this.paint, XmapView.GAP);
+			shape.draw(canvas, this.paint);
 
 			// draw sample name
-			Product product = c.getProduct();
-			String text = product.getName();
-			this.paint.setColor(stroke);
-			this.paint.setStyle(Style.STROKE);
+			String text = c.product.getName();
 			this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);
-			float top = c.getY() - this.paint.ascent() / 2.0f;
-			float left = c.getX() - this.txtbounds.width() / 2.0f;
+			float top = c.shape.getY() - this.paint.ascent() / 2.0f;
+			float left = c.shape.getX() - this.txtbounds.width() / 2.0f;
 			canvas.drawText(text, left, top, this.paint);
 		}
 	}
@@ -302,8 +266,8 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		case MotionEvent.ACTION_DOWN:
 			this.dragging = true;
 			this.selection = null;
-			for (CircleSampleSelector c : this.selectors) {
-				if (c.contains(event.getX(), event.getY())) {
+			for (SampleSelector c : this.selectors) {
+				if (c.shape.contains(event.getX(), event.getY())) {
 					this.selection = c;
 					break;
 				}
@@ -315,15 +279,16 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		case MotionEvent.ACTION_MOVE:
 			if (this.dragging && null != this.selection) {
 				synchronized (this.selection) {
-					this.selection.move(this.pos.x, this.pos.y, event.getX(),
-							event.getY());
+					this.selection.shape.move(event.getX() - this.pos.x,
+							event.getY() - this.pos.y);
 				}
 			}
 			break;
 		default:
 			break;
 		}
-		this.pos.set(event.getX(), event.getY());
+
+		this.pos.set((int) event.getX(), (int) event.getY());
 		this.repaint();
 		return true;
 	}

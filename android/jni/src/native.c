@@ -50,7 +50,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
     jclass cls_product = (*env)->FindClass(env, CLASS_PRODUCT);
     jclass cls_product_argument = (*env)->FindClass(env, CLASS_PRODUCT_ARGUMENT);
     jclass cls_sample = (*env)->FindClass(env, CLASS_SAMPLE);
-    jclass cls_rectangle = (*env)->FindClass(env, CLASS_RECTANGLE);
+    jclass cls_shape = (*env)->FindClass(env, CLASS_SHAPE);
     jclass cls_sample_detector = (*env)->FindClass(env, CLASS_SAMPLE_DETECTOR);
     jclass cls_sample_selector = (*env)->FindClass(env, CLASS_SAMPLE_SELECTOR);
 
@@ -66,10 +66,10 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
     jmethodID fun_database_helper_get_product_arguments = (*env)->GetMethodID(env, cls_database_helper, "getProductArguments", "(J)L"CLASS_LIST";");
 
-    jmethodID fun_rectangle_get_x = (*env)->GetMethodID(env, cls_rectangle, "getX", "()D");
-    jmethodID fun_rectangle_get_y = (*env)->GetMethodID(env, cls_rectangle, "getY", "()D");
-    jmethodID fun_rectangle_get_width = (*env)->GetMethodID(env, cls_rectangle, "getWidth", "()D");
-    jmethodID fun_rectangle_get_height = (*env)->GetMethodID(env, cls_rectangle, "getHeight", "()D");
+    jmethodID fun_shape_get_x = (*env)->GetMethodID(env, cls_shape, "getX", "()F");
+    jmethodID fun_shape_get_y = (*env)->GetMethodID(env, cls_shape, "getY", "()F");
+    jmethodID fun_shape_get_width = (*env)->GetMethodID(env, cls_shape, "getWidth", "()F");
+    jmethodID fun_shape_get_height = (*env)->GetMethodID(env, cls_shape, "getHeight", "()F");
 
     jmethodID fun_product_get_id = (*env)->GetMethodID(env, cls_product, "getId", "()J");
     jmethodID fun_product_get_name = (*env)->GetMethodID(env, cls_product, "getName", "()L"CLASS_STRING";");
@@ -83,7 +83,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
     jmethodID fun_sample_set_brightness = (*env)->GetMethodID(env, cls_sample, "setBrightness", "(D)V");
     jmethodID fun_sample_set_concentration = (*env)->GetMethodID(env, cls_sample, "setConcentration", "(D)V");
 
-    jmethodID fun_sample_selector_get_bounds = (*env)->GetMethodID(env, cls_sample_selector, "getBounds", "()L"CLASS_RECTANGLE";");
+    jmethodID fun_sample_selector_get_shape = (*env)->GetMethodID(env, cls_sample_selector, "getShape", "()L"CLASS_SHAPE";");
     jmethodID fun_sample_selector_get_product = (*env)->GetMethodID(env, cls_sample_selector, "getProduct", "()L"CLASS_PRODUCT";");
     jmethodID fun_sample_selector_get_scaling = (*env)->GetMethodID(env, cls_sample_selector, "getScaling", "()F");
     jmethodID fun_sample_selector_get_delta_x = (*env)->GetMethodID(env, cls_sample_selector, "getDeltaX", "()F");
@@ -104,7 +104,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
         jlong jid = (*env)->CallLongMethod(env, jproduct, fun_product_get_id);
         jobject jmodel = (*env)->CallObjectMethod(env, jproduct, fun_product_get_model);
         jobject jname = (*env)->CallObjectMethod(env, jproduct, fun_product_get_name);
-        jobject jbounds = (*env)->CallObjectMethod(env, jsel, fun_sample_selector_get_bounds);
+        jobject jshape = (*env)->CallObjectMethod(env, jsel, fun_sample_selector_get_shape);
         jobject jpalist = (*env)->CallObjectMethod(env, jdbhelper, fun_database_helper_get_product_arguments, jid);
         const char *model = (const char*) (*env)->GetStringUTFChars(env, jmodel, JNI_FALSE);
         const char *name = (const char*) (*env)->GetStringUTFChars(env, jname, JNI_FALSE);
@@ -114,10 +114,10 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
         float dx = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_delta_x);
         float dy = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_delta_y);
         float scaling = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_scaling);
-        double x = (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_x);
-        double y =  (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_y);
-        double w = (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_width);
-        double h = (*env)->CallDoubleMethod(env, jbounds, fun_rectangle_get_height);
+        double x = (*env)->CallFloatMethod(env, jshape, fun_shape_get_x);
+        double y =  (*env)->CallFloatMethod(env, jshape, fun_shape_get_y);
+        double w = (*env)->CallFloatMethod(env, jshape, fun_shape_get_width);
+        double h = (*env)->CallFloatMethod(env, jshape, fun_shape_get_height);
 
         struct rectangle rect;
         rect.x = (x - dx) / scaling;
@@ -152,7 +152,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
         // delete local references
         (*env)->DeleteLocalRef(env, jpalist);
-        (*env)->DeleteLocalRef(env, jbounds);
+        (*env)->DeleteLocalRef(env, jshape);
         (*env)->DeleteLocalRef(env, jname);
         (*env)->DeleteLocalRef(env, jmodel);
         (*env)->DeleteLocalRef(env, jproduct);
