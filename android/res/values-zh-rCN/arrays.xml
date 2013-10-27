@@ -13,6 +13,10 @@
         <item>索引</item>
         <item>名称</item>
     </string-array>
+    <string-array name="array_sample_selector_type_names">
+        <item>圆形</item>
+        <item>矩形</item>
+    </string-array>
     <string-array name="product_model_labels">
         <item>线性</item>
     </string-array>

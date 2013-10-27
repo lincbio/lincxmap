@@ -20,7 +20,7 @@ public interface DrawableShape extends Shape {
 
 	final int BACKGROUND = Color.BLACK;
 
-	final int FOREGROUD = Color.BLUE;
+	final int FOREGROUD = Color.CYAN;
 
 	final PathEffect DASH = new DashPathEffect(new float[] { 5, 5, 5, 5 }, 1);
 

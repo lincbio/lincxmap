@@ -65,7 +65,9 @@
     <string name="title_sample_identifier">样本标识</string>
     <string name="title_sample_settings">样本设置</string>
     <string name="title_sample_selector_gap">样本选择器间隙</string>
+    <string name="title_sample_selector_settings">样本选择器设置</string>
     <string name="title_sample_selector_size">样本选择器大小</string>
+    <string name="title_sample_selector_type">样本选择器类型</string>
     <string name="title_send_result">发送结果</string>
     <string name="title_settings">首选项</string>
     <string name="title_template_list">模板列表</string>
@@ -75,6 +77,7 @@
     <string name="summary_sample_identifier">设置样本标识</string>
     <string name="summary_sample_selector_size">设置样本选择器尺寸</string>
     <string name="summary_sample_selector_gap">设置样本选择器间隙</string>
+    <string name="summary_sample_selector_type">设置选择器类型</string>
 
     <string name="hint_template_name">模板名称</string>
     <string name="hint_template_rows">模板行数</string>

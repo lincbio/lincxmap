@@ -12,11 +12,11 @@ build-module = \
 
 lincxmap_sources := \
 	bitmap.c \
-	circularselector.c \
 	detector.c \
 	native.c \
 	pixbuf.c \
 	samples.c \
+	selector.c \
 	selectors.c \
 
 # liblincxmap.so

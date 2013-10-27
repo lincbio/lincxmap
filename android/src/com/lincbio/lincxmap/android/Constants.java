@@ -1,6 +1,12 @@
 package com.lincbio.lincxmap.android;
 
+import java.util.regex.Pattern;
+
 public interface Constants {
+
+	public static final String REGEXP_SIZE = "(\\d+)\\s*\\*\\s*(\\d+)";
+
+	public static final Pattern PATTERN_SIZE = Pattern.compile(REGEXP_SIZE);
 
 	public static final String CATEGORY_TOOLBAR = "lincxmap.intent.category.toolbar";
 
@@ -13,6 +19,8 @@ public interface Constants {
 	public static final String KEY_SAMPLE_SELECTOR_GAP = "key_sample_selector_gap";
 
 	public static final String KEY_SAMPLE_SELECTOR_SIZE = "key_sample_selector_size";
+
+	public static final String KEY_SAMPLE_SELECTOR_TYPE = "key_sample_selector_type";
 
 	public static final String KEY_SAMPLE_IDENTIFIER = "key_sample_identifier";
 

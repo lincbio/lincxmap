@@ -22,8 +22,7 @@
 #include <utils.h>
 
 #include "histogram.c"
-
-typedef struct
+struct _bitmap
 {
     struct image super;
     uint32_t size[2];
@@ -31,7 +30,7 @@ typedef struct
     uint32_t nchannels;
     image_type_t type;
     void *arg;
-} bitmap_t;
+};
 
 extern int  lincxmap_native_bitmap_get_pixel(void*, uint32_t, uint32_t);
 extern void lincxmap_native_bitmap_set_pixel(void*, uint32_t, uint32_t, uint32_t);
@@ -68,7 +67,7 @@ static histogram_t lincxmap_bitmap_get_histogram(image_t *self)
     int i, j, k, x, y;
     uint8_t *px, *pixels;
     uint32_t width, height, size;
-    bitmap_t *bmp = (bitmap_t*) *self;
+    struct _bitmap *bmp = (struct _bitmap*) *self;
     histogram_t hist = lincxmap_histogram_new(bmp->nchannels);
 
     width = bmp->size[0];
@@ -131,7 +130,7 @@ static uint32_t lincxmap_bitmap_get_n_channels(image_t *self)
 
     assert(self && *self);
 
-    return ((bitmap_t*) *self)->nchannels;
+    return ((struct _bitmap*) *self)->nchannels;
 }
 
 static image_t lincxmap_bitmap_get_channel(image_t *self, uint32_t nth)
@@ -141,9 +140,9 @@ static image_t lincxmap_bitmap_get_channel(image_t *self, uint32_t nth)
     assert(self && *self);
 
     int width, height;
-    bitmap_t *src;
+    struct _bitmap *src;
 
-    src = (bitmap_t*) *self;
+    src = (struct _bitmap*) *self;
     assert(nth >= 0 && nth < src->nchannels);
     width = src->size[0];
     height = src->size[1];
@@ -159,7 +158,7 @@ static uint32_t lincxmap_bitmap_get_height(image_t *self)
 
     assert(self && *self);
 
-    return ((bitmap_t*) *self)->size[1];
+    return ((struct _bitmap*) *self)->size[1];
 }
 
 static uint32_t lincxmap_bitmap_get_pixel(image_t *self, uint32_t x, uint32_t y)
@@ -168,7 +167,7 @@ static uint32_t lincxmap_bitmap_get_pixel(image_t *self, uint32_t x, uint32_t y)
 
     assert(self && *self);
 
-    bitmap_t *bmp = (bitmap_t*) *self;
+    struct _bitmap *bmp = (struct _bitmap*) *self;
 
     return lincxmap_native_bitmap_get_pixel(bmp->arg, x, y);
 }
@@ -179,7 +178,7 @@ static void lincxmap_bitmap_get_pixels(image_t *self, uint8_t **pixels, uint32_t
 
     assert(self && *self);
 
-    bitmap_t *bmp = (bitmap_t*) *self;
+    struct _bitmap *bmp = (struct _bitmap*) *self;
 
     lincxmap_native_bitmap_get_pixels(bmp->arg, pixels, stride, x, y, w, h);
 }
@@ -190,7 +189,7 @@ static uint32_t lincxmap_bitmap_get_stride(image_t *self)
 
     assert(self && *self);
 
-    return ((bitmap_t*) *self)->stride;
+    return ((struct _bitmap*) *self)->stride;
 }
 
 static uint32_t lincxmap_bitmap_get_width(image_t *self)
@@ -199,7 +198,7 @@ static uint32_t lincxmap_bitmap_get_width(image_t *self)
 
     assert(self && *self);
 
-    return ((bitmap_t*) *self)->size[0];
+    return ((struct _bitmap*) *self)->size[0];
 }
 
 static image_type_t lincxamp_bitmap_get_type(image_t *self)
@@ -208,7 +207,7 @@ static image_type_t lincxamp_bitmap_get_type(image_t *self)
 
     assert(self && *self);
 
-    return ((bitmap_t*) *self)->type;
+    return ((struct _bitmap*) *self)->type;
 }
 
 static void lincxmap_bitmap_set_pixel(image_t *self, uint32_t x, uint32_t y, uint32_t color)
@@ -217,7 +216,7 @@ static void lincxmap_bitmap_set_pixel(image_t *self, uint32_t x, uint32_t y, uin
 
     assert(self && *self);
 
-    bitmap_t *bmp = (bitmap_t*) *self;
+    struct _bitmap *bmp = (struct _bitmap*) *self;
 
     lincxmap_native_bitmap_set_pixel(bmp->arg, x, y, color);
 }
@@ -230,7 +229,7 @@ static void lincxmap_bitmap_set_pixels(image_t *self, const uint8_t *pixels, uin
     assert(pixels);
     assert(stride >= w);
 
-    bitmap_t *bmp = (bitmap_t*) *self;
+    struct _bitmap *bmp = (struct _bitmap*) *self;
 
     lincxmap_native_bitmap_set_pixels(bmp->arg, pixels, stride, x, y, w, h);
 }
@@ -298,33 +297,33 @@ static int lincxmap_bitmap_write(image_t *self, int fd, image_writer_t *writer)
     return (*writer)(self, fd);
 }
 
+static const struct image clazz = {
+    equalize     : lincxmap_bitmap_equalize,
+    free         : lincxmap_bitmap_free,
+    getchannel   : lincxmap_bitmap_get_channel,
+    getheight    : lincxmap_bitmap_get_height,
+    gethistogram : lincxmap_bitmap_get_histogram,
+    getnchannels : lincxmap_bitmap_get_n_channels,
+    getpixel     : lincxmap_bitmap_get_pixel,
+    getpixels    : lincxmap_bitmap_get_pixels,
+    getstride    : lincxmap_bitmap_get_stride,
+    getwidth     : lincxmap_bitmap_get_width,
+    gettype      : lincxamp_bitmap_get_type,
+    setpixel     : lincxmap_bitmap_set_pixel,
+    setpixels    : lincxmap_bitmap_set_pixels,
+    smooth       : lincxmap_bitmap_smooth,
+    write        : lincxmap_bitmap_write,
+};
+
 image_t bitmap_new(uint32_t w, uint32_t h, image_type_t type, void *arg)
 {
     TRACE();
-
-    const static struct image ks_image = {
-        equalize     : lincxmap_bitmap_equalize,
-        free         : lincxmap_bitmap_free,
-        getchannel   : lincxmap_bitmap_get_channel,
-        getheight    : lincxmap_bitmap_get_height,
-        gethistogram : lincxmap_bitmap_get_histogram,
-        getnchannels : lincxmap_bitmap_get_n_channels,
-        getpixel     : lincxmap_bitmap_get_pixel,
-        getpixels    : lincxmap_bitmap_get_pixels,
-        getstride    : lincxmap_bitmap_get_stride,
-        getwidth     : lincxmap_bitmap_get_width,
-        gettype      : lincxamp_bitmap_get_type,
-        setpixel     : lincxmap_bitmap_set_pixel,
-        setpixels    : lincxmap_bitmap_set_pixels,
-        smooth       : lincxmap_bitmap_smooth,
-        write        : lincxmap_bitmap_write,
-    };
 
     assert(w > 0);
     assert(h > 0);
 
     const uint32_t size[] = { w, h };
-    bitmap_t *bmp = calloc(1, sizeof(bitmap_t));
+    struct _bitmap *bmp = calloc(1, sizeof(struct _bitmap));
 
     if (!bmp) {
         ERROR("Out of memory!\n");
@@ -336,7 +335,7 @@ image_t bitmap_new(uint32_t w, uint32_t h, image_type_t type, void *arg)
     bmp->nchannels = image_get_nchannels(type);
     bmp->stride = w * bmp->nchannels;
     memcpy(&bmp->size, &size, sizeof(size));
-    memcpy(&bmp->super, &ks_image, sizeof(struct image));
+    memcpy(&bmp->super, &clazz, sizeof(struct image));
 
     return &bmp->super;
 }

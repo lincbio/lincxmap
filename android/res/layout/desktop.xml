@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.lincbio.lincxmap"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/wallpaper" >
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="55dp"
+        android:layout_weight="0"
+        android:orientation="horizontal"
+        android:padding="@dimen/padding_medium" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:layout_gravity="center"
+            android:text="@string/app_name"
+            android:textAppearance="@android:style/TextAppearance.Large" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0"
+            android:onClick="onButtonPreferenceClick"
+            android:src="@drawable/ic_preference" />
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1px"
+        android:background="#7FFFFFFF"/>
+
+    <com.lincbio.lincxmap.android.view.FlowLayout
+        android:id="@+id/desktop"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:padding="@dimen/padding_large"
+        app:horizontalSpacing="@dimen/margin_large"
+        app:verticalSpacing="@dimen/margin_large" />
+
+</LinearLayout>

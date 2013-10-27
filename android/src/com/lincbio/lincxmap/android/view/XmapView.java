@@ -1,31 +1,23 @@
 package com.lincbio.lincxmap.android.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.lincbio.lincxmap.R;
 import com.lincbio.lincxmap.android.Constants;
-import com.lincbio.lincxmap.android.database.DatabaseHelper;
 import com.lincbio.lincxmap.android.utils.Bitmaps;
-import com.lincbio.lincxmap.android.utils.Toasts;
 import com.lincbio.lincxmap.dip.SampleSelector;
-import com.lincbio.lincxmap.pojo.Product;
+import com.lincbio.lincxmap.dip.SampleSelectorBuilder;
+import com.lincbio.lincxmap.geom.Shape;
 import com.lincbio.lincxmap.pojo.Template;
-import com.lincbio.lincxmap.pojo.TemplateItem;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.preference.PreferenceManager;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.WindowManager;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 
@@ -59,32 +51,32 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 	 */
 	private final Rect txtbounds = new Rect();
 
-	/**
-	 * Selector list
-	 */
-	private final List<SampleSelector> selectors = new ArrayList<SampleSelector>();
-	private final Display display;
-	private final DatabaseHelper dbHelper;
-	private final SharedPreferences pref;
+	private final SampleSelectorBuilder builder;
 
 	private boolean dragging;
 	private SampleSelector selection;
+	/**
+	 * Original image bounds
+	 */
 	private Rect bgBounds;
 	private String bgpath;
+	/**
+	 * Scaled image as background
+	 */
 	private Bitmap background;
 	private Template template;
+	private Painter painter;
+	private Thread paintThread;
+	private List<SampleSelector> selectors;
 
 	public XmapView(Context context, AttributeSet attrs, int defStyle) {
 		super(context, attrs, defStyle);
 
-		WindowManager wm = (WindowManager) context
-				.getSystemService(Context.WINDOW_SERVICE);
-		this.display = wm.getDefaultDisplay();
-		this.dbHelper = new DatabaseHelper(context);
-		this.pref = PreferenceManager.getDefaultSharedPreferences(context);
+		this.builder = new SampleSelectorBuilder(context, this);
 		this.paint.setAntiAlias(true);
-		getHolder().addCallback(this);
-		setFocusable(true);
+		this.painter = new Painter(getHolder(), this);
+		this.getHolder().addCallback(this);
+		this.setFocusable(true);
 	}
 
 	public XmapView(Context context, AttributeSet attrs) {
@@ -105,64 +97,11 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 
 	public void setTemplate(Template t) {
 		this.template = t;
-		this.selectors.clear();
-
-		String dftGap = getContext().getString(R.string.default_selector_gap);
-		String dftSize = getContext().getString(R.string.default_selector_size);
-		String sgap = this.pref.getString(KEY_SAMPLE_SELECTOR_GAP, dftGap);
-		String sdim = this.pref.getString(KEY_SAMPLE_SELECTOR_SIZE, dftSize);
-		int gap = Integer.parseInt(sgap);
-		int diameter = Integer.parseInt(sdim);
-		int w = this.template.getColumnCount() * (diameter + gap) - gap;
-		int h = this.template.getRowCount() * (diameter + gap) - gap;
-		float radius = diameter / 2.0f;
-		float dx = (this.display.getWidth() - w + diameter) / 2, x = dx;
-		float dy = (this.display.getHeight() - h + diameter) / 2, y = dy;
-		int rc = t.getRowCount();
-		int cc = t.getColumnCount();
-
-		List<TemplateItem> items = t.getItems();
-		SampleSelector[][] circles = new SampleSelector[rc][cc];
-
-		for (int i = 0, row = 0; row < t.getRowCount(); ++row) {
-			y = dy + row * (diameter + gap);
-
-			for (int col = 0; col < t.getColumnCount(); ++col) {
-				x = dx + col * (diameter + gap);
-
-				TemplateItem ti = items.get(i++);
-				DrawableShape shape = new DrawableCircle(x, y, radius);
-				Product product = this.dbHelper.getProduct(ti.getProductId());
-				SampleSelector c = new SampleSelector(product, shape);
-				circles[row][col] = c;
-				this.selectors.add(c);
-			}
-		}
 	}
 
 	public SampleSelector[] getSelectors() {
 		SampleSelector[] selectors = new SampleSelector[this.selectors.size()];
 		return this.selectors.toArray(selectors);
-	}
-
-	public final void repaint() {
-		Canvas canvas = null;
-		SurfaceHolder holder = getHolder();
-
-		try {
-			if (null == (canvas = holder.lockCanvas()))
-				return;
-
-			synchronized (holder) {
-				draw(canvas);
-			}
-		} catch (Throwable t) {
-			Toasts.show(getContext(), t);
-		} finally {
-			if (null != canvas) {
-				holder.unlockCanvasAndPost(canvas);
-			}
-		}
 	}
 
 	@Override
@@ -172,33 +111,47 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		this.bgBounds = Bitmaps.getBounds(this.bgpath);
 		this.background = Bitmaps.load(this.bgpath, width, height);
 
-		if (null != bmp) {
+		if (null != bmp && !bmp.isRecycled()) {
 			bmp.recycle();
+			bmp = null;
 		}
-		this.repaint();
 	}
 
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		this.repaint();
+		if (null == this.paintThread || !this.paintThread.isAlive()) {
+			this.painter.setRunning(true);
+			this.paintThread = new Thread(this.painter);
+			this.paintThread.start();
+		}
 	}
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		synchronized (holder) {
-			Bitmap bmp = this.background;
-			this.background = null;
+		if (null == this.paintThread || !this.paintThread.isAlive())
+			return;
 
-			if (null != bmp) {
-				bmp.recycle();
+		this.painter.setRunning(false);
+
+		while (true) {
+			try {
+				this.paintThread.join();
+				break;
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
+		}
 
-			this.selection = null;
+		if (null != this.background && !this.background.isRecycled()) {
+			this.background.recycle();
+			this.background = null;
 		}
 	}
 
 	@Override
 	protected void onDraw(Canvas canvas) {
+		super.onDraw(canvas);
+
 		if (null == this.background)
 			return;
 
@@ -240,23 +193,40 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		if (null == this.template)
 			return;
 
-		// draw all selectors
-		for (int i = 0; i < this.selectors.size(); ++i) {
-			SampleSelector c = this.selectors.get(i);
-			DrawableShape shape = (DrawableShape) c.shape;
-			c.setDeltaX(dx);
-			c.setDeltaX(dy);
-			c.setScaling(scaling);
+		synchronized (this) {
+			for (int i = 0; i < this.selectors.size(); ++i) {
+				SampleSelector c = this.selectors.get(i);
+				c.setDeltaX(dx);
+				c.setDeltaY(dy);
+				c.setScaling(scaling);
 
-			shape.drawBoundary(canvas, this.paint, XmapView.GAP);
-			shape.draw(canvas, this.paint);
+				// draw sample selector
+				DrawableShape shape = (DrawableShape) c.shape;
+				shape.drawBoundary(canvas, this.paint, XmapView.GAP);
+				shape.draw(canvas, this.paint);
 
-			// draw sample name
-			String text = c.product.getName();
-			this.paint.getTextBounds(text, 0, text.length(), this.txtbounds);
-			float top = c.shape.getY() - this.paint.ascent() / 2.0f;
-			float left = c.shape.getX() - this.txtbounds.width() / 2.0f;
-			canvas.drawText(text, left, top, this.paint);
+				// draw sample name
+				float x = c.shape.getX();
+				float y = c.shape.getY();
+				String text = c.product.getName();
+				int nchar = text.length();
+				this.paint.getTextBounds(text, 0, nchar, this.txtbounds);
+				x += (c.shape.getWidth() - this.txtbounds.width()) / 2.0f;
+				y += (c.shape.getHeight() - this.paint.ascent()) / 2.0f;
+				canvas.drawText(text, x, y, this.paint);
+			}
+		}
+	}
+
+	@Override
+	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+		int parentWidth = MeasureSpec.getSize(widthMeasureSpec);
+		int parentHeight = MeasureSpec.getSize(heightMeasureSpec);
+		this.setMeasuredDimension(parentWidth, parentHeight);
+
+		synchronized (this) {
+			this.selectors = this.builder.build(this.template);
 		}
 	}
 
@@ -278,9 +248,25 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 			break;
 		case MotionEvent.ACTION_MOVE:
 			if (this.dragging && null != this.selection) {
+				Shape shape = this.selection.shape;
+				float dx = event.getX() - this.pos.x;
+				float dy = event.getY() - this.pos.y;
+				float left = shape.getX();
+				float top = shape.getY();
+				float right = shape.getWidth() + left;
+				float bottom = shape.getHeight() + top;
+
+				if (left + dx < this.bgbounds2.left)
+					dx = this.bgbounds2.left - left;
+				if (right + dx > this.bgbounds2.right)
+					dx = this.bgbounds2.right - right;
+				if (top + dy < this.bgbounds2.top)
+					dy = this.bgbounds2.top - top;
+				if (bottom + dy > this.bgbounds2.bottom)
+					dy = this.bgbounds2.bottom - bottom;
+
 				synchronized (this.selection) {
-					this.selection.shape.move(event.getX() - this.pos.x,
-							event.getY() - this.pos.y);
+					this.selection.shape.move(dx, dy);
 				}
 			}
 			break;
@@ -289,7 +275,47 @@ public class XmapView extends SurfaceView implements Callback, Constants {
 		}
 
 		this.pos.set((int) event.getX(), (int) event.getY());
-		this.repaint();
 		return true;
+	}
+
+	private static class Painter implements Runnable {
+		private SurfaceHolder holder;
+		private XmapView view;
+		private boolean running;
+
+		public Painter(SurfaceHolder holder, XmapView view) {
+			this.holder = holder;
+			this.view = view;
+		}
+
+		public void setRunning(boolean running) {
+			this.running = running;
+		}
+
+		@Override
+		public void run() {
+			Canvas canvas;
+
+			while (this.running) {
+				canvas = null;
+
+				try {
+					canvas = this.holder.lockCanvas();
+
+					synchronized (this.holder) {
+						this.view.onDraw(canvas);
+					}
+				} finally {
+					if (null != canvas) {
+						this.holder.unlockCanvasAndPost(canvas);
+					}
+				}
+
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+				}
+			}
+		}
 	}
 }

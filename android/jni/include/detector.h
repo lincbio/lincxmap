@@ -24,8 +24,8 @@
 extern "C" {
 #endif
 
-typedef struct __detector* detector_t;
-struct __detector
+typedef struct detector* detector_t;
+struct detector
 {
     /**
      * Detect samples without selector(s).

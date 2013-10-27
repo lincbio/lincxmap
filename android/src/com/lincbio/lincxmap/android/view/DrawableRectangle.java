@@ -21,7 +21,8 @@ public class DrawableRectangle extends Rectangle implements DrawableShape {
 	public void draw(Canvas canvas, Paint paint) {
 		paint.setStyle(Style.FILL);
 		paint.setColor((FOREGROUD & 0xFFFFFF) | OPACITY);
-		canvas.drawRect(this.x, this.y, this.width, this.height, paint);
+		canvas.drawRect(this.x, this.y, this.x + this.width, this.y
+				+ this.height, paint);
 		paint.setColor(DrawableShape.FOREGROUD);
 		paint.setStyle(Style.STROKE);
 	}
@@ -31,8 +32,8 @@ public class DrawableRectangle extends Rectangle implements DrawableShape {
 		paint.setStyle(Style.STROKE);
 		paint.setPathEffect(DASH);
 		paint.setColor(FOREGROUD);
-		canvas.drawRect(this.x, this.y, this.width + padding, this.height
-				+ padding, paint);
+		canvas.drawRect(this.x - padding, this.y - padding, this.x + this.width
+				+ padding, this.y + this.height + padding, paint);
 		paint.setPathEffect(null);
 	}
 }

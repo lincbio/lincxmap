@@ -69,7 +69,7 @@
             android:name=".android.app.DetectionResultActivity"
             android:label="@string/title_detection_result" />
         <activity
-            android:name=".android.app.MainActivity"
+            android:name=".android.app.DesktopActivity"
             android:label="@string/title_launcher"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen" >
             <intent-filter>

@@ -35,10 +35,10 @@
   #define APP_SOLIB_DIR "/usr/local/lib"
 #endif
 
-typedef struct
+struct _detector
 {
-    struct __detector super;
-} detector_impl_t;
+    struct detector super;
+};
 
 #ifndef NDEBUG
 static int lincxmap_detector_write_to_pgm(image_t *image, int fd)
@@ -103,31 +103,29 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
 {
     TRACE();
 
-    int nos;                             // number of sample
-    int dx, dy;                            // delta between outer square and inner square
-    int w, h, x, y;                        // bounds of inner square
-    int x1, y1, x2, y2;                    // valid bounds of inner square
-    int dim[3];                            // image dimension & stride
+    int nos;                            // number of sample
+    int x, y;                           // bounds of inner square
+    int x1, y1;                         // valid bounds of inner square
+    int x2, y2;                         // valid bounds of inner square
+    int dim[3];                         // image dimension & stride
     int area[9];                        // area for smooth
     int argc;                           // product arg count
     char **argv;                        // product args
     char *modelnm;                      // model name
     char libpath[1024];                 // model solib path
     void *solib;                        // the handle of the solib
-    double sum;                            // sum of brightness
-    double sqrt2;
-    double radius;                        // radius of circular selector
+    double sum;                         // sum of brightness
     struct rectangle *bounds;
     struct sample *smpa, **smp = &smpa;
     struct selectors *sa0;
     struct hsl hsl;
     struct rgbx rgbx;
-    uint8_t *px, *pixels;                // pixels of image
-    uint32_t nth;                        // selected channel number
-    uint32_t nchannels;                    // the number of channels
+    uint8_t *px, *pixels;               // pixels of image
+    uint32_t nth;                       // selected channel number
+    uint32_t nchannels;                 // the number of channels
+    model_t model;
     histogram_t hist;
     selector_t selector;
-    model_t model;
     model_t (*model_new)(int, char**);
 
     argc = 0;
@@ -137,7 +135,6 @@ static struct sample* lincxmap_detector_manual(detector_t *self, image_t *image,
     memset(dim, 0, sizeof(dim));
     memset(area, 0, sizeof(area));
 
-    sqrt2 = sqrt(2);
     dim[0] = (*image)->getwidth(image);
     dim[1] = (*image)->getheight(image);
     dim[2] = (*image)->getstride(image);
@@ -175,15 +172,19 @@ skip_debug:
         snprintf(libpath, sizeof(libpath), APP_SOLIB_DIR"/lib%s.so", modelnm);
 
         // calculate the bounds of the inner square of circular selector
-        radius = bounds->width / 2.0f;
-        dx = dy = radius - (radius / sqrt2);
-        x = bounds->x + dx;
-        y = bounds->y + dy;
-        w = h = radius * sqrt2;
-        x1 = MAX(0, x);
-        y1 = MAX(0, y);
-        x2 = MIN(dim[0], x + w);
-        y2 = MIN(dim[1], y + h);
+        // radius = bounds->width / 2.0f;
+        // dx = dy = radius - (radius / sqrt2);
+        // x = bounds->x + dx;
+        // y = bounds->y + dy;
+        // w = h = radius * sqrt2;
+        // x1 = MAX(0, x);
+        // y1 = MAX(0, y);
+        // x2 = MIN(dim[0], x + w);
+        // y2 = MIN(dim[1], y + h);
+        x1 = bounds->x;
+        y1 = bounds->y;
+        x2 = bounds->x + bounds->width;
+        y2 = bounds->y + bounds->height;
 
         *smp = calloc(1, sizeof(struct sample));
         if (!*smp)
@@ -252,23 +253,23 @@ static void lincxmap_detector_free(detector_t *self)
     *self = NULL;
 }
 
+static const struct detector clazz = {
+    detect : lincxmap_detector_detect,
+    free   : lincxmap_detector_free,
+};
+
 detector_t detector_new()
 {
     TRACE();
 
-    const static struct __detector ks_detector = {
-        detect : lincxmap_detector_detect,
-        free   : lincxmap_detector_free,
-    };
-
-    detector_impl_t *impl = calloc(1, sizeof(detector_impl_t));
+    struct _detector *impl = calloc(1, sizeof(struct _detector));
 
     if (!impl) {
         ERROR("Out of memory!\n");
         return NULL;
     }
 
-    memcpy(&impl->super, &ks_detector, sizeof(struct __detector));
+    memcpy(&impl->super, &clazz, sizeof(struct detector));
 
     return &impl->super;
 }

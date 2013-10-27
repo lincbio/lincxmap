@@ -40,9 +40,9 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
     TRACE();
 
     int i, j;
-    struct native_obj arg = { env, jbmp };
     struct selectors *sela;
     struct selectors **sel = &sela;
+    struct native_obj bmparg = { env, jbmp };
 
     jclass cls_array_list = (*env)->FindClass(env, CLASS_ARRAY_LIST);
     jclass cls_bitmap = (*env)->FindClass(env, CLASS_BITMAP);
@@ -114,16 +114,21 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
         float dx = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_delta_x);
         float dy = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_delta_y);
         float scaling = (*env)->CallFloatMethod(env, jsel, fun_sample_selector_get_scaling);
-        double x = (*env)->CallFloatMethod(env, jshape, fun_shape_get_x);
-        double y =  (*env)->CallFloatMethod(env, jshape, fun_shape_get_y);
-        double w = (*env)->CallFloatMethod(env, jshape, fun_shape_get_width);
-        double h = (*env)->CallFloatMethod(env, jshape, fun_shape_get_height);
+        float x = (*env)->CallFloatMethod(env, jshape, fun_shape_get_x);
+        float y =  (*env)->CallFloatMethod(env, jshape, fun_shape_get_y);
+        float w = (*env)->CallFloatMethod(env, jshape, fun_shape_get_width);
+        float h = (*env)->CallFloatMethod(env, jshape, fun_shape_get_height);
+
+        INFO("Delta  = {dx:%f, dy:%f}\n", dx, dy);
+        INFO("Origin = {x:%f, y:%f, w:%f, h:%f}\n", x, y, w, h);
 
         struct rectangle rect;
         rect.x = (x - dx) / scaling;
         rect.y = (y - dy) / scaling;
         rect.width = w / scaling;
         rect.height = h / scaling;
+
+        INFO("Resize = {x:%f, y:%f, w:%f, h:%f}\n", rect.x, rect.y, rect.width, rect.height);
 
         for (j = 0; j < argc; j++) {
             jobject jpa = (*env)->CallObjectMethod(env, jpalist, fun_array_list_get, j);
@@ -138,12 +143,11 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
             (*env)->DeleteLocalRef(env, jval);
         }
 
-        DEBUG("[%d] {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf} =={scaling:%f, (dx:%.0f, dy:%.0f)}=> {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf}\n", i, x, y, w, h, scaling, dx, dy, rect.x, rect.y, rect.width, rect.height);
+        DEBUG("[%d] {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf} == {scaling:%f, (dx:%.0f, dy:%.0f)} => {x:%.0lf, y:%.0lf, width:%.0lf, height:%.0lf}\n", i, x, y, w, h, scaling, dx, dy, rect.x, rect.y, rect.width, rect.height);
 
         *sel = calloc(1, sizeof(struct selectors));
-        (*sel)->selector = circular_selector_new(rect.width * 0.5f);
+        (*sel)->selector = selector_new(&rect);
         (*sel)->selector->setname(&(*sel)->selector, name);
-        (*sel)->selector->setbounds(&(*sel)->selector, &rect);
         (*sel)->selector->setmodel(&(*sel)->selector, model, argc, argv);
 
         // release local string
@@ -168,7 +172,7 @@ JNIEXPORT jobject JNICALL native_detect(JNIEnv *env, jobject jself,
 
     struct sample *smp;
     detector_t detector = detector_new();
-    image_t img = bitmap_new(jwidth, jheight, IMAGE_TYPE_ARGB, &arg);
+    image_t img = bitmap_new(jwidth, jheight, IMAGE_TYPE_ARGB, &bmparg);
     struct sample *smpa = detector->detect(&detector, &img, sela);
 
     for (smp = smpa; smp; smp = smp->next) {

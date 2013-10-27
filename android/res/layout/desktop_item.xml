@@ -24,12 +24,12 @@
             android:layout_gravity="center" />
     </LinearLayout>
 
-    <ImageView
+    <!--ImageView
         android:id="@+id/desktop_item_del"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignRight="@id/desktop_item_icon"
         android:src="@drawable/ic_desktop_del"
-        android:visibility="gone" />
+        android:visibility="gone" /-->
 
 </RelativeLayout>

@@ -23,7 +23,7 @@
 
 #include "histogram.c"
 
-typedef struct
+struct _pixbuf
 {
     struct image super;
     uint8_t *data;
@@ -31,7 +31,7 @@ typedef struct
     uint32_t stride;
     uint32_t nchannels;
     image_type_t type;
-} pixbuf_t;
+};
 
 static image_t lincxmap_pixbuf_equalize(image_t *self, histogram_t *hist)
 {
@@ -49,7 +49,7 @@ static void lincxmap_pixbuf_free(image_t *self)
 
     assert(self && *self);
 
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
 
     if (pbf->data) {
         free(pbf->data);
@@ -68,7 +68,7 @@ static histogram_t lincxmap_pixbuf_get_histogram(image_t *self)
     int i, j, k, x, y;
     uint8_t *px;
     uint32_t width, height, stride, size;
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
     histogram_t hist = lincxmap_histogram_new(pbf->nchannels);
 
     width = pbf->size[0];
@@ -127,7 +127,7 @@ static uint32_t lincxmap_pixbuf_get_n_channels(image_t *self)
 
     assert(self && *self);
 
-    return ((pixbuf_t*) *self)->nchannels;
+    return ((struct _pixbuf*) *self)->nchannels;
 }
 
 static image_t lincxmap_pixbuf_get_channel(image_t *self, uint32_t nth)
@@ -139,12 +139,12 @@ static image_t lincxmap_pixbuf_get_channel(image_t *self, uint32_t nth)
     int x, y;
     uint8_t *p;
     image_t img;
-    pixbuf_t *src, *pbf;
+    struct _pixbuf *src, *pbf;
     
-    src = (pixbuf_t*) *self;
+    src = (struct _pixbuf*) *self;
     assert(nth >= 0 && nth < src->nchannels);
     img = pixbuf_new(src->size[0], src->size[1], IMAGE_TYPE_GRAY);
-    pbf = (pixbuf_t*) img;
+    pbf = (struct _pixbuf*) img;
 
     for (y = 0; y < src->size[1]; y++) {
         for (x = 0; x < src->size[0]; x++) {
@@ -162,7 +162,7 @@ static uint32_t lincxmap_pixbuf_get_height(image_t *self)
 
     assert(self && *self);
 
-    return ((pixbuf_t*) *self)->size[1];
+    return ((struct _pixbuf*) *self)->size[1];
 }
 
 static uint32_t lincxmap_pixbuf_get_pixel(image_t *self, uint32_t x, uint32_t y)
@@ -171,7 +171,7 @@ static uint32_t lincxmap_pixbuf_get_pixel(image_t *self, uint32_t x, uint32_t y)
 
     assert(self && *self);
 
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
     uint8_t *data = pbf->data + y * pbf->stride + x * pbf->nchannels;
     uint32_t color = 0;
 
@@ -186,7 +186,7 @@ static void lincxmap_pixbuf_get_pixels(image_t *self, uint8_t **pixels, uint32_t
 
     assert(self && *self);
 
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
     uint8_t *p = pbf->data + y * stride + x * pbf->nchannels;
 
     assert(w > 0 && w <= pbf->size[0] && h > 0 && h <= pbf->size[1]);
@@ -204,7 +204,7 @@ static uint32_t lincxmap_pixbuf_get_stride(image_t *self)
 
     assert(self && *self);
 
-    return ((pixbuf_t*) *self)->stride;
+    return ((struct _pixbuf*) *self)->stride;
 }
 
 static uint32_t lincxmap_pixbuf_get_width(image_t *self)
@@ -213,7 +213,7 @@ static uint32_t lincxmap_pixbuf_get_width(image_t *self)
 
     assert(self && *self);
 
-    return ((pixbuf_t*) *self)->size[0];
+    return ((struct _pixbuf*) *self)->size[0];
 }
 
 static image_type_t lincxamp_pixbuf_get_type(image_t *self)
@@ -222,7 +222,7 @@ static image_type_t lincxamp_pixbuf_get_type(image_t *self)
 
     assert(self && *self);
 
-    return ((pixbuf_t*) *self)->type;
+    return ((struct _pixbuf*) *self)->type;
 }
 
 static void lincxmap_pixbuf_set_pixel(image_t *self, uint32_t x, uint32_t y, uint32_t color)
@@ -231,7 +231,7 @@ static void lincxmap_pixbuf_set_pixel(image_t *self, uint32_t x, uint32_t y, uin
 
     assert(self && *self);
 
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
     uint8_t *data = pbf->data + y * pbf->stride + x * pbf->nchannels;
 
     memcpy(data, &color, pbf->nchannels);
@@ -245,7 +245,7 @@ static void lincxmap_pixbuf_set_pixels(image_t *self, const uint8_t *pixels, uin
     assert(pixels);
     assert(stride >= w);
 
-    pixbuf_t *pbf = (pixbuf_t*) *self;
+    struct _pixbuf *pbf = (struct _pixbuf*) *self;
     int offset = y * stride + x * pbf->nchannels;
     memcpy(pbf->data + offset, pixels, w * h - offset);
 }
@@ -313,33 +313,33 @@ static int lincxmap_pixbuf_write(image_t *self, int fd, image_writer_t *writer)
     return (*writer)(self, fd);
 }
 
+static const struct image clazz = {
+    equalize     : lincxmap_pixbuf_equalize,
+    free         : lincxmap_pixbuf_free,
+    getchannel   : lincxmap_pixbuf_get_channel,
+    getheight    : lincxmap_pixbuf_get_height,
+    gethistogram : lincxmap_pixbuf_get_histogram,
+    getnchannels : lincxmap_pixbuf_get_n_channels,
+    getpixel     : lincxmap_pixbuf_get_pixel,
+    getpixels    : lincxmap_pixbuf_get_pixels,
+    getstride    : lincxmap_pixbuf_get_stride,
+    getwidth     : lincxmap_pixbuf_get_width,
+    gettype      : lincxamp_pixbuf_get_type,
+    setpixel     : lincxmap_pixbuf_set_pixel,
+    setpixels    : lincxmap_pixbuf_set_pixels,
+    smooth       : lincxmap_pixbuf_smooth,
+    write        : lincxmap_pixbuf_write,
+};
+
 image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
 {
     TRACE();
-
-    const static struct image ks_image = {
-        equalize     : lincxmap_pixbuf_equalize,
-        free         : lincxmap_pixbuf_free,
-        getchannel   : lincxmap_pixbuf_get_channel,
-        getheight    : lincxmap_pixbuf_get_height,
-        gethistogram : lincxmap_pixbuf_get_histogram,
-        getnchannels : lincxmap_pixbuf_get_n_channels,
-        getpixel     : lincxmap_pixbuf_get_pixel,
-        getpixels    : lincxmap_pixbuf_get_pixels,
-        getstride    : lincxmap_pixbuf_get_stride,
-        getwidth     : lincxmap_pixbuf_get_width,
-        gettype      : lincxamp_pixbuf_get_type,
-        setpixel     : lincxmap_pixbuf_set_pixel,
-        setpixels    : lincxmap_pixbuf_set_pixels,
-        smooth       : lincxmap_pixbuf_smooth,
-        write        : lincxmap_pixbuf_write,
-    };
 
     assert(w > 0);
     assert(h > 0);
 
     const uint32_t size[] = { w, h };
-    pixbuf_t *pbf = calloc(1, sizeof(pixbuf_t));
+    struct _pixbuf *pbf = calloc(1, sizeof(struct _pixbuf));
 
     if (!pbf) {
         ERROR("Out of memory!\n");
@@ -358,7 +358,7 @@ image_t pixbuf_new(uint32_t w, uint32_t h, image_type_t type)
     }
 
     memcpy(&pbf->size, &size, sizeof(size));
-    memcpy(&pbf->super, &ks_image, sizeof(struct image));
+    memcpy(&pbf->super, &clazz, sizeof(struct image));
 
     return &pbf->super;
 }

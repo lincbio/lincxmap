@@ -31,7 +31,7 @@ extern "C" {
 #define CLASS_PRODUCT_ARGUMENT      CLASS(com/lincbio/lincxmap/pojo/ProductArgument)
 #define CLASS_SAMPLE                CLASS(com/lincbio/lincxmap/pojo/Sample)
 #define CLASS_TEMPLATE              CLASS(com/lincbio/lincxmap/pojo/Template)
-#define CLASS_SHAPE                 CLASS(com/lincbio/lincxmap/dip/Shape)
+#define CLASS_SHAPE                 CLASS(com/lincbio/lincxmap/geom/Shape)
 #define CLASS_SAMPLE_DETECTOR       CLASS(com/lincbio/lincxmap/dip/SampleDetector)
 #define CLASS_SAMPLE_SELECTOR       CLASS(com/lincbio/lincxmap/dip/SampleSelector)
 

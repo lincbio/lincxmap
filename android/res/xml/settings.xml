@@ -3,17 +3,6 @@
     android:title="@string/title_settings" >
 
     <PreferenceCategory android:title="@string/title_sample_settings" >
-        <EditTextPreference
-            android:defaultValue="@string/default_selector_size"
-            android:key="key_sample_selector_size"
-            android:summary="@string/summary_sample_selector_size"
-            android:title="@string/title_sample_selector_size" />
-        <EditTextPreference
-            android:defaultValue="@string/default_selector_gap"
-            android:key="key_sample_selector_gap"
-            android:summary="@string/summary_sample_selector_gap"
-            android:title="@string/title_sample_selector_gap" />
-
         <ListPreference
             android:defaultValue="@string/sample_identifier_name"
             android:dialogIcon="@android:drawable/ic_dialog_info"
@@ -23,6 +12,28 @@
             android:key="key_sample_identifier"
             android:summary="@string/summary_sample_identifier"
             android:title="@string/title_sample_identifier" />
+    </PreferenceCategory>
+    <PreferenceCategory android:title="@string/title_sample_selector_settings" >
+        <ListPreference
+            android:defaultValue="@string/default_sample_selector_type"
+            android:dialogIcon="@android:drawable/ic_dialog_info"
+            android:dialogTitle="@string/title_sample_selector_type"
+            android:entries="@array/array_sample_selector_type_names"
+            android:entryValues="@array/array_sample_selector_type_values"
+            android:key="key_sample_selector_type"
+            android:summary="@string/summary_sample_selector_type"
+            android:title="@string/title_sample_selector_type" />
+
+        <EditTextPreference
+            android:defaultValue="@string/default_sample_selector_size"
+            android:key="key_sample_selector_size"
+            android:summary="@string/summary_sample_selector_size"
+            android:title="@string/title_sample_selector_size" />
+        <EditTextPreference
+            android:defaultValue="@string/default_sample_selector_gap"
+            android:key="key_sample_selector_gap"
+            android:summary="@string/summary_sample_selector_gap"
+            android:title="@string/title_sample_selector_gap" />
     </PreferenceCategory>
     <PreferenceCategory android:title="@string/title_detection_settings" >
         <ListPreference
