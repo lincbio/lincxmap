@@ -106,7 +106,7 @@ public class TemplateListActivity extends Activity implements Constants {
 		super.onStart();
 
 		View item;
-		ImageView del;
+		// ImageView del;
 		ImageView icon;
 		TextView label;
 
@@ -120,7 +120,7 @@ public class TemplateListActivity extends Activity implements Constants {
 		for (final Template tpl : templates) {
 			item = this.getLayoutInflater().inflate(R.layout.desktop_item,
 					this.desktop, false);
-			del = (ImageView) item.findViewById(R.id.desktop_item_del);
+			// del = (ImageView) item.findViewById(R.id.desktop_item_del);
 			icon = (ImageView) item.findViewById(R.id.desktop_item_icon);
 			label = (TextView) item.findViewById(R.id.desktop_item_label);
 			label.setText(tpl.getName());
@@ -129,7 +129,7 @@ public class TemplateListActivity extends Activity implements Constants {
 				icon.setImageResource(R.drawable.ic_desktop_add);
 				item.setOnClickListener(new NewTemplateListener());
 			} else {
-				del.setOnClickListener(new DeleteTemplateListener(tpl, item));
+				// del.setOnClickListener(new DeleteTemplateListener(tpl, item));
 				icon.setImageResource(R.drawable.ic_desktop);
 				item.setOnLongClickListener(new DesktopListener());
 				item.setOnClickListener(new DetectionWizardListener(tpl));
@@ -163,8 +163,8 @@ public class TemplateListActivity extends Activity implements Constants {
 
 		@Override
 		public boolean onLongClick(View v) {
-			View del = v.findViewById(R.id.desktop_item_del);
-			del.setVisibility(View.VISIBLE);
+			// View del = v.findViewById(R.id.desktop_item_del);
+			// del.setVisibility(View.VISIBLE);
 			return true;
 		}
 
@@ -179,12 +179,12 @@ public class TemplateListActivity extends Activity implements Constants {
 
 		@Override
 		public void onClick(View v) {
-			View del = v.findViewById(R.id.desktop_item_del);
+			// View del = v.findViewById(R.id.desktop_item_del);
 
-			if (null != del && View.VISIBLE == del.getVisibility()) {
-				del.setVisibility(View.GONE);
-				return;
-			}
+			// if (null != del && View.VISIBLE == del.getVisibility()) {
+			// 	del.setVisibility(View.GONE);
+			// 	return;
+			// }
 
 			CharSequence[] choices = getResources().getTextArray(
 					R.array.array_image_sources);
