@@ -74,10 +74,10 @@
     <string name="title_detection_policy">Detection policy</string>
     <string name="title_detection_result">Detection result</string>
     <string name="title_detection_settings">Detection settings</string>
-    <string name="title_history_list">History list</string>
+    <string name="title_history_list">Histories</string>
     <string name="title_launcher">Lincxmap</string>
-    <string name="title_product_list">Product list</string>
-    <string name="title_profile_list">Profile list</string>
+    <string name="title_product_list">Products</string>
+    <string name="title_profile_list">Profiles</string>
     <string name="title_result_detail">Detection result details</string>
     <string name="title_sample_layout">Sample layout</string>
     <string name="title_sample_identifier">Sample identifier</string>
@@ -88,7 +88,7 @@
     <string name="title_sample_selector_type">Sample selector size</string>
     <string name="title_send_result">Send result</string>
     <string name="title_settings">Settings</string>
-    <string name="title_template_list">Template list</string>
+    <string name="title_template_list">Templates</string>
     <string name="title_template_new">New template</string>
     
     <string name="summary_detection_policy">Choose a detection policy</string>

@@ -18,7 +18,8 @@
         <activity
             android:name=".android.app.TemplateListActivity"
             android:icon="@android:drawable/ic_menu_slideshow"
-            android:label="@string/title_template_list" >
+            android:label="@string/title_template_list"
+            android:screenOrientation="portrait" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
